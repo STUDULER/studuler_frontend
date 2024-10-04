@@ -1,10 +1,18 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:http/http.dart' as http;
 
 import 'auth_service_type.dart';
 
 class AuthService {
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true,
+    ),
+  );
 
   Future<void> signIn({
     required AuthServiceType authServiceType,
@@ -19,8 +27,38 @@ class AuthService {
             value: "google",
           );
         }
+        print(googleUser);
         print("sign in");
         break;
+
+      case AuthServiceType.kakao:
+        try {
+          bool isKakaoInstalled = await isKakaoTalkInstalled();
+          OAuthToken token = isKakaoInstalled
+              ? await UserApi.instance.loginWithKakaoTalk()
+              : await UserApi.instance.loginWithKakaoAccount();
+
+          await _secureStorage.write(key: 'isLoggedIn', value: 'true');
+          await _secureStorage.write(
+            key: "authServiceType",
+            value: "kakao",
+          );
+
+          final url = Uri.https('kapi.kakao.com', '/v2/user/me');
+          final response = await http.get(
+            url,
+            headers: {
+              HttpHeaders.authorizationHeader: 'Bearer ${token.accessToken}'
+            },
+          );
+          final profileInfo = json.decode(response.body);
+          print(profileInfo.toString());
+
+        } catch (error) {
+          print('Kakao sign in failed: $error');
+        }
+        break;
+
       default:
     }
   }
