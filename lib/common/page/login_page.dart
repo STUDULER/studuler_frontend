@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:studuler/common/auth/auth_service_type.dart';
 
 import '../auth/auth_service.dart';
+import '../auth/auth_service_type.dart';
+import '../section/yellow_background.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -11,31 +12,41 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () {
-                print("asd");
-              },
-              child: Container(
-                color: Colors.amber,
-                width: 300,
-                height: 200,
+      body: YellowBackground(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Spacer(flex: 2,),
+              Text(
+                "STUDULER",
+                style: Theme.of(context).textTheme.displayLarge,
               ),
-            ),
-            GestureDetector(
-              onTap: () async => _authService.signIn(
-                authServiceType: AuthServiceType.google,
+              const Spacer(),
+              GestureDetector(
+                onTap: () {
+                  print("asd");
+                },
+                child: Container(
+                  color: Colors.amber,
+                  width: MediaQuery.sizeOf(context).width * 0.8,
+                  height: 70,
+                ),
               ),
-              child: Container(
-                color: Colors.blue,
-                width: 300,
-                height: 200,
+              const SizedBox(height: 16,),
+              GestureDetector(
+                onTap: () async => _authService.signIn(
+                  authServiceType: AuthServiceType.google,
+                ),
+                child: Container(
+                  color: Colors.blue,
+                  width: MediaQuery.sizeOf(context).width * 0.8,
+                  height: 70,
+                ),
               ),
-            ),
-          ],
+              const Spacer(flex: 3,),
+            ],
+          ),
         ),
       ),
     );
