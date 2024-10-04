@@ -33,7 +33,18 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.859051913082-24nkdjnbhjohaa76obvmrp0i0a1v2o2i</string>
+
+				<!-- common -->
 				<string>kakao948e680b2e31563c3d8f21e3881e9450</string>
+
+				<!-- KakaoTalk login -->
+                <string>kakaokompassauth</string>
+                <string>storykompassauth</string>
+
+                <!-- KakaoLink -->
+                <string>kakaolink</string>
+                <string>kakaotalk-5.9.7</string>
+
 			</array>
 		</dict>
 	</array>
