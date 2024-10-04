@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_sign_in: ^6.1.6
   flutter_secure_storage: ^9.2.2
+  kakao_flutter_sdk: ^1.9.6
 
 dev_dependencies:
   flutter_test:

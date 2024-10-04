@@ -16,9 +16,9 @@ class LoginPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             GestureDetector(
-              onTap: () {
-                print("asd");
-              },
+              onTap: () async => _authService.signIn(
+                authServiceType: AuthServiceType.kakao,
+              ),
               child: Container(
                 color: Colors.amber,
                 width: 300,
