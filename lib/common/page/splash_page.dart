@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:studuler/common/page/login_page.dart';
+import 'package:studuler/common/page/role_selection_page.dart';
 
 import '../../main.dart';
 import '../auth/auth_service.dart';
@@ -80,7 +80,7 @@ class _SplashPageState extends State<SplashPage> {
                   ? const MyHomePage(
                       title: "dummy",
                     )
-                  : LoginPage();
+                  : const RoleSelectionPage();
             }
           },
         ),
