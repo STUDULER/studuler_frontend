@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'common/auth/auth_service.dart';
-import 'common/page/splash_page.dart';
+import 'common/page/login_page.dart';
 
 void main() {
   KakaoSdk.init(nativeAppKey: '948e680b2e31563c3d8f21e3881e9450'); // 이 줄을 runApp 위에 추가한다.
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
