@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:studuler/common/auth/auth_service_type.dart';
+
+import '../auth/auth_service.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
+
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +26,9 @@ class LoginPage extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: () {},
+              onTap: () async => _authService.signIn(
+                authServiceType: AuthServiceType.google,
+              ),
               child: Container(
                 color: Colors.blue,
                 width: 300,

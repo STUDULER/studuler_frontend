@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
+import 'common/auth/auth_service.dart';
 import 'common/page/login_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final AuthService _authService = AuthService();
 
   // This widget is the root of your application.
   @override
@@ -19,7 +22,20 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      home: const LoginPage(),
+      home: FutureBuilder(
+        future: _authService.autoLogin(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return snapshot.data == true
+                ? const MyHomePage(
+                    title: "dummy",
+                  )
+                : LoginPage();
+          }
+        },
+      ),
     );
   }
 }
@@ -35,6 +51,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final AuthService _authService = AuthService();
 
   void _incrementCounter() {
     setState(() {
@@ -60,6 +77,19 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            GestureDetector(
+              onTap: () => _authService.signOut(),
+              child: Container(
+                width: 200,
+                height: 100,
+                color: Colors.red.shade100,
+                child: const Center(
+                  child: Text(
+                    "로그아웃",
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),

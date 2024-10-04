@@ -1,0 +1,3 @@
+enum AuthServiceType {
+  google, kakao
+}
