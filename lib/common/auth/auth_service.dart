@@ -6,7 +6,7 @@ import 'auth_service_type.dart';
 class AuthService {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
-  Future<void> signIn({
+  Future<bool> signIn({
     required AuthServiceType authServiceType,
   }) async {
     switch (authServiceType) {
@@ -20,9 +20,10 @@ class AuthService {
           );
         }
         print("sign in");
-        break;
+        return true;
       default:
     }
+    return false;
   }
 
   Future<void> signOut() async {
@@ -61,5 +62,4 @@ class AuthService {
       return false;
     }
   }
-
 }
