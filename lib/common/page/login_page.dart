@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../auth/auth_service.dart';
 import '../auth/auth_service_type.dart';
 import '../section/yellow_background.dart';
+import 'account_input_page.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -17,7 +18,9 @@ class LoginPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Spacer(flex: 2,),
+              const Spacer(
+                flex: 2,
+              ),
               Text(
                 "STUDULER",
                 style: Theme.of(context).textTheme.displayLarge,
@@ -33,18 +36,34 @@ class LoginPage extends StatelessWidget {
                   height: 70,
                 ),
               ),
-              const SizedBox(height: 16,),
+              const SizedBox(
+                height: 16,
+              ),
               GestureDetector(
-                onTap: () async => _authService.signIn(
-                  authServiceType: AuthServiceType.google,
-                ),
+                onTap: () async {
+                  final result = await _authService.signIn(
+                    authServiceType: AuthServiceType.google,
+                  );
+                  if (result == true) {
+                    if (!context.mounted) return;
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AccountInputPage(),
+                      ),
+                      (route) => false,
+                    );
+                  }
+                },
                 child: Container(
                   color: Colors.blue,
                   width: MediaQuery.sizeOf(context).width * 0.8,
                   height: 70,
                 ),
               ),
-              const Spacer(flex: 3,),
+              const Spacer(
+                flex: 3,
+              ),
             ],
           ),
         ),
