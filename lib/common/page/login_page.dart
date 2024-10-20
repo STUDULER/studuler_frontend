@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:studuler/common/section/sign_in_with_email_or_login_section.dart';
 import 'package:studuler/main.dart';
 
 import '../auth/auth_service.dart';
 import '../auth/auth_service_type.dart';
+import '../section/login_with_email_or_sign_in_section.dart';
 import '../section/yellow_background.dart';
 import 'account_input_page.dart';
 
@@ -10,10 +12,12 @@ class LoginPage extends StatelessWidget {
   LoginPage({
     super.key,
     required this.isTeacher,
+    required this.showLoginWithEmail,
   });
 
   final AuthService _authService = AuthService();
   final bool isTeacher;
+  final bool showLoginWithEmail;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +80,12 @@ class LoginPage extends StatelessWidget {
                   height: 70,
                 ),
               ),
+              const SizedBox(
+                height: 16,
+              ),
+              showLoginWithEmail
+                  ? const LoginWithEmailOrSignInSection()
+                  : const SignInWithEmailOrLoginSection(),
               const Spacer(
                 flex: 3,
               ),
