@@ -16,7 +16,7 @@ class _AccountInputPageState extends State<AccountInputPage> {
   final _accountNumberController = TextEditingController();
   final _textfieldController = TextEditingController();
   final List<String> _banks = [
-    "카카오뱅크"
+    "카카오뱅크",
     "국민은행",
     "기업은행",
     "농협은행",
