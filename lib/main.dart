@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studuler/common/page/role_selection_page.dart';
 
 import 'common/auth/auth_service.dart';
 import 'common/page/splash_page.dart';
@@ -62,7 +63,15 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             GestureDetector(
-              onTap: () => _authService.signOut(),
+              onTap: () {
+                _authService.signOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RoleSelectionPage(),
+                  ),
+                );
+              },
               child: Container(
                 width: 200,
                 height: 100,
