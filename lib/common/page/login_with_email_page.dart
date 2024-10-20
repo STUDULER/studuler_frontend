@@ -25,7 +25,6 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       body: GestureDectectorHidingKeyboard(
         child: YellowBackground(
           child: Center(
@@ -62,8 +61,6 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
                           ),
                           TextField(
                             controller: _idController,
-                            readOnly: true,
-                            showCursor: false,
                             decoration: const InputDecoration(
                               hintText: "아이디를 입력해주세요",
                             ),
@@ -75,7 +72,6 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
                           ),
                           TextField(
                             controller: _passwordController,
-                            keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
                               hintText: "비밀번호를 입력해주세요",
                             ),
