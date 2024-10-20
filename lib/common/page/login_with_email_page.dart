@@ -3,6 +3,7 @@ import 'package:studuler/main.dart';
 
 import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
+import '../widget/auth_text_field.dart';
 
 class LoginWithEmailPage extends StatefulWidget {
   const LoginWithEmailPage({super.key});
@@ -55,40 +56,33 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "이메일 아이디",
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          TextField(
+                          AuthTextField(
                             controller: _idController,
-                            decoration: const InputDecoration(
-                              hintText: "아이디를 입력해주세요",
-                            ),
+                            label: "이메일 아이디",
+                            hintText: "아이디를 입력해주세요",
+                            keyboardType: TextInputType.emailAddress,
                           ),
                           const Spacer(),
-                          Text(
-                            "비밀번호",
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          TextField(
+                          AuthTextField(
                             controller: _passwordController,
-                            decoration: const InputDecoration(
-                              hintText: "비밀번호를 입력해주세요",
-                            ),
+                            label: "비밀번호",
+                            hintText: "비밀번호를 입력해주세요",
+                            obscureText: true,
                           ),
                           const Spacer(),
                           GestureDectectorHidingKeyboard(
                             onTap: () {
-                              if (_idController.text.isNotEmpty &&
-                                  _passwordController.text.isNotEmpty) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const MyHomePage(title: "로그인"),
-                                  ),
-                                );
+                              if (_idController.text.isEmpty ||
+                                  _passwordController.text.isEmpty) {
+                                return;
                               }
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const MyHomePage(title: "로그인"),
+                                ),
+                              );
                             },
                             child: Container(
                               width: MediaQuery.sizeOf(context).width,

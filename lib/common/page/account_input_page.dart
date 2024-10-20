@@ -3,6 +3,7 @@ import 'package:studuler/main.dart';
 
 import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
+import '../widget/auth_text_field.dart';
 import 'bank_selection_page.dart';
 
 class AccountInputPage extends StatefulWidget {
@@ -43,6 +44,7 @@ class _AccountInputPageState extends State<AccountInputPage> {
     _textfieldController.dispose();
     _accountNumberController.dispose();
     super.dispose();
+    ;
   }
 
   @override
@@ -79,17 +81,12 @@ class _AccountInputPageState extends State<AccountInputPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "은행",
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          TextField(
+                          AuthTextField(
                             controller: _bankController,
+                            label: "은행",
+                            hintText: "은행을 선택해주세요",
                             readOnly: true,
                             showCursor: false,
-                            decoration: const InputDecoration(
-                              hintText: "은행을 선택해주세요",
-                            ),
                             onTap: () {
                               showModalBottomSheet<void>(
                                 context: context,
@@ -107,16 +104,11 @@ class _AccountInputPageState extends State<AccountInputPage> {
                             },
                           ),
                           const Spacer(),
-                          Text(
-                            "계좌번호 입력",
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          TextField(
+                          AuthTextField(
                             controller: _accountNumberController,
+                            label: "계좌번호 입력",
+                            hintText: "계좌번호를 입력해주세요",
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              hintText: "계좌번호를 입력해주세요",
-                            ),
                           ),
                           const Spacer(),
                           GestureDectectorHidingKeyboard(

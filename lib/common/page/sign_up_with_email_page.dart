@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
+import '../widget/auth_text_field.dart';
 import 'account_input_page.dart';
 import 'login_with_email_page.dart';
 
@@ -77,50 +78,31 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                "이름",
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              TextField(
+                              AuthTextField(
                                 controller: _nameController,
-                                decoration: const InputDecoration(
-                                  hintText: "이름을 입력해주세요",
-                                ),
+                                label: "이름",
+                                hintText: "이름을 입력해주세요",
                               ),
                               const Spacer(),
-                              Text(
-                                "이메일",
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              TextField(
+                              AuthTextField(
                                 controller: _emailController,
-                                decoration: const InputDecoration(
-                                  hintText: "이메일을 입력해주세요",
-                                ),
+                                label: "이메일",
+                                hintText: "이메일을 입력해주세요",
+                                keyboardType: TextInputType.emailAddress,
                               ),
                               const Spacer(),
-                              Text(
-                                "비밀번호",
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              TextField(
+                              AuthTextField(
                                 controller: _passwordController,
+                                label: "비밀번호",
+                                hintText: "비밀번호를 입력해주세요",
                                 obscureText: true,
-                                decoration: const InputDecoration(
-                                  hintText: "비밀번호를 입력해주세요",
-                                ),
                               ),
                               const Spacer(),
-                              Text(
-                                "비밀번호 확인",
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              TextField(
+                              AuthTextField(
                                 controller: _passwordCheckController,
+                                label: "비밀번호 확인",
+                                hintText: "비밀번호를 입력해주세요",
                                 obscureText: true,
-                                decoration: const InputDecoration(
-                                  hintText: "비밀번호를 입력해주세요",
-                                ),
                               ),
                               const Spacer(),
                               GestureDectectorHidingKeyboard(
