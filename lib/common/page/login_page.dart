@@ -45,17 +45,6 @@ class LoginPage extends StatelessWidget {
                   height: 70,
                 ),
               ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () {
-                  print("asd");
-                },
-                child: Container(
-                  color: Colors.amber,
-                  width: MediaQuery.sizeOf(context).width * 0.8,
-                  height: 70,
-                ),
-              ),
               const SizedBox(
                 height: 16,
               ),
