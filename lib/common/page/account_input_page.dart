@@ -130,7 +130,7 @@ class _AccountInputPageState extends State<AccountInputPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      const MyHomePage(title: "로그인"),
+                                      const MyHomePage(title: "선생님"),
                                 ),
                                 (route) => false,
                               );
