@@ -3,6 +3,7 @@ import 'package:studuler/main.dart';
 
 import '../auth/auth_service.dart';
 import '../auth/auth_service_type.dart';
+import '../http/http_service.dart';
 import '../section/login_with_email_or_sign_in_section.dart';
 import '../section/sign_up_with_email_or_login_section.dart';
 import '../section/yellow_background.dart';
@@ -15,9 +16,35 @@ class LoginPage extends StatelessWidget {
     required this.showLoginWithEmail,
   });
 
+  final HttpService _httpService = HttpService();
   final AuthService _authService = AuthService();
   final bool isTeacher;
   final bool showLoginWithEmail;
+
+  Future<void> handleSuccessAuthService(BuildContext context) async {
+    if (isTeacher) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const AccountInputPage(),
+        ),
+        (route) => false,
+      );
+    } else {
+      final httpResult = await _httpService.createParent(
+        "dummyName",
+      );
+      if (httpResult == false) return;
+      if (!context.mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const MyHomePage(title: "학부모"),
+        ),
+        (route) => false,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,25 +67,9 @@ class LoginPage extends StatelessWidget {
                   final result = await _authService.signIn(
                     authServiceType: AuthServiceType.kakao,
                   );
-                  if (!context.mounted) return;
                   if (result == false) return;
-                  if (isTeacher) {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AccountInputPage(),
-                      ),
-                      (route) => false,
-                    );
-                  } else {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MyHomePage(title: "학부모"),
-                      ),
-                      (route) => false,
-                    );
-                  }
+                  if (!context.mounted) return;
+                  await handleSuccessAuthService(context);
                 },
                 child: Container(
                   color: Colors.amber,
@@ -74,26 +85,9 @@ class LoginPage extends StatelessWidget {
                   final result = await _authService.signIn(
                     authServiceType: AuthServiceType.google,
                   );
-                  if (result == true) {
-                    if (!context.mounted) return;
-                    if (isTeacher) {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AccountInputPage(),
-                        ),
-                        (route) => false,
-                      );
-                    } else {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MyHomePage(title: "학부모"),
-                        ),
-                        (route) => false,
-                      );
-                    }
-                  }
+                  if (result == false) return;
+                  if (!context.mounted) return;
+                  await handleSuccessAuthService(context);
                 },
                 child: Container(
                   color: Colors.blue,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:studuler/main.dart';
 
+import '../http/http_service.dart';
 import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
 import '../widget/auth_text_field.dart';
@@ -14,6 +15,8 @@ class AccountInputPage extends StatefulWidget {
 }
 
 class _AccountInputPageState extends State<AccountInputPage> {
+  final httpservice = HttpService();
+
   final _bankController = TextEditingController();
   final _accountNumberController = TextEditingController();
   final _textfieldController = TextEditingController();
@@ -111,11 +114,18 @@ class _AccountInputPageState extends State<AccountInputPage> {
                           ),
                           const Spacer(),
                           GestureDectectorHidingKeyboard(
-                            onTap: () {
+                            onTap: () async {
                               if (_bankController.text.isEmpty ||
                                   _accountNumberController.text.isEmpty) {
                                 return;
                               }
+                              final result = await httpservice.createTeacher(
+                                "dummyName",
+                                _bankController.text,
+                                _accountNumberController.text,
+                              );
+                              if (result == false) return;
+                              if (!context.mounted) return;
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(

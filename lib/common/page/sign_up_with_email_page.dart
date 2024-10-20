@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../http/http_service.dart';
 import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
 import '../widget/auth_text_field.dart';
@@ -16,6 +17,8 @@ class SignUpWithEmailPage extends StatefulWidget {
 }
 
 class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
+  final httpService = HttpService();
+
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -106,7 +109,7 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                               ),
                               const Spacer(),
                               GestureDectectorHidingKeyboard(
-                                onTap: () {
+                                onTap: () async {
                                   if (_nameController.text.isEmpty ||
                                       _emailController.text.isEmpty ||
                                       _passwordController.text.isEmpty ||
@@ -125,6 +128,12 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                                       ),
                                     );
                                   } else {
+                                    final result =
+                                        await httpService.createParent(
+                                      "dummyName",
+                                    );
+                                    if (result == false) return;
+                                    if (!context.mounted) return;
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(

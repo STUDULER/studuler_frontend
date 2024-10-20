@@ -50,4 +50,40 @@ class HttpService {
     // },
     // ));
   }
+
+  Future<bool> createTeacher(String name, String bank, String account) async {
+    // TMP
+    await Future.delayed(const Duration(milliseconds: 300));
+    return true;
+
+    // final response = await call.post(
+    //   "/api/teachers",
+    //   data: {
+    //     "name": name,
+    //     "bank": bank,
+    //     "account": account,
+    //   },
+    // );
+    // if (response.statusCode != 200) {
+    //   return false;
+    // }
+    // return true;
+  }
+
+  Future<bool> createParent(String name) async {
+    // TMP
+    await Future.delayed(const Duration(milliseconds: 300));
+    return true;
+
+    // final response = await call.post(
+    //   "/api/parents",
+    //   data: {
+    //     "name": name,
+    //   },
+    // );
+    // if (response.statusCode != 200) {
+    //   return false;
+    // }
+    // return true;
+  }
 }
