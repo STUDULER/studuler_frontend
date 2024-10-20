@@ -121,16 +121,18 @@ class _AccountInputPageState extends State<AccountInputPage> {
                           const Spacer(),
                           GestureDectectorHidingKeyboard(
                             onTap: () {
-                              if (_bankController.text.isNotEmpty &&
-                                  _accountNumberController.text.isNotEmpty) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const MyHomePage(title: "로그인"),
-                                  ),
-                                );
+                              if (_bankController.text.isEmpty ||
+                                  _accountNumberController.text.isEmpty) {
+                                return;
                               }
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const MyHomePage(title: "로그인"),
+                                ),
+                                (route) => false,
+                              );
                             },
                             child: Container(
                               width: MediaQuery.sizeOf(context).width,
@@ -143,7 +145,10 @@ class _AccountInputPageState extends State<AccountInputPage> {
                               ),
                               child: const Center(
                                 child: Text(
-                                  "다음",
+                                  "회원가입 완료",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),

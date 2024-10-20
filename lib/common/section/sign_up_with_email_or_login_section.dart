@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studuler/common/page/sign_up_with_email_page.dart';
 
 class SignUpWithEmailOrLoginSection extends StatelessWidget {
   const SignUpWithEmailOrLoginSection({
@@ -16,7 +17,14 @@ class SignUpWithEmailOrLoginSection extends StatelessWidget {
       children: [
         const Spacer(),
         GestureDetector(
-          onTap: () {},
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SignUpWithEmailPage(
+                isTeacher: isTeacher,
+              ),
+            ),
+          ),
           child: const Text("이메일로 회원가입"),
         ),
         const SizedBox(
