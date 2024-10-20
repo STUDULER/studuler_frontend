@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studuler/main.dart';
 
 import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
@@ -118,18 +119,32 @@ class _AccountInputPageState extends State<AccountInputPage> {
                             ),
                           ),
                           const Spacer(),
-                          Container(
-                            width: MediaQuery.sizeOf(context).width,
-                            height: MediaQuery.sizeOf(context).height / 16,
-                            decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8),
+                          GestureDectectorHidingKeyboard(
+                            onTap: () {
+                              if (_bankController.text.isNotEmpty &&
+                                  _accountNumberController.text.isNotEmpty) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const MyHomePage(title: "로그인"),
+                                  ),
+                                );
+                              }
+                            },
+                            child: Container(
+                              width: MediaQuery.sizeOf(context).width,
+                              height: MediaQuery.sizeOf(context).height / 16,
+                              decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                ),
+                                color: Colors.brown,
                               ),
-                              color: Colors.brown,
-                            ),
-                            child: const Center(
-                              child: Text(
-                                "다음",
+                              child: const Center(
+                                child: Text(
+                                  "다음",
+                                ),
                               ),
                             ),
                           )
