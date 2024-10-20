@@ -84,8 +84,12 @@ class LoginPage extends StatelessWidget {
                 height: 16,
               ),
               showLoginWithEmail
-                  ? const LoginWithEmailOrSignInSection()
-                  : const SignInWithEmailOrLoginSection(),
+                  ? LoginWithEmailOrSignInSection(
+                      isTeacher: isTeacher,
+                    )
+                  : SignInWithEmailOrLoginSection(
+                      isTeacher: isTeacher,
+                    ),
               const Spacer(
                 flex: 3,
               ),

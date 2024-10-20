@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:studuler/common/page/login_page.dart';
 
 class LoginWithEmailOrSignInSection extends StatelessWidget {
-  const LoginWithEmailOrSignInSection({super.key});
+  const LoginWithEmailOrSignInSection({
+    super.key,
+    required this.isTeacher,
+  });
+
+  final bool isTeacher;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +32,15 @@ class LoginWithEmailOrSignInSection extends StatelessWidget {
           width: 8,
         ),
         GestureDetector(
-          onTap: () {},
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LoginPage(
+                isTeacher: isTeacher,
+                showLoginWithEmail: false,
+              ),
+            ),
+          ),
           child: const Text("회원가입"),
         ),
         const Spacer(),
