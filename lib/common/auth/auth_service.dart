@@ -74,30 +74,44 @@ class AuthService {
     switch (AuthServiceType.values.byName(authServiceTypeString)) {
       case AuthServiceType.google:
         await GoogleSignIn().signOut();
-        await _secureStorage.deleteAll();
         break;
+      case AuthServiceType.kakao:
       default:
     }
+    await _secureStorage.deleteAll();
   }
 
   Future<bool> autoLogin() async {
     String? isLoggedIn = await _secureStorage.read(key: 'isLoggedIn');
 
     if (isLoggedIn == 'true') {
-      final GoogleSignInAccount? googleUser =
-          await GoogleSignIn().signInSilently();
-      if (googleUser != null) {
-        // User is auto logged in
-        print('Auto logged in: ${googleUser.email}');
-        return true;
-      } else {
-        // Silent sign-in failed, clear the login state
-        await _secureStorage.deleteAll();
-        print('Auto login failed');
-        return false;
+      String? authServiceTypeString = await _secureStorage.read(
+        key: "authServiceType",
+      );
+      if (authServiceTypeString == null) return false;
+
+      switch (AuthServiceType.values.byName(authServiceTypeString)) {
+        case AuthServiceType.google:
+          final GoogleSignInAccount? googleUser =
+              await GoogleSignIn().signInSilently();
+          if (googleUser != null) {
+            // User is auto logged in
+            print('Auto logged in: ${googleUser.email}');
+            return true;
+          } else {
+            // Silent sign-in failed, clear the login state
+            await _secureStorage.deleteAll();
+            print('Auto login failed');
+            return false;
+          }
+        case AuthServiceType.kakao:
+          return true;
+        default:
+          return false;
       }
     } else {
       print('User is not logged in');
+      await _secureStorage.deleteAll();
       return false;
     }
   }
