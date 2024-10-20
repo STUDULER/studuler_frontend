@@ -44,7 +44,6 @@ class _AccountInputPageState extends State<AccountInputPage> {
     _textfieldController.dispose();
     _accountNumberController.dispose();
     super.dispose();
-    ;
   }
 
   @override
