@@ -10,11 +10,12 @@ import 'auth_service_type.dart';
 
 class AuthService {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true,
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
     ),
   );
 
-  Future<void> signIn({
+  Future<bool> signIn({
     required AuthServiceType authServiceType,
   }) async {
     switch (authServiceType) {
@@ -29,7 +30,7 @@ class AuthService {
         }
         print(googleUser);
         print("sign in");
-        break;
+        return true;
 
       case AuthServiceType.kakao:
         try {
@@ -53,14 +54,15 @@ class AuthService {
           );
           final profileInfo = json.decode(response.body);
           print(profileInfo.toString());
-
         } catch (error) {
           print('Kakao sign in failed: $error');
+          return false;
         }
-        break;
+        return true;
 
       default:
     }
+    return false;
   }
 
   Future<void> signOut() async {
@@ -99,5 +101,4 @@ class AuthService {
       return false;
     }
   }
-
 }

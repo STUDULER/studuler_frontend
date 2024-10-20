@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+
 import 'common/auth/auth_service.dart';
-import 'common/page/login_page.dart';
+import 'common/page/role_selection_page.dart';
+import 'common/page/splash_page.dart';
 
 void main() {
   KakaoSdk.init(nativeAppKey: '948e680b2e31563c3d8f21e3881e9450'); // 이 줄을 runApp 위에 추가한다.
@@ -20,22 +22,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      // home: FutureBuilder(
-      //   // future: _authService.autoLogin(),
-      //   builder: (context, snapshot) {
-      //     if (snapshot.connectionState == ConnectionState.waiting) {
-      //       return const Center(child: CircularProgressIndicator());
-      //     } else {
-      //       return snapshot.data == true
-      //           ? const MyHomePage(
-      //               title: "dummy",
-      //             )
-      //           : LoginPage();
-      //     }
-      //   },
-      // ),
-      home: LoginPage(),
+      home: const SplashPage(),
     );
   }
 }
@@ -77,19 +64,27 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            // GestureDetector(
-            //   onTap: () => _authService.signOut(),
-            //   child: Container(
-            //     width: 200,
-            //     height: 100,
-            //     color: Colors.red.shade100,
-            //     child: const Center(
-            //       child: Text(
-            //         "로그아웃",
-            //       ),
-            //     ),
-            //   ),
-            // )
+            GestureDetector(
+              onTap: () {
+                _authService.signOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RoleSelectionPage(),
+                  ),
+                );
+              },
+              child: Container(
+                width: 200,
+                height: 100,
+                color: Colors.red.shade100,
+                child: const Center(
+                  child: Text(
+                    "로그아웃",
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),
