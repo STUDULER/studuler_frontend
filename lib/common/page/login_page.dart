@@ -36,9 +36,30 @@ class LoginPage extends StatelessWidget {
               ),
               const Spacer(),
               GestureDetector(
-                onTap: () async => _authService.signIn(
-                  authServiceType: AuthServiceType.kakao,
-                ),
+                onTap: () async {
+                  final result = await _authService.signIn(
+                    authServiceType: AuthServiceType.kakao,
+                  );
+                  if (!context.mounted) return;
+                  if (result == false) return;
+                  if (isTeacher) {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AccountInputPage(),
+                      ),
+                      (route) => false,
+                    );
+                  } else {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MyHomePage(title: "학부모"),
+                      ),
+                      (route) => false,
+                    );
+                  }
+                },
                 child: Container(
                   color: Colors.amber,
                   width: MediaQuery.sizeOf(context).width * 0.8,
