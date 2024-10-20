@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class SignInWithEmailOrLoginSection extends StatelessWidget {
-  const SignInWithEmailOrLoginSection({
+class SignUpWithEmailOrLoginSection extends StatelessWidget {
+  const SignUpWithEmailOrLoginSection({
     super.key,
     required this.isTeacher,
   });

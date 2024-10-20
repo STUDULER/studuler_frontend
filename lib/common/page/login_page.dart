@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:studuler/common/section/sign_in_with_email_or_login_section.dart';
 import 'package:studuler/main.dart';
 
 import '../auth/auth_service.dart';
 import '../auth/auth_service_type.dart';
 import '../section/login_with_email_or_sign_in_section.dart';
+import '../section/sign_up_with_email_or_login_section.dart';
 import '../section/yellow_background.dart';
 import 'account_input_page.dart';
 
@@ -87,7 +87,7 @@ class LoginPage extends StatelessWidget {
                   ? LoginWithEmailOrSignInSection(
                       isTeacher: isTeacher,
                     )
-                  : SignInWithEmailOrLoginSection(
+                  : SignUpWithEmailOrLoginSection(
                       isTeacher: isTeacher,
                     ),
               const Spacer(
