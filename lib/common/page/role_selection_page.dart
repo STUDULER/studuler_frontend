@@ -32,7 +32,9 @@ class RoleSelectionPage extends StatelessWidget {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LoginPage(),
+                            builder: (context) => LoginPage(
+                              isTeacher: true,
+                            ),
                           ),
                         ),
                         child: Container(
@@ -54,7 +56,9 @@ class RoleSelectionPage extends StatelessWidget {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LoginPage(),
+                            builder: (context) => LoginPage(
+                              isTeacher: false,
+                            ),
                           ),
                         ),
                         child: Container(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studuler/main.dart';
 
 import '../auth/auth_service.dart';
 import '../auth/auth_service_type.dart';
@@ -6,9 +7,13 @@ import '../section/yellow_background.dart';
 import 'account_input_page.dart';
 
 class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+  LoginPage({
+    super.key,
+    required this.isTeacher,
+  });
 
   final AuthService _authService = AuthService();
+  final bool isTeacher;
 
   @override
   Widget build(BuildContext context) {
@@ -46,13 +51,23 @@ class LoginPage extends StatelessWidget {
                   );
                   if (result == true) {
                     if (!context.mounted) return;
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AccountInputPage(),
-                      ),
-                      (route) => false,
-                    );
+                    if (isTeacher) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AccountInputPage(),
+                        ),
+                        (route) => false,
+                      );
+                    } else {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MyHomePage(title: "학부모"),
+                        ),
+                        (route) => false,
+                      );
+                    }
                   }
                 },
                 child: Container(
