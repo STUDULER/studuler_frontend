@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
 import 'common/auth/auth_service.dart';
+import 'common/page/drawer_page.dart';
 import 'common/page/role_selection_page.dart';
 import 'common/page/splash_page.dart';
 
 void main() {
-  KakaoSdk.init(nativeAppKey: '948e680b2e31563c3d8f21e3881e9450'); // 이 줄을 runApp 위에 추가한다.
+  KakaoSdk.init(
+    nativeAppKey: '948e680b2e31563c3d8f21e3881e9450',
+  ); // 이 줄을 runApp 위에 추가한다.
   runApp(const MyApp());
 }
 
@@ -52,6 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: <Widget>[Container()],
         title: Text(widget.title),
       ),
       body: Center(
@@ -93,7 +97,8 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
+      endDrawer: const DrawerPage(),
     );
   }
 }
