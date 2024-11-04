@@ -55,7 +55,14 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: <Widget>[Container()],
+        actions: <Widget>[
+          GestureDetector(
+            onTap: () {
+              print("add class");
+            },
+            child: const Icon(Icons.add),
+          ),
+        ],
         title: Text(widget.title),
       ),
       body: Center(
