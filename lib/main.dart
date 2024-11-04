@@ -5,6 +5,7 @@ import 'common/auth/auth_service.dart';
 import 'common/page/drawer_page.dart';
 import 'common/page/role_selection_page.dart';
 import 'common/page/splash_page.dart';
+import 'teacher/page/add_class_page.dart';
 
 void main() {
   KakaoSdk.init(
@@ -55,10 +56,18 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        automaticallyImplyLeading: false,
         actions: <Widget>[
           GestureDetector(
             onTap: () {
-              print("add class");
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                useSafeArea: true,
+                builder: (BuildContext context) {
+                  return const AddClassPage();
+                },
+              );
             },
             child: const Icon(Icons.add),
           ),
