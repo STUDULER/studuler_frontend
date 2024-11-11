@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../common/util/gesture_dectector_hiding_keyboard.dart.dart';
+import '../../common/widget/background.dart';
 
 class AddClassPage extends StatefulWidget {
   const AddClassPage({super.key});
@@ -64,162 +65,179 @@ class _AddClassPageState extends State<AddClassPage> {
       ),
     );
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+      body: Stack(
         children: [
-          Row(
-            children: [
-              AnimatedContainer(
-                duration: duration,
-                curve: Curves.bounceInOut,
-                width: 18,
-                height: 20,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 3,
-                    color: const Color(0xffffec9e),
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  color:
-                      currIndex == 0 ? const Color(0xffffec9e) : Colors.white70,
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  "수업이름",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Color(0xff383838),
-                  ),
-                ),
-              ),
-            ],
+          const Background(
+            iconActionButtons: [],
           ),
-          Row(
+          Column(
             children: [
-              const SizedBox(
-                width: 7.5,
-              ),
-              AnimatedContainer(
-                curve: Curves.bounceInOut,
-                duration: duration,
-                width: 2,
-                height: currIndex == 0 ? 80 : 30,
-                color: const Color(0xFFC7B7A3),
-              ),
-              const SizedBox(
-                width: 32,
-              ),
-              ClassNameInputTile(
-                currIndex: currIndex,
-                classNameController: classNameController,
-                nextButton: nextButton,
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              AnimatedContainer(
-                duration: duration,
-                curve: Curves.bounceInOut,
-                width: 18,
-                height: 20,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 3,
-                    color: const Color(0xffffec9e),
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  // color: const Color(0xffffec9e),
-                  color: Colors.transparent,
+              const SizedBox(height: 140),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        AnimatedContainer(
+                          duration: duration,
+                          curve: Curves.bounceInOut,
+                          width: 18,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 3,
+                              color: const Color(0xffffec9e),
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            color: currIndex == 0
+                                ? const Color(0xffffec9e)
+                                : Colors.white70,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            "수업이름",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Color(0xff383838),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 7.5,
+                        ),
+                        AnimatedContainer(
+                          curve: Curves.bounceInOut,
+                          duration: duration,
+                          width: 2,
+                          height: currIndex == 0 ? 80 : 30,
+                          color: const Color(0xFFC7B7A3),
+                        ),
+                        const SizedBox(
+                          width: 32,
+                        ),
+                        ClassNameInputTile(
+                          currIndex: currIndex,
+                          classNameController: classNameController,
+                          nextButton: nextButton,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        AnimatedContainer(
+                          duration: duration,
+                          curve: Curves.bounceInOut,
+                          width: 18,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 3,
+                              color: const Color(0xffffec9e),
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            // color: const Color(0xffffec9e),
+                            color: Colors.transparent,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            "수업료 납부 횟수",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Color(0xff383838),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 7.5,
+                        ),
+                        AnimatedContainer(
+                          curve: Curves.bounceInOut,
+                          duration: duration,
+                          width: 2,
+                          height: currIndex == 1 ? 80 : 30,
+                          color: const Color(0xFFC7B7A3),
+                        ),
+                        const SizedBox(
+                          width: 32,
+                        ),
+                        NumberOfClassesToPayInputTile(
+                          currIndex: currIndex,
+                          classNameController: numOfClassesToPayController,
+                          beforeButton: beforeButton,
+                          nextButton: nextButton,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        AnimatedContainer(
+                          duration: duration,
+                          curve: Curves.bounceInOut,
+                          width: 18,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 3,
+                              color: const Color(0xffffec9e),
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            color: (currIndex == 2)
+                                ? const Color(0xffffec9e)
+                                : Colors.transparent,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            "수업료",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Color(0xff383838),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 7.5,
+                        ),
+                        AnimatedContainer(
+                          curve: Curves.bounceInOut,
+                          duration: duration,
+                          width: 2,
+                          height: currIndex == 1 ? 80 : 30,
+                          color: const Color(0xFFC7B7A3),
+                        ),
+                        const SizedBox(
+                          width: 32,
+                        ),
+                        ClassPriceInputTile(
+                          currIndex: currIndex,
+                          classNameController: numOfClassesToPayController,
+                          beforeButton: beforeButton,
+                          nextButton: nextButton,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  "수업료 납부 횟수",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Color(0xff383838),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              const SizedBox(
-                width: 7.5,
-              ),
-              AnimatedContainer(
-                curve: Curves.bounceInOut,
-                duration: duration,
-                width: 2,
-                height: currIndex == 1 ? 80 : 30,
-                color: const Color(0xFFC7B7A3),
-              ),
-              const SizedBox(
-                width: 32,
-              ),
-              NumberOfClassesToPayInputTile(
-                currIndex: currIndex,
-                classNameController: numOfClassesToPayController,
-                beforeButton: beforeButton,
-                nextButton: nextButton,
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              AnimatedContainer(
-                duration: duration,
-                curve: Curves.bounceInOut,
-                width: 18,
-                height: 20,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 3,
-                    color: const Color(0xffffec9e),
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  color: (currIndex == 2) ? const Color(0xffffec9e) : Colors.transparent,
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  "수업료",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Color(0xff383838),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              const SizedBox(
-                width: 7.5,
-              ),
-              AnimatedContainer(
-                curve: Curves.bounceInOut,
-                duration: duration,
-                width: 2,
-                height: currIndex == 1 ? 80 : 30,
-                color: const Color(0xFFC7B7A3),
-              ),
-              const SizedBox(
-                width: 32,
-              ),
-              ClassPriceInputTile(
-                currIndex: currIndex,
-                classNameController: numOfClassesToPayController,
-                beforeButton: beforeButton,
-                nextButton: nextButton,
               ),
             ],
           ),
@@ -311,6 +329,7 @@ class NumberOfClassesToPayInputTile extends StatelessWidget {
     );
   }
 }
+
 class ClassPriceInputTile extends StatelessWidget {
   const ClassPriceInputTile({
     super.key,
