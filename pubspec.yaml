@@ -39,6 +39,8 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   kakao_flutter_sdk: ^1.9.2
   dio: ^5.7.0
+  typed_data: ^1.4.0
+  card_swiper: ^3.0.1
 
 dev_dependencies:
   flutter_test:

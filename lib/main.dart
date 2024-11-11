@@ -5,6 +5,7 @@ import 'common/auth/auth_service.dart';
 import 'common/page/drawer_page.dart';
 import 'common/page/role_selection_page.dart';
 import 'common/page/splash_page.dart';
+import 'common/widget/bottom_bar.dart';
 
 void main() {
   KakaoSdk.init(
@@ -92,6 +93,8 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ],
         ),
+      ),
+      bottomNavigationBar: BottomBar(
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
