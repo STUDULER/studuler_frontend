@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:studuler/main.dart';
 
+import '../../main.dart';
 import '../auth/auth_service.dart';
 import '../auth/auth_service_type.dart';
+import '../auth/oauth_user_dto.dart';
 import '../http/http_service.dart';
 import '../section/login_with_email_or_sign_in_section.dart';
 import '../section/sign_up_with_email_or_login_section.dart';
@@ -21,12 +22,19 @@ class LoginPage extends StatelessWidget {
   final bool isTeacher;
   final bool showLoginWithEmail;
 
-  Future<void> handleSuccessAuthService(BuildContext context) async {
+  Future<void> handleSuccessAuthService(
+    BuildContext context,
+    OAuthUserDto dto,
+    int loginMethod,
+  ) async {
     if (isTeacher) {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => const AccountInputPage(),
+          builder: (context) => AccountInputPage(
+            dto: dto,
+            loginMethod: loginMethod,
+          ),
         ),
         (route) => false,
       );
@@ -67,9 +75,9 @@ class LoginPage extends StatelessWidget {
                   final result = await _authService.signIn(
                     authServiceType: AuthServiceType.kakao,
                   );
-                  if (result == false) return;
+                  if (result == null) return;
                   if (!context.mounted) return;
-                  await handleSuccessAuthService(context);
+                  await handleSuccessAuthService(context, result, 1);
                 },
                 child: Container(
                   color: Colors.amber,
@@ -85,9 +93,9 @@ class LoginPage extends StatelessWidget {
                   final result = await _authService.signIn(
                     authServiceType: AuthServiceType.google,
                   );
-                  if (result == false) return;
+                  if (result == null) return;
                   if (!context.mounted) return;
-                  await handleSuccessAuthService(context);
+                  await handleSuccessAuthService(context, result, 2);
                 },
                 child: Container(
                   color: Colors.blue,

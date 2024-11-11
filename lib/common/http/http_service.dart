@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:studuler/common/auth/oauth_user_dto.dart';
 
 class HttpService {
   final Dio call = Dio();
 
   HttpService() {
-    call.options.baseUrl = "https://studuler.com";
+    call.options.baseUrl = "http://13.209.171.206";
+    // call.options.baseUrl = "http://localhost:8080";
     _initializeInterceptors();
   }
 
@@ -51,23 +53,28 @@ class HttpService {
     // ));
   }
 
-  Future<bool> createTeacher(String name, String bank, String account) async {
+  Future<bool> createTeacher(
+      OAuthUserDto dto, String bank, String account, int loginMethod) async {
     // TMP
-    await Future.delayed(const Duration(milliseconds: 300));
-    return true;
-
-    // final response = await call.post(
-    //   "/api/teachers",
-    //   data: {
-    //     "name": name,
-    //     "bank": bank,
-    //     "account": account,
-    //   },
-    // );
-    // if (response.statusCode != 200) {
-    //   return false;
-    // }
+    // await Future.delayed(const Duration(milliseconds: 300));
     // return true;
+
+    final response = await call.post(
+      "/teachers/signup",
+      data: {
+        "username": dto.username,
+        "password": dto.password,
+        "account": int.parse(account),
+        "bank": bank,
+        "mail": dto.mail,
+        "loginMethod": loginMethod,
+        "image": dto.image,
+      },
+    );
+    if (response.statusCode != 200) {
+      return false;
+    }
+    return true;
   }
 
   Future<bool> createParent(String name) async {
