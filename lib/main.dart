@@ -6,6 +6,7 @@ import 'common/page/drawer_page.dart';
 import 'common/page/role_selection_page.dart';
 import 'common/page/splash_page.dart';
 import 'common/widget/bottom_bar.dart';
+import 'teacher/page/add_class_page.dart';
 
 void main() {
   KakaoSdk.init(
@@ -56,7 +57,22 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: <Widget>[Container()],
+        automaticallyImplyLeading: false,
+        actions: <Widget>[
+          GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                useSafeArea: true,
+                builder: (BuildContext context) {
+                  return const AddClassPage();
+                },
+              );
+            },
+            child: const Icon(Icons.add),
+          ),
+        ],
         title: Text(widget.title),
       ),
       body: Center(
