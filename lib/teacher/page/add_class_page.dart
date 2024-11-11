@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studuler/teacher/widget/add_class_tile.dart';
 
 import '../../common/util/gesture_dectector_hiding_keyboard.dart.dart';
 import '../../common/widget/background.dart';
@@ -81,68 +82,30 @@ class _AddClassPageState extends State<AddClassPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              // const SizedBox(height: 70),
+              const SizedBox(height: 20),
               Container(
                 decoration: const BoxDecoration(
-                  color: Colors.amber
-                ),
+                    color: Colors.white,
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(64))),
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          AnimatedContainer(
-                            duration: duration,
-                            curve: Curves.bounceInOut,
-                            width: 18,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 3,
-                                color: const Color(0xffffec9e),
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                              color: currIndex == 0
-                                  ? const Color(0xffffec9e)
-                                  : Colors.white70,
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              "수업이름",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Color(0xff383838),
-                              ),
-                            ),
-                          ),
-                        ],
+                      const SizedBox(
+                        height: 40,
                       ),
-                      Row(
-                        children: [
-                          const SizedBox(
-                            width: 7.5,
-                          ),
-                          AnimatedContainer(
-                            curve: Curves.bounceInOut,
-                            duration: duration,
-                            width: 2,
-                            height: currIndex == 0 ? 80 : 30,
-                            color: const Color(0xFFC7B7A3),
-                          ),
-                          const SizedBox(
-                            width: 32,
-                          ),
-                          ClassNameInputTile(
-                            currIndex: currIndex,
-                            classNameController: classNameController,
-                            nextButton: nextButton,
-                          ),
-                        ],
+                      AddClassTile(
+                        currIdx: currIndex,
+                        positionIdx: 0,
+                        title: "수업이름",
+                        inputTile: ClassNameInputTile(
+                          currIndex: currIndex,
+                          classNameController: classNameController,
+                          nextButton: nextButton,
+                        ),
                       ),
                       Row(
                         children: [
@@ -196,6 +159,13 @@ class _AddClassPageState extends State<AddClassPage> {
                           ),
                         ],
                       ),
+                      AddClassTile(currIdx: currIndex, positionIdx: 1, title: "수업료 납부 횟수", inputTile:  ClassPriceInputTile(
+                            currIndex: currIndex,
+                            classNameController: numOfClassesToPayController,
+                            beforeButton: beforeButton,
+                            nextButton: nextButton,
+                          ),),
+
                       Row(
                         children: [
                           AnimatedContainer(
