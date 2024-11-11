@@ -3,6 +3,9 @@ import 'package:studuler/teacher/widget/add_class_tile.dart';
 
 import '../../common/util/gesture_dectector_hiding_keyboard.dart.dart';
 import '../../common/widget/background.dart';
+import '../widget/add_class_input_tile/class_name_input_tile.dart';
+import '../widget/add_class_input_tile/class_price_input_tile.dart';
+import '../widget/add_class_input_tile/number_of_classes_to_pay_input_tile.dart';
 
 class AddClassPage extends StatefulWidget {
   const AddClassPage({super.key});
@@ -67,295 +70,133 @@ class _AddClassPageState extends State<AddClassPage> {
     );
 
     return Scaffold(
-      body: Stack(
-        children: [
-          const Background(
-            iconActionButtons: [],
-          ),
-          Column(
-            children: [
-              const SizedBox(height: 140),
-              const Text(
-                "수업 추가하기",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
+      body: GestureDectectorHidingKeyboard(
+        child: Stack(
+          children: [
+            const Background(
+              iconActionButtons: [],
+            ),
+            Column(
+              children: [
+                const SizedBox(height: 120),
+                const Text(
+                  "수업 추가하기",
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                decoration: const BoxDecoration(
+                const SizedBox(height: 20),
+                Container(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(64))),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      AddClassTile(
-                        currIdx: currIndex,
-                        positionIdx: 0,
-                        title: "수업이름",
-                        inputTile: ClassNameInputTile(
-                          currIndex: currIndex,
-                          classNameController: classNameController,
-                          nextButton: nextButton,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(64),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 32,
+                      horizontal: 16,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          height: 40,
                         ),
-                      ),
-                      Row(
-                        children: [
-                          AnimatedContainer(
-                            duration: duration,
-                            curve: Curves.bounceInOut,
-                            width: 18,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 3,
-                                color: const Color(0xffffec9e),
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                              // color: const Color(0xffffec9e),
-                              color: Colors.transparent,
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              "수업료 납부 횟수",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Color(0xff383838),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const SizedBox(
-                            width: 7.5,
-                          ),
-                          AnimatedContainer(
-                            curve: Curves.bounceInOut,
-                            duration: duration,
-                            width: 2,
-                            height: currIndex == 1 ? 80 : 30,
-                            color: const Color(0xFFC7B7A3),
-                          ),
-                          const SizedBox(
-                            width: 32,
-                          ),
-                          NumberOfClassesToPayInputTile(
+                        AddClassTile(
+                          currIdx: currIndex,
+                          positionIdx: 0,
+                          title: "수업이름",
+                          inputTile: ClassNameInputTile(
                             currIndex: currIndex,
+                            positionIndex: 0,
+                            classNameController: classNameController,
+                            nextButton: nextButton,
+                          ),
+                        ),
+                        AddClassTile(
+                          currIdx: currIndex,
+                          positionIdx: 1,
+                          title: "수업료 납부 횟수",
+                          inputTile: NumberOfClassesToPayInputTile(
+                            currIndex: currIndex,
+                            positionIndex: 1,
                             classNameController: numOfClassesToPayController,
                             beforeButton: beforeButton,
                             nextButton: nextButton,
                           ),
-                        ],
-                      ),
-                      AddClassTile(currIdx: currIndex, positionIdx: 1, title: "수업료 납부 횟수", inputTile:  ClassPriceInputTile(
+                        ),
+                        AddClassTile(
+                          currIdx: currIndex,
+                          positionIdx: 2,
+                          title: "수업료",
+                          inputTile: ClassPriceInputTile(
                             currIndex: currIndex,
-                            classNameController: numOfClassesToPayController,
-                            beforeButton: beforeButton,
-                            nextButton: nextButton,
-                          ),),
-
-                      Row(
-                        children: [
-                          AnimatedContainer(
-                            duration: duration,
-                            curve: Curves.bounceInOut,
-                            width: 18,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 3,
-                                color: const Color(0xffffec9e),
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                              color: (currIndex == 2)
-                                  ? const Color(0xffffec9e)
-                                  : Colors.transparent,
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              "수업료",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Color(0xff383838),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const SizedBox(
-                            width: 7.5,
-                          ),
-                          AnimatedContainer(
-                            curve: Curves.bounceInOut,
-                            duration: duration,
-                            width: 2,
-                            height: currIndex == 1 ? 80 : 30,
-                            color: const Color(0xFFC7B7A3),
-                          ),
-                          const SizedBox(
-                            width: 32,
-                          ),
-                          ClassPriceInputTile(
-                            currIndex: currIndex,
+                            positionIndex: 2,
                             classNameController: numOfClassesToPayController,
                             beforeButton: beforeButton,
                             nextButton: nextButton,
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                        AddClassTile(
+                          currIdx: currIndex,
+                          positionIdx: 3,
+                          title: "수업 일정",
+                          inputTile: ClassPriceInputTile(
+                            currIndex: currIndex,
+                            positionIndex: 3,
+                            classNameController: numOfClassesToPayController,
+                            beforeButton: beforeButton,
+                            nextButton: nextButton,
+                          ),
+                        ),
+                        AddClassTile(
+                          currIdx: currIndex,
+                          positionIdx: 4,
+                          title: "회당 시간",
+                          inputTile: ClassPriceInputTile(
+                            currIndex: currIndex,
+                            positionIndex: 4,
+                            classNameController: numOfClassesToPayController,
+                            beforeButton: beforeButton,
+                            nextButton: nextButton,
+                          ),
+                        ),
+                        AddClassTile(
+                          currIdx: currIndex,
+                          positionIdx: 5,
+                          title: "납부 방식",
+                          inputTile: ClassPriceInputTile(
+                            currIndex: currIndex,
+                            positionIndex: 5,
+                            classNameController: numOfClassesToPayController,
+                            beforeButton: beforeButton,
+                            nextButton: nextButton,
+                          ),
+                        ),
+                        AddClassTile(
+                          currIdx: currIndex,
+                          positionIdx: 6,
+                          title: "테마 색상 설정",
+                          inputTile: ClassPriceInputTile(
+                            currIndex: currIndex,
+                            positionIndex: 6,
+                            classNameController: numOfClassesToPayController,
+                            beforeButton: beforeButton,
+                            nextButton: nextButton,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
-    );
-  }
-}
-
-class ClassNameInputTile extends StatelessWidget {
-  const ClassNameInputTile({
-    super.key,
-    required this.currIndex,
-    required this.classNameController,
-    required this.nextButton,
-  });
-
-  final int currIndex;
-  final TextEditingController classNameController;
-  final GestureDectectorHidingKeyboard nextButton;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: currIndex == 0
-          ? Column(
-              children: [
-                TextField(
-                  controller: classNameController,
-                  decoration: const InputDecoration(
-                    hintText: "수업이름을 적어주세요",
-                  ),
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  children: [const Spacer(), nextButton],
-                )
-              ],
-            )
-          : const SizedBox.shrink(),
-    );
-  }
-}
-
-class NumberOfClassesToPayInputTile extends StatelessWidget {
-  const NumberOfClassesToPayInputTile({
-    super.key,
-    required this.currIndex,
-    required this.classNameController,
-    required this.beforeButton,
-    required this.nextButton,
-  });
-
-  final int currIndex;
-  final TextEditingController classNameController;
-  final GestureDectectorHidingKeyboard beforeButton;
-  final GestureDectectorHidingKeyboard nextButton;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: currIndex == 1
-          ? Column(
-              children: [
-                TextField(
-                  controller: classNameController,
-                  decoration: const InputDecoration(
-                    hintText: "수업이름을 적어주세요",
-                  ),
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  children: [
-                    const Spacer(),
-                    beforeButton,
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    nextButton,
-                  ],
-                ),
-              ],
-            )
-          : const SizedBox.shrink(),
-    );
-  }
-}
-
-class ClassPriceInputTile extends StatelessWidget {
-  const ClassPriceInputTile({
-    super.key,
-    required this.currIndex,
-    required this.classNameController,
-    required this.beforeButton,
-    required this.nextButton,
-  });
-
-  final int currIndex;
-  final TextEditingController classNameController;
-  final GestureDectectorHidingKeyboard beforeButton;
-  final GestureDectectorHidingKeyboard nextButton;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: currIndex == 2
-          ? Column(
-              children: [
-                TextField(
-                  controller: classNameController,
-                  decoration: const InputDecoration(
-                    hintText: "수업료는 얼마인가요?",
-                  ),
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  children: [
-                    const Spacer(),
-                    beforeButton,
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    nextButton,
-                  ],
-                ),
-              ],
-            )
-          : const SizedBox.shrink(),
     );
   }
 }
