@@ -22,7 +22,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       {
         'title': '대치동 수학 과외',
         'code': 'REK45J2F',
-        'completionRate': 0.75,
+        'completionRate': 3/8,
         'themeColor': Color(0xFFB5C18E), // 초기 테마 색상 추가
         'infoItems': [
           ClassInfoItem(icon: Icons.person, title: '학생 이름', value: '홍길동'),
@@ -37,7 +37,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       {
         'title': '서초동 영어 과외',
         'code': 'ENG12345',
-        'completionRate': 0.5,
+        'completionRate': 3/4,
         'themeColor': Color(0xFFFCCFCF), // 초기 테마 색상 추가
         'infoItems': [
           ClassInfoItem(icon: Icons.person, title: '학생 이름', value: '이몽룡'),
@@ -45,7 +45,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
           ClassInfoItem(icon: Icons.calendar_today, title: '요일', value: '화/목'),
           ClassInfoItem(icon: Icons.payment, title: '정산 방법', value: '후불'),
           ClassInfoItem(icon: Icons.attach_money, title: '시급', value: '15000원'),
-          ClassInfoItem(icon: Icons.repeat, title: '수업 횟수', value: '5회'),
+          ClassInfoItem(icon: Icons.repeat, title: '수업 횟수', value: '4회'),
           ClassInfoItem(icon: Icons.calendar_today, title: '다음 정산일', value: '10월 10일'),
         ],
       },
@@ -54,22 +54,25 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height; // 화면 높이 가져오기
+    final screenWidth = MediaQuery.of(context).size.width; // 화면 너비 가져오기
+
     return Scaffold(
       body: Stack(
         children: [
           const Background(),
           Column(
             children: [
-              const SizedBox(height: 140),
+              SizedBox(height: screenHeight * 0.13), // 화면 높이의 10%
               // 커스텀 인디케이터 추가 (카드 위쪽)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(classData.length, (index) {
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
-                    margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                    width: currentIndex == index ? 20.0 : 8.0, // 현재 카드의 인덱스일 때는 길게 표시
-                    height: 8.0,
+                    margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.01), // 화면 너비의 1%
+                    width: currentIndex == index ? screenWidth * 0.06 : screenWidth * 0.02, // 인덱스에 따라 너비 조절
+                    height: screenHeight * 0.01, // 화면 높이의 1%
                     decoration: BoxDecoration(
                       color: currentIndex == index ? Colors.grey[600] : Colors.grey[400],
                       borderRadius: BorderRadius.circular(4.0),
@@ -77,7 +80,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                   );
                 }),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.06), // 화면 높이의 6%
               Expanded(
                 child: Swiper(
                   itemCount: classData.length,
@@ -99,6 +102,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                       },
                     );
                   },
+                  loop: false, // 마지막 카드에서 첫 번째 카드로 넘어가지 않도록 설정
                   onIndexChanged: (index) {
                     setState(() {
                       currentIndex = index; // 현재 인덱스 업데이트
