@@ -216,12 +216,13 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                     const Divider(),
                     if (showIncompleteFeedbackList)
                       IncompleteClassFeedback(
+                        classTitle: widget.title,
                         classId: 'dummyClassId',
                         backToClassInfo: () {
                           setState(() {
                             showIncompleteFeedbackList = false;
                           });
-                        },
+                        }, 
                       ),
                     if (!showIncompleteFeedbackList)
                       Column(

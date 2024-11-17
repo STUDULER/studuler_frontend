@@ -4,10 +4,12 @@ class IncompleteClassFeedbackTile extends StatelessWidget {
   const IncompleteClassFeedbackTile({
     super.key,
     required this.classId,
-    required this.date,
+    required this.classTitle,
+    required this.date, 
   });
 
   final String classId;
+  final String classTitle;
   final DateTime date;
 
   GestureDetector goToWriteFeedbackButton() {

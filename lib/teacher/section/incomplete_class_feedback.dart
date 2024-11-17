@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:studuler/teacher/widget/incomplete_class_feedback_tile.dart';
 
 import '../../common/http/http_service.dart';
+import '../widget/incomplete_class_feedback_tile.dart';
 
 class IncompleteClassFeedback extends StatefulWidget {
   const IncompleteClassFeedback({
     super.key,
     required this.classId,
+    required this.classTitle,
     required this.backToClassInfo,
   });
 
   final String classId;
+  final String classTitle;
   final VoidCallback backToClassInfo;
 
   @override
@@ -82,6 +84,7 @@ class _IncompleteClassFeedbackState extends State<IncompleteClassFeedback> {
               incompleteFeedbackDates.length,
               (index) => IncompleteClassFeedbackTile(
                 classId: widget.classId,
+                classTitle: widget.classTitle,
                 date: incompleteFeedbackDates.elementAt(index),
               ),
             ),
