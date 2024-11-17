@@ -6,16 +6,19 @@ class AddClassTile extends StatelessWidget {
     required this.currIdx,
     required this.positionIdx,
     required this.title,
-    required this.inputTile,
+    required this.inputTile, 
+    required this.height,
   });
 
   final int currIdx;
   final int positionIdx;
   final String title;
   final Widget inputTile;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
+    assert (height >= 30);
     const duration = Duration(
       milliseconds: 300,
     );
@@ -61,17 +64,12 @@ class AddClassTile extends StatelessWidget {
               curve: Curves.bounceInOut,
               duration: duration,
               width: 2,
-              height: currIdx == positionIdx ? 80 : 30,
+              height: currIdx == positionIdx ? height : 30,
               color: const Color(0xFFC7B7A3),
             ),
             const SizedBox(
               width: 32,
             ),
-            // ClassNameInputTile(
-            //   currIndex: currIndex,
-            //   classNameController: classNameController,
-            //   nextButton: nextButton,
-            // ),
             inputTile,
           ],
         ),
