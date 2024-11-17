@@ -122,12 +122,6 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     );
   }
 
-  void _backToClassInfo() {
-    setState(() {
-      showIncompleteFeedbackList = false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
