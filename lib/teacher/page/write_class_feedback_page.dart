@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:studuler/common/widget/auth_text_field.dart';
 
+import '../../common/http/http_service.dart';
 import '../../common/util/gesture_dectector_hiding_keyboard.dart.dart';
+import '../../common/widget/auth_text_field.dart';
 import '../../common/widget/background.dart';
 
 class WriteClassFeedbackPage extends StatefulWidget {
@@ -22,6 +23,14 @@ class WriteClassFeedbackPage extends StatefulWidget {
 }
 
 class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
+  final HttpService httpService = HttpService();
+
+  final _didController = TextEditingController();
+  final _attitudeController = TextEditingController();
+  String _homework = "";
+  final _memoController = TextEditingController();
+  int _rating = 5;
+
   int buttonActivated = 0;
   String _dateToString() {
     String weekday = "";
@@ -52,6 +61,14 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
     return "${widget.date.year}년 ${widget.date.month}월 ${widget.date.day}일 $weekday";
   }
 
+  @override
+  void dispose() {
+    _didController.dispose();
+    _attitudeController.dispose();
+    _memoController.dispose();
+    super.dispose();
+  }
+
   Widget cancelButton() {
     return GestureDectectorHidingKeyboard(
       onTap: () {
@@ -73,8 +90,26 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
 
   Widget completeButton() {
     return GestureDectectorHidingKeyboard(
-      onTap: () {
-        Navigator.pop(context);
+      onTap: () async {
+        if (_didController.text.isEmpty) return;
+        if (_attitudeController.text.isEmpty) return;
+        if (_homework.isEmpty) return;
+        if (_memoController.text.isEmpty) return;
+
+        final feedbackId = await httpService.createClassFeedback(
+          classId: widget.classId,
+          date: widget.date,
+          did: _didController.text,
+          attitude: _attitudeController.text,
+          homework: _homework,
+          memo: _memoController.text,
+          rating: _rating,
+        );
+        if (feedbackId != null) {
+          if (context.mounted) {
+            Navigator.pop(context);
+          }
+        }
       },
       child: Container(
         width: 56,
@@ -149,7 +184,7 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
                             child: Column(
                               children: [
                                 AuthTextField(
-                                  controller: TextEditingController(),
+                                  controller: _didController,
                                   label: "오늘 한 일",
                                   hintText: "오늘 한 일을 적어주세요.",
                                 ),
@@ -157,7 +192,7 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
                                   height: 16,
                                 ),
                                 AuthTextField(
-                                  controller: TextEditingController(),
+                                  controller: _attitudeController,
                                   label: "태도",
                                   hintText: "태도를 적어주세요.",
                                 ),
@@ -190,7 +225,7 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        // widget.onPressed("선불");
+                                        _homework = "완료";
                                         setState(() {
                                           buttonActivated = 1;
                                         });
@@ -225,7 +260,7 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        // widget.onPressed("선불");
+                                        _homework = "부분완료";
                                         setState(() {
                                           buttonActivated = 2;
                                         });
@@ -260,7 +295,7 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        // widget.onPressed("선불");
+                                        _homework = "미완료";
                                         setState(() {
                                           buttonActivated = 3;
                                         });
@@ -290,7 +325,7 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
                                   height: 8,
                                 ),
                                 AuthTextField(
-                                  controller: TextEditingController(),
+                                  controller: _memoController,
                                   label: "메모",
                                   hintText: "메모를 적어주세요.",
                                 ),
@@ -319,7 +354,9 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
                                     Icons.star,
                                     color: Colors.amber,
                                   ),
-                                  onRatingUpdate: (rating) {},
+                                  onRatingUpdate: (rating) {
+                                    _rating = rating.toInt();
+                                  },
                                 ),
                                 const SizedBox(
                                   height: 16,
