@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import '../../teacher/section/incomplete_class_feedback.dart';
 import '../section/class_info_item.dart';
 import '../section/animated_wave_painter.dart';
 import 'edit_class_info_modal.dart';
@@ -12,7 +14,11 @@ class ClassInfoCard extends StatefulWidget {
   final List<ClassInfoItem> infoItems;
   final double completionRate;
   final Color themeColor; // 테마 색상 추가
-  final Function(String title, List<ClassInfoItem> infoItems, Color themeColor) onUpdate;
+  final Function(
+    String title,
+    List<ClassInfoItem> infoItems,
+    Color themeColor,
+  ) onUpdate;
 
   const ClassInfoCard({
     required this.title,
@@ -27,10 +33,11 @@ class ClassInfoCard extends StatefulWidget {
   });
 
   @override
-  _ClassInfoCardState createState() => _ClassInfoCardState();
+  State<ClassInfoCard> createState() => _ClassInfoCardState();
 }
 
-class _ClassInfoCardState extends State<ClassInfoCard> with SingleTickerProviderStateMixin {
+class _ClassInfoCardState extends State<ClassInfoCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late TextEditingController titleController;
   late TextEditingController studentNameController;
@@ -42,6 +49,8 @@ class _ClassInfoCardState extends State<ClassInfoCard> with SingleTickerProvider
   late String nextPaymentDate;
   late Color currentThemeColor; // 현재 테마 색상
 
+  bool showIncompleteFeedbackList = false;
+
   @override
   void initState() {
     super.initState();
@@ -51,13 +60,19 @@ class _ClassInfoCardState extends State<ClassInfoCard> with SingleTickerProvider
     )..repeat();
 
     titleController = TextEditingController(text: widget.title);
-    studentNameController = TextEditingController(text: widget.infoItems[0].value);
-    sessionDurationController = TextEditingController(text: widget.infoItems[1].value);
+    studentNameController =
+        TextEditingController(text: widget.infoItems[0].value);
+    sessionDurationController =
+        TextEditingController(text: widget.infoItems[1].value);
     daysController = TextEditingController(text: widget.infoItems[2].value);
-    paymentMethodController = TextEditingController(text: widget.infoItems[3].value);
-    hourlyRateController = TextEditingController(text: widget.infoItems[4].value);
-    sessionCountController = TextEditingController(text: widget.infoItems[5].value);
-    nextPaymentDate = widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
+    paymentMethodController =
+        TextEditingController(text: widget.infoItems[3].value);
+    hourlyRateController =
+        TextEditingController(text: widget.infoItems[4].value);
+    sessionCountController =
+        TextEditingController(text: widget.infoItems[5].value);
+    nextPaymentDate =
+        widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
     currentThemeColor = widget.themeColor; // 초기 테마 색상 설정
   }
 
@@ -107,6 +122,12 @@ class _ClassInfoCardState extends State<ClassInfoCard> with SingleTickerProvider
     );
   }
 
+  void _backToClassInfo() {
+    setState(() {
+      showIncompleteFeedbackList = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -139,17 +160,29 @@ class _ClassInfoCardState extends State<ClassInfoCard> with SingleTickerProvider
                           children: [
                             GestureDetector(
                               onTap: () {},
-                              child: const Icon(Icons.share, color: Colors.grey, size: 20),
+                              child: const Icon(
+                                Icons.share,
+                                color: Colors.grey,
+                                size: 20,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             GestureDetector(
                               onTap: _editClassInfo,
-                              child: const Icon(Icons.edit, color: Colors.grey, size: 20),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Colors.grey,
+                                size: 20,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             GestureDetector(
                               onTap: () {},
-                              child: const Icon(Icons.delete, color: Colors.grey, size: 20),
+                              child: const Icon(
+                                Icons.delete,
+                                color: Colors.grey,
+                                size: 20,
+                              ),
                             ),
                           ],
                         ),
@@ -178,34 +211,52 @@ class _ClassInfoCardState extends State<ClassInfoCard> with SingleTickerProvider
                         const SizedBox(width: 4),
                         GestureDetector(
                           onTap: _copyCodeToClipboard,
-                          child: const Icon(Icons.copy, size: 16, color: Colors.grey),
+                          child: const Icon(
+                            Icons.copy,
+                            size: 16,
+                            color: Colors.grey,
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    Column(
-                      children: widget.infoItems.map((item) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: item,
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        // 미작성 피드백 바로가기 버튼 동작 추가 (필요시 구현)
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFC7B7A3),
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size.fromHeight(40),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10), // 버튼 모서리 둥글게
-                        ),
+                    const Divider(),
+                    if (showIncompleteFeedbackList)
+                      IncompleteClassFeedback(
+                        classId: 'dummyClassId',
+                        backToClassInfo: () {
+                          setState(() {
+                            showIncompleteFeedbackList = false;
+                          });
+                        },
                       ),
-                      child: const Text('미작성 피드백 바로가기'),
-                    ),
+                    if (!showIncompleteFeedbackList)
+                      Column(
+                        children: widget.infoItems.map((item) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: item,
+                          );
+                        }).toList(),
+                      ),
+                    if (!showIncompleteFeedbackList) const SizedBox(height: 16),
+                    if (!showIncompleteFeedbackList)
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            showIncompleteFeedbackList = true;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFC7B7A3),
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size.fromHeight(40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(10), // 버튼 모서리 둥글게
+                          ),
+                        ),
+                        child: const Text('미작성 피드백 바로가기'),
+                      ),
                   ],
                 ),
               ),
@@ -244,7 +295,10 @@ class _ClassInfoCardState extends State<ClassInfoCard> with SingleTickerProvider
                   ),
                   Text(
                     '${(widget.completionRate * 100).toInt()}%',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
