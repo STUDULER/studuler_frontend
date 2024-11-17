@@ -128,138 +128,140 @@ class _AddClassPageState extends State<AddClassPage> {
     }
 
     return Scaffold(
-      body: GestureDectectorHidingKeyboard(
-        child: Stack(
-          children: [
-            const Background(
-              iconActionButtons: [],
-            ),
-            Column(
-              children: [
-                const SizedBox(height: 120),
-                const Text(
-                  "수업 추가하기",
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(64),
+      body: SingleChildScrollView(
+        child: GestureDectectorHidingKeyboard(
+          child: Stack(
+            children: [
+              const Background(
+                iconActionButtons: [],
+              ),
+              Column(
+                children: [
+                  const SizedBox(height: 120),
+                  const Text(
+                    "수업 추가하기",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 32,
-                      horizontal: 16,
+                  const SizedBox(height: 20),
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(64),
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        AddClassTile(
-                          currIdx: currIndex,
-                          positionIdx: 0,
-                          height: 80,
-                          title: "수업이름",
-                          inputTile: ClassNameInputTile(
-                            currIndex: currIndex,
-                            positionIndex: 0,
-                            classNameController: classNameController,
-                            nextButton: nextButton,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 32,
+                        horizontal: 16,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            height: 40,
                           ),
-                        ),
-                        AddClassTile(
-                          currIdx: currIndex,
-                          positionIdx: 1,
-                          height: 80,
-                          title: "수업료 납부 횟수",
-                          inputTile: NumberOfClassesToPayInputTile(
-                            currIndex: currIndex,
-                            positionIndex: 1,
-                            classNameController: numOfClassesToPayController,
-                            beforeButton: beforeButton,
-                            nextButton: nextButton,
+                          AddClassTile(
+                            currIdx: currIndex,
+                            positionIdx: 0,
+                            height: 80,
+                            title: "수업이름",
+                            inputTile: ClassNameInputTile(
+                              currIndex: currIndex,
+                              positionIndex: 0,
+                              classNameController: classNameController,
+                              nextButton: nextButton,
+                            ),
                           ),
-                        ),
-                        AddClassTile(
-                          currIdx: currIndex,
-                          positionIdx: 2,
-                          height: 80,
-                          title: "수업료",
-                          inputTile: ClassPriceInputTile(
-                            currIndex: currIndex,
-                            positionIndex: 2,
-                            classNameController: classPriceController,
-                            beforeButton: beforeButton,
-                            nextButton: nextButton,
+                          AddClassTile(
+                            currIdx: currIndex,
+                            positionIdx: 1,
+                            height: 80,
+                            title: "수업료 납부 횟수",
+                            inputTile: NumberOfClassesToPayInputTile(
+                              currIndex: currIndex,
+                              positionIndex: 1,
+                              classNameController: numOfClassesToPayController,
+                              beforeButton: beforeButton,
+                              nextButton: nextButton,
+                            ),
                           ),
-                        ),
-                        AddClassTile(
-                          currIdx: currIndex,
-                          positionIdx: 3,
-                          height: 120,
-                          title: "수업 일정",
-                          inputTile: ClassScheduleInputTile(
-                            currIndex: currIndex,
-                            positionIndex: 3,
-                            classScheduleController: classScheduleController,
-                            beforeButton: beforeButton,
-                            nextButton: nextButton,
+                          AddClassTile(
+                            currIdx: currIndex,
+                            positionIdx: 2,
+                            height: 80,
+                            title: "수업료",
+                            inputTile: ClassPriceInputTile(
+                              currIndex: currIndex,
+                              positionIndex: 2,
+                              classNameController: classPriceController,
+                              beforeButton: beforeButton,
+                              nextButton: nextButton,
+                            ),
                           ),
-                        ),
-                        AddClassTile(
-                          currIdx: currIndex,
-                          positionIdx: 4,
-                          height: 80,
-                          title: "회당 시간",
-                          inputTile: HoursPerClassInputTile(
-                            currIndex: currIndex,
-                            positionIndex: 4,
-                            hoursPerClassController: hoursPerClassController,
-                            beforeButton: beforeButton,
-                            nextButton: nextButton,
+                          AddClassTile(
+                            currIdx: currIndex,
+                            positionIdx: 3,
+                            height: 120,
+                            title: "수업 일정",
+                            inputTile: ClassScheduleInputTile(
+                              currIndex: currIndex,
+                              positionIndex: 3,
+                              classScheduleController: classScheduleController,
+                              beforeButton: beforeButton,
+                              nextButton: nextButton,
+                            ),
                           ),
-                        ),
-                        AddClassTile(
-                          currIdx: currIndex,
-                          positionIdx: 5,
-                          height: 80,
-                          title: "납부 방식",
-                          inputTile: HowToPayInputTile(
-                            currIndex: currIndex,
-                            positionIndex: 5,
-                            onPressed: howToPayControllerUpdate,
-                            beforeButton: beforeButton,
-                            nextButton: nextButton,
+                          AddClassTile(
+                            currIdx: currIndex,
+                            positionIdx: 4,
+                            height: 80,
+                            title: "회당 시간",
+                            inputTile: HoursPerClassInputTile(
+                              currIndex: currIndex,
+                              positionIndex: 4,
+                              hoursPerClassController: hoursPerClassController,
+                              beforeButton: beforeButton,
+                              nextButton: nextButton,
+                            ),
                           ),
-                        ),
-                        AddClassTile(
-                          currIdx: currIndex,
-                          positionIdx: 6,
-                          height: 80,
-                          title: "테마 색상 설정",
-                          inputTile: ClassThemeColorInputTile(
-                            currIndex: currIndex,
-                            positionIndex: 6,
-                            themeColorController: themeColorController,
-                            beforeButton: beforeButton,
-                            nextButton: submitButton,
+                          AddClassTile(
+                            currIdx: currIndex,
+                            positionIdx: 5,
+                            height: 80,
+                            title: "납부 방식",
+                            inputTile: HowToPayInputTile(
+                              currIndex: currIndex,
+                              positionIndex: 5,
+                              onPressed: howToPayControllerUpdate,
+                              beforeButton: beforeButton,
+                              nextButton: nextButton,
+                            ),
                           ),
-                        ),
-                      ],
+                          AddClassTile(
+                            currIdx: currIndex,
+                            positionIdx: 6,
+                            height: 80,
+                            title: "테마 색상 설정",
+                            inputTile: ClassThemeColorInputTile(
+                              currIndex: currIndex,
+                              positionIndex: 6,
+                              themeColorController: themeColorController,
+                              beforeButton: beforeButton,
+                              nextButton: submitButton,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
