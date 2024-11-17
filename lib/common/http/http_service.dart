@@ -86,4 +86,34 @@ class HttpService {
     // }
     // return true;
   }
+
+  Future<String?> createClass({
+    required String className,
+    required String numOfClassesToPay,
+    required String classPrice,
+    required String classSchedule,
+    required String hoursPerClass,
+    required String howToPay,
+    required String themeColor,
+  }) async {
+    // TMP
+    print("dd");
+    await Future.delayed(const Duration(milliseconds: 300));
+    return "dummyClassId";
+
+    // final response = await call.post(
+    //   "api/class",
+    //   data: {
+    //     "className": className,
+    //     "numOfClassesToPay": numOfClassesToPay,
+    //     "classPrice": classPrice,
+    //     "classSchedule": classSchedule,
+    //     "hoursPerClass": hoursPerClass,
+    //     "howToPay": howToPay,
+    //     "themeColor": themeColor,
+    //   },
+    // );
+    // if (response.statusCode != 201) return null;
+    // return response.data['classId'];
+  }
 }

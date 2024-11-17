@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../common/http/http_service.dart';
 import '../../common/util/gesture_dectector_hiding_keyboard.dart.dart';
 import '../../common/widget/background.dart';
 import '../widget/add_class_input_tile/class_name_input_tile.dart';
@@ -19,6 +20,8 @@ class AddClassPage extends StatefulWidget {
 }
 
 class _AddClassPageState extends State<AddClassPage> {
+  final HttpService httpService = HttpService();
+
   int currIndex = 0;
   TextEditingController classNameController = TextEditingController();
   TextEditingController numOfClassesToPayController = TextEditingController();
@@ -27,7 +30,6 @@ class _AddClassPageState extends State<AddClassPage> {
   TextEditingController hoursPerClassController = TextEditingController();
   TextEditingController howToPayController = TextEditingController();
   TextEditingController themeColorController = TextEditingController();
-  int howToPay = 0;
 
   @override
   void dispose() {
@@ -82,10 +84,29 @@ class _AddClassPageState extends State<AddClassPage> {
     );
 
     var submitButton = GestureDectectorHidingKeyboard(
-      onTap: () {
-        setState(() {
-          // currIndex++;
-        });
+      onTap: () async {
+        if (classNameController.text.isEmpty) return;
+        if (numOfClassesToPayController.text.isEmpty) return;
+        if (classPriceController.text.isEmpty) return;
+        if (classScheduleController.text.isEmpty) return;
+        if (hoursPerClassController.text.isEmpty) return;
+        if (howToPayController.text.isEmpty) return;
+        if (themeColorController.text.isEmpty) return;
+
+        final String? classId = await httpService.createClass(
+          className: classNameController.text,
+          numOfClassesToPay: numOfClassesToPayController.text,
+          classPrice: classPriceController.text,
+          classSchedule: classScheduleController.text,
+          hoursPerClass: hoursPerClassController.text,
+          howToPay: howToPayController.text,
+          themeColor: themeColorController.text,
+        );
+        if (classId != null && classId.isNotEmpty) {
+          if (context.mounted) {
+            Navigator.pop(context);
+          }
+        }
       },
       child: Container(
         width: 102,
@@ -190,7 +211,7 @@ class _AddClassPageState extends State<AddClassPage> {
                             positionIndex: 3,
                             classScheduleController: classScheduleController,
                             beforeButton: beforeButton,
-                            nextButton: nextButton, 
+                            nextButton: nextButton,
                           ),
                         ),
                         AddClassTile(
@@ -227,7 +248,7 @@ class _AddClassPageState extends State<AddClassPage> {
                           inputTile: ClassThemeColorInputTile(
                             currIndex: currIndex,
                             positionIndex: 6,
-                            themeColorController: numOfClassesToPayController,
+                            themeColorController: themeColorController,
                             beforeButton: beforeButton,
                             nextButton: submitButton,
                           ),
