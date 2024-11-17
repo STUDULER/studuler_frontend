@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:math';
 import '../section/class_info_item.dart';
 import '../section/animated_wave_painter.dart';
 import 'edit_class_info_modal.dart';
