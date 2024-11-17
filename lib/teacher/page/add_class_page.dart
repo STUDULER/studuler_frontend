@@ -33,7 +33,6 @@ class _AddClassPageState extends State<AddClassPage> {
 
   @override
   void dispose() {
-    super.dispose();
     classNameController.dispose();
     numOfClassesToPayController.dispose();
     classPriceController.dispose();
@@ -41,6 +40,7 @@ class _AddClassPageState extends State<AddClassPage> {
     hoursPerClassController.dispose();
     howToPayController.dispose();
     themeColorController.dispose();
+    super.dispose();
   }
 
   @override
