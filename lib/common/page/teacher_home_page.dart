@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
+
+import '../../main.dart';
 import '../../teacher/page/add_class_page.dart';
 import '../widget/class_info_card.dart';
 import '../section/class_info_item.dart';
@@ -9,7 +11,7 @@ class TeacherHomePage extends StatefulWidget {
   const TeacherHomePage({super.key});
 
   @override
-  _TeacherHomePageState createState() => _TeacherHomePageState();
+  State<TeacherHomePage> createState() => _TeacherHomePageState();
 }
 
 class _TeacherHomePageState extends State<TeacherHomePage> {
@@ -108,7 +110,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
               ),
               IconButton(
                 icon: const Icon(Icons.menu, color: Colors.black),
-                onPressed: () {},
+                onPressed: () => mainScaffoldKey.currentState?.openEndDrawer(),
               ),
             ],
           ),
@@ -121,8 +123,12 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                 children: List.generate(classData.length, (index) {
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
-                    margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.01), // 화면 너비의 1%
-                    width: currentIndex == index ? screenWidth * 0.06 : screenWidth * 0.02, // 인덱스에 따라 너비 조절
+                    margin: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.01,
+                    ), // 화면 너비의 1%
+                    width: currentIndex == index
+                        ? screenWidth * 0.06
+                        : screenWidth * 0.02, // 인덱스에 따라 너비 조절
                     height: screenHeight * 0.01, // 화면 높이의 1%
                     decoration: BoxDecoration(
                       color: currentIndex == index
