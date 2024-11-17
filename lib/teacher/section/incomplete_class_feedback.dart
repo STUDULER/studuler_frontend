@@ -21,16 +21,21 @@ class IncompleteClassFeedback extends StatefulWidget {
 class _IncompleteClassFeedbackState extends State<IncompleteClassFeedback> {
   final HttpService httpService = HttpService();
   List<DateTime> incompleteFeedbackDates = [];
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
 
     () async {
+      setState(() {
+        isLoading = true;
+      });
       final result = await httpService.fetchIncompleteFeedbackDates(
         classId: widget.classId,
       );
       setState(() {
+        isLoading = false;
         incompleteFeedbackDates = result;
       });
     }();
@@ -66,15 +71,21 @@ class _IncompleteClassFeedbackState extends State<IncompleteClassFeedback> {
         const SizedBox(
           height: 8,
         ),
-        Column(
-          children: List.generate(
-            incompleteFeedbackDates.length,
-            (index) => IncompleteClassFeedbackTile(
-              classId: widget.classId,
-              date: incompleteFeedbackDates.elementAt(index),
+        if (isLoading)
+          const CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Colors.black54,
+          ),
+        if (!isLoading)
+          Column(
+            children: List.generate(
+              incompleteFeedbackDates.length,
+              (index) => IncompleteClassFeedbackTile(
+                classId: widget.classId,
+                date: incompleteFeedbackDates.elementAt(index),
+              ),
             ),
           ),
-        ),
       ],
     );
   }
