@@ -30,17 +30,21 @@ class _IncompleteClassFeedbackState extends State<IncompleteClassFeedback> {
     super.initState();
 
     () async {
-      setState(() {
-        isLoading = true;
-      });
-      final result = await httpService.fetchIncompleteFeedbackDates(
-        classId: widget.classId,
-      );
-      setState(() {
-        isLoading = false;
-        incompleteFeedbackDates = result;
-      });
+      await fetchIncompleteFeedbackDates();
     }();
+  }
+
+  Future<void> fetchIncompleteFeedbackDates() async {
+    setState(() {
+      isLoading = true;
+    });
+    final result = await httpService.fetchIncompleteFeedbackDates(
+      classId: widget.classId,
+    );
+    setState(() {
+      isLoading = false;
+      incompleteFeedbackDates = result;
+    });
   }
 
   @override
@@ -86,6 +90,7 @@ class _IncompleteClassFeedbackState extends State<IncompleteClassFeedback> {
                 classId: widget.classId,
                 classTitle: widget.classTitle,
                 date: incompleteFeedbackDates.elementAt(index),
+                onPop: fetchIncompleteFeedbackDates,
               ),
             ),
           ),

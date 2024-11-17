@@ -8,11 +8,13 @@ class IncompleteClassFeedbackTile extends StatelessWidget {
     required this.classId,
     required this.classTitle,
     required this.date, 
+    required this.onPop,
   });
 
   final String classId;
   final String classTitle;
   final DateTime date;
+  final Function onPop;
 
   GestureDetector goToWriteFeedbackButton(BuildContext context) {
     return GestureDetector(
@@ -23,7 +25,8 @@ class IncompleteClassFeedbackTile extends StatelessWidget {
             builder: (context) => WriteClassFeedbackPage(
               classId: classId,
               classTitle: classTitle,
-              date: date,
+              date: date, 
+              onPop: onPop,
             ),
           ),
         );

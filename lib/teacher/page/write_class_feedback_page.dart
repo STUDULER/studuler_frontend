@@ -12,11 +12,13 @@ class WriteClassFeedbackPage extends StatefulWidget {
     required this.classId,
     required this.classTitle,
     required this.date,
+    required this.onPop,
   });
 
   final String classId;
   final String classTitle;
   final DateTime date;
+  final Function onPop;
 
   @override
   State<WriteClassFeedbackPage> createState() => _WriteClassFeedbackPageState();
@@ -108,6 +110,7 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
         if (feedbackId != null) {
           if (context.mounted) {
             Navigator.pop(context);
+            widget.onPop();
           }
         }
       },
