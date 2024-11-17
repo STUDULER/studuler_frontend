@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../page/write_class_feedback_page.dart';
+
 class IncompleteClassFeedbackTile extends StatelessWidget {
   const IncompleteClassFeedbackTile({
     super.key,
@@ -12,10 +14,19 @@ class IncompleteClassFeedbackTile extends StatelessWidget {
   final String classTitle;
   final DateTime date;
 
-  GestureDetector goToWriteFeedbackButton() {
+  GestureDetector goToWriteFeedbackButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        print(date);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => WriteClassFeedbackPage(
+              classId: classId,
+              classTitle: classTitle,
+              date: date,
+            ),
+          ),
+        );
       },
       child: Container(
         width: 102,
@@ -42,7 +53,7 @@ class IncompleteClassFeedbackTile extends StatelessWidget {
             style: const TextStyle(fontSize: 18),
           ),
           const Spacer(),
-          goToWriteFeedbackButton(),
+          goToWriteFeedbackButton(context),
         ],
       ),
     );
