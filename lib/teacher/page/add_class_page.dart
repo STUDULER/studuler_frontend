@@ -22,6 +22,7 @@ class _AddClassPageState extends State<AddClassPage> {
   int currIndex = 0;
   TextEditingController classNameController = TextEditingController();
   TextEditingController numOfClassesToPayController = TextEditingController();
+  TextEditingController classPriceController = TextEditingController();
 
   TextEditingController hoursPerClassController = TextEditingController();
   TextEditingController howToPayController = TextEditingController();
@@ -33,6 +34,7 @@ class _AddClassPageState extends State<AddClassPage> {
     super.dispose();
     classNameController.dispose();
     numOfClassesToPayController.dispose();
+    classPriceController.dispose();
 
     hoursPerClassController.dispose();
     howToPayController.dispose();
@@ -173,7 +175,7 @@ class _AddClassPageState extends State<AddClassPage> {
                           inputTile: ClassPriceInputTile(
                             currIndex: currIndex,
                             positionIndex: 2,
-                            classNameController: numOfClassesToPayController,
+                            classNameController: classPriceController,
                             beforeButton: beforeButton,
                             nextButton: nextButton,
                           ),
