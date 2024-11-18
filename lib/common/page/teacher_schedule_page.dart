@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../main.dart';
 import '../widget/background.dart'; // background.dart import
 import '../widget/calendar_widget.dart'; // 가상의 캘린더 위젯 import
 import '../widget/schedule_item.dart'; // 분리된 ScheduleItem 위젯 import
@@ -45,10 +46,20 @@ class TeacherSchedulePage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Background(), // 배경 추가
+          Background(
+            iconActionButtons: [
+              IconButton(
+                icon: const Icon(Icons.menu, color: Colors.black),
+                onPressed: () => mainScaffoldKey.currentState?.openEndDrawer(),
+              ),
+            ],
+          ), // 배경 추가
           SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 100.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 100.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

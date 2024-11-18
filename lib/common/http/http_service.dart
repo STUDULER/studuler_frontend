@@ -99,4 +99,73 @@ class HttpService {
     // }
     // return true;
   }
+
+  Future<String?> createClass({
+    required String className,
+    required String numOfClassesToPay,
+    required String classPrice,
+    required String classSchedule,
+    required String hoursPerClass,
+    required String howToPay,
+    required String themeColor,
+  }) async {
+    // TMP
+    print("dd");
+    await Future.delayed(const Duration(milliseconds: 300));
+    return "dummyClassId";
+
+    // final response = await call.post(
+    //   "api/class",
+    //   data: {
+    //     "className": className,
+    //     "numOfClassesToPay": numOfClassesToPay,
+    //     "classPrice": classPrice,
+    //     "classSchedule": classSchedule,
+    //     "hoursPerClass": hoursPerClass,
+    //     "howToPay": howToPay,
+    //     "themeColor": themeColor,
+    //   },
+    // );
+    // if (response.statusCode != 201) return null;
+    // return response.data['classId'];
+  }
+
+  Future<List<DateTime>> fetchIncompleteFeedbackDates({
+    required String classId,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return [
+      DateTime.utc(2024, 11, 12),
+      DateTime.now(),
+    ];
+  }
+
+  Future<String?> createClassFeedback({
+    required String classId,
+    required DateTime date,
+    required String did,
+    required String attitude,
+    required String homework,
+    required String memo,
+    required int rating,
+  }) async {
+    // TMP
+    await Future.delayed(const Duration(milliseconds: 300));
+    return "dummyFeedbackId";
+
+    // final result = await call.post(
+    //   "/api/class/feedback",
+    //   data: {
+    //     "classId": classId,
+    //     "date": date,
+    //     "did": did,
+    //     "attitude": attitude,
+    //     "homework": homework,
+    //     "memo": memo,
+    //     "rating": rating,
+    //   },
+    // );
+    // if (result.statusCode != 201) return null;
+    // return result.data['feedbackId'];
+  }
 }

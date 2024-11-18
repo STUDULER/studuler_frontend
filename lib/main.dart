@@ -6,6 +6,7 @@ import 'common/page/drawer_page.dart';
 import 'common/page/role_selection_page.dart';
 import 'common/page/splash_page.dart';
 import 'common/widget/bottom_bar.dart';
+import 'teacher/page/add_class_page.dart';
 
 void main() {
   KakaoSdk.init(
@@ -32,6 +33,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+final GlobalKey<ScaffoldState> mainScaffoldKey = GlobalKey<ScaffoldState>();
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -54,9 +57,25 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: mainScaffoldKey,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: <Widget>[Container()],
+        automaticallyImplyLeading: false,
+        actions: <Widget>[
+          GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                useSafeArea: true,
+                builder: (BuildContext context) {
+                  return const AddClassPage();
+                },
+              );
+            },
+            child: const Icon(Icons.add),
+          ),
+        ],
         title: Text(widget.title),
       ),
       body: Center(
@@ -94,8 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomBar(
-      ),
+      bottomNavigationBar: const BottomBar(),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
