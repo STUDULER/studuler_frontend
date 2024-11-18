@@ -583,7 +583,7 @@ packages:
       sha256: "841ad54f3c8381c480d0c9b508b89a34036f512482c407e6df7a9c4aa2ef8f59"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.1"
+    version: "2.3.2"
   simple_gesture_detector:
     dependency: transitive
     description:
