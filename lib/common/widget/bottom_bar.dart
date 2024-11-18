@@ -3,6 +3,8 @@ import 'package:studuler/common/page/teacher_home_page.dart';
 import 'package:studuler/common/page/teacher_schedule_page.dart';
 import 'package:studuler/common/page/teacher_settlement_page.dart';
 
+import '../page/drawer_page.dart';
+
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
 
@@ -56,6 +58,7 @@ class _BottomBarState extends State<BottomBar> {
           ),
         ],
       ),
+      endDrawer: const DrawerPage(),
     );
   }
 }

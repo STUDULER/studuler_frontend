@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:studuler/common/auth/oauth_user_dto.dart';
 
 import 'auth_service_type.dart';
 
@@ -15,7 +16,7 @@ class AuthService {
     ),
   );
 
-  Future<bool> signIn({
+  Future<OAuthUserDto?> signIn({
     required AuthServiceType authServiceType,
   }) async {
     switch (authServiceType) {
@@ -30,7 +31,12 @@ class AuthService {
         }
         print(googleUser);
         print("sign in");
-        return true;
+        return OAuthUserDto(
+          username: googleUser?.displayName ?? "", 
+          password: "",
+          mail: googleUser?.email ?? "",
+          image: 1,
+        );
 
       case AuthServiceType.kakao:
         try {
@@ -56,13 +62,14 @@ class AuthService {
           print(profileInfo.toString());
         } catch (error) {
           print('Kakao sign in failed: $error');
-          return false;
+          return null;
         }
-        return true;
+        // TODO 이 부분을 IOAuthUserDto 로 바꾸어야 함.
+        return null;
 
       default:
     }
-    return false;
+    return null;
   }
 
   Future<void> signOut() async {
