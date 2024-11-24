@@ -65,7 +65,12 @@ class _AddClassPageState extends State<AddClassPage> {
           color: const Color(0xFFC7B7A3),
         ),
         child: const Center(
-          child: Text("이전"),
+          child: Text(
+            "이전",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
         ),
       ),
     );
@@ -84,7 +89,12 @@ class _AddClassPageState extends State<AddClassPage> {
           color: const Color(0xFFC7B7A3),
         ),
         child: const Center(
-          child: Text("다음"),
+          child: Text(
+            "다음",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
         ),
       ),
     );
@@ -124,7 +134,12 @@ class _AddClassPageState extends State<AddClassPage> {
           color: const Color(0xFFC7B7A3),
         ),
         child: const Center(
-          child: Text("추가하기"),
+          child: Text(
+            "추가하기",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
         ),
       ),
     );
@@ -244,7 +259,8 @@ class _AddClassPageState extends State<AddClassPage> {
                             inputTile: ClassStartDateInputTile(
                               currIndex: currIndex,
                               positionIndex: 5,
-                              classStartDateController: classStartDateController,
+                              classStartDateController:
+                                  classStartDateController,
                               beforeButton: beforeButton,
                               nextButton: nextButton,
                             ),
