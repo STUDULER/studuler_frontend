@@ -32,7 +32,10 @@ class ClassNameInputTile extends StatelessWidget {
                   height: 8,
                 ),
                 Row(
-                  children: [const Spacer(), nextButton],
+                  children: [
+                    const Spacer(),
+                    nextButton,
+                  ],
                 )
               ],
             )
