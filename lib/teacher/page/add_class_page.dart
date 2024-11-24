@@ -6,6 +6,7 @@ import '../../common/widget/background.dart';
 import '../widget/add_class_input_tile/class_name_input_tile.dart';
 import '../widget/add_class_input_tile/class_price_input_tile.dart';
 import '../widget/add_class_input_tile/class_schedule_input_tile.dart';
+import '../widget/add_class_input_tile/class_start_date_input_tile.dart';
 import '../widget/add_class_input_tile/class_theme_color_input_tile.dart';
 import '../widget/add_class_input_tile/hours_per_class_input_tile.dart';
 import '../widget/add_class_input_tile/how_to_pay_input_tile.dart';
@@ -29,6 +30,7 @@ class _AddClassPageState extends State<AddClassPage> {
   TextEditingController numOfClassesToPayController = TextEditingController();
   TextEditingController classPriceController = TextEditingController();
   TextEditingController classScheduleController = TextEditingController();
+  TextEditingController classStartDateController = TextEditingController();
   TextEditingController hoursPerClassController = TextEditingController();
   TextEditingController howToPayController = TextEditingController();
   TextEditingController themeColorController = TextEditingController();
@@ -40,6 +42,7 @@ class _AddClassPageState extends State<AddClassPage> {
     numOfClassesToPayController.dispose();
     classPriceController.dispose();
     classScheduleController.dispose();
+    classStartDateController.dispose();
     hoursPerClassController.dispose();
     howToPayController.dispose();
     themeColorController.dispose();
@@ -93,6 +96,7 @@ class _AddClassPageState extends State<AddClassPage> {
         if (numOfClassesToPayController.text.isEmpty) return;
         if (classPriceController.text.isEmpty) return;
         if (classScheduleController.text.isEmpty) return;
+        if (classStartDateController.text.isEmpty) return;
         if (hoursPerClassController.text.isEmpty) return;
         if (howToPayController.text.isEmpty) return;
         if (themeColorController.text.isEmpty) return;
@@ -236,11 +240,11 @@ class _AddClassPageState extends State<AddClassPage> {
                             currIdx: currIndex,
                             positionIdx: 5,
                             height: 80,
-                            title: "회당 시간",
-                            inputTile: HoursPerClassInputTile(
+                            title: "수업 시작일",
+                            inputTile: ClassStartDateInputTile(
                               currIndex: currIndex,
                               positionIndex: 5,
-                              hoursPerClassController: hoursPerClassController,
+                              classStartDateController: classStartDateController,
                               beforeButton: beforeButton,
                               nextButton: nextButton,
                             ),
@@ -249,11 +253,11 @@ class _AddClassPageState extends State<AddClassPage> {
                             currIdx: currIndex,
                             positionIdx: 6,
                             height: 80,
-                            title: "납부 방식",
-                            inputTile: HowToPayInputTile(
+                            title: "회당 시간",
+                            inputTile: HoursPerClassInputTile(
                               currIndex: currIndex,
                               positionIndex: 6,
-                              onPressed: howToPayControllerUpdate,
+                              hoursPerClassController: hoursPerClassController,
                               beforeButton: beforeButton,
                               nextButton: nextButton,
                             ),
@@ -262,10 +266,23 @@ class _AddClassPageState extends State<AddClassPage> {
                             currIdx: currIndex,
                             positionIdx: 7,
                             height: 80,
+                            title: "납부 방식",
+                            inputTile: HowToPayInputTile(
+                              currIndex: currIndex,
+                              positionIndex: 7,
+                              onPressed: howToPayControllerUpdate,
+                              beforeButton: beforeButton,
+                              nextButton: nextButton,
+                            ),
+                          ),
+                          AddClassTile(
+                            currIdx: currIndex,
+                            positionIdx: 8,
+                            height: 120,
                             title: "테마 색상 설정",
                             inputTile: ClassThemeColorInputTile(
                               currIndex: currIndex,
-                              positionIndex: 7,
+                              positionIndex: 8,
                               themeColorController: themeColorController,
                               beforeButton: beforeButton,
                               nextButton: submitButton,
