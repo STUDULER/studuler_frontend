@@ -64,7 +64,7 @@ class AddClassTile extends StatelessWidget {
               curve: Curves.bounceInOut,
               duration: duration,
               width: 2,
-              height: currIdx == positionIdx ? height : 30,
+              height: currIdx == positionIdx ? height : 15,
               color: const Color(0xFFC7B7A3),
             ),
             const SizedBox(
