@@ -1,8 +1,15 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:studuler/common/auth/oauth_user_dto.dart';
 
 class HttpService {
   final Dio call = Dio();
+
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
 
   HttpService() {
     call.options.baseUrl = "http://13.209.171.206";
@@ -14,8 +21,7 @@ class HttpService {
     call.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          // final jwt = await localAuthStorage.getJwt();
-          const jwt = "43c64c";
+          final jwt = await _secureStorage.read(key: "jwt");
           options.headers['Authorization'] = 'Bearer $jwt';
           return handler.next(options);
         },
@@ -79,7 +85,10 @@ class HttpService {
     if (response.statusCode != 201) {
       return false;
     }
-    print(response.data);
+    String jwt = response.data['token'];
+    int userId = response.data['userId'];
+    await _secureStorage.write(key: "userId", value: "$userId");
+    await _secureStorage.write(key: "jwt", value: jwt);
     return true;
   }
 
@@ -110,24 +119,30 @@ class HttpService {
     required String themeColor,
   }) async {
     // TMP
-    print("dd");
-    await Future.delayed(const Duration(milliseconds: 300));
-    return "dummyClassId";
+    // print("dd");
+    // await Future.delayed(const Duration(milliseconds: 300));
+    // return "dummyClassId";
+    final userId = await _secureStorage.read(key: "userId");
+    // final jwt = await _secureStorage.read(key: "jwt");
 
-    // final response = await call.post(
-    //   "api/class",
-    //   data: {
-    //     "className": className,
-    //     "numOfClassesToPay": numOfClassesToPay,
-    //     "classPrice": classPrice,
-    //     "classSchedule": classSchedule,
-    //     "hoursPerClass": hoursPerClass,
-    //     "howToPay": howToPay,
-    //     "themeColor": themeColor,
-    //   },
-    // );
-    // if (response.statusCode != 201) return null;
+    final response = await call.post(
+      "/home/createClass",
+      data: {
+        "classname": "나의 이름은",
+        "studnentname": "단한번",
+        "startdate": "2020-09-03",
+        "period": 10,
+        "time": 2,
+        "day": "월/화/수",
+        "hourlyrate": 15000,
+        "prepay": 0,
+        "themecolor": 1,
+        "teacherid": userId,
+      },
+    );
+    if (response.statusCode != 201) return null;
     // return response.data['classId'];
+    return "good";
   }
 
   Future<List<DateTime>> fetchIncompleteFeedbackDates({
