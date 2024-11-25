@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class Background extends StatelessWidget {
-  const Background({super.key});
+  const Background({
+    super.key,
+    required this.iconActionButtons,
+  });
+
+  final List<IconButton> iconActionButtons;
 
   @override
   Widget build(BuildContext context) {
@@ -31,16 +36,7 @@ class Background extends StatelessWidget {
                   ),
                 ),
                 Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.add, color: Colors.black),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.menu, color: Colors.black),
-                      onPressed: () {},
-                    ),
-                  ],
+                  children: iconActionButtons,
                 ),
               ],
             ),

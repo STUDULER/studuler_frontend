@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studuler/common/auth/oauth_user_dto.dart';
 
 import '../http/http_service.dart';
 import '../section/yellow_background.dart';
@@ -120,11 +121,19 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                                     return;
                                   }
                                   if (widget.isTeacher) {
+                                    final dto = OAuthUserDto(
+                                      username: _nameController.text,
+                                      password: _passwordController.text,
+                                      mail: _emailController.text,
+                                      image: 1,
+                                    );
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            const AccountInputPage(),
+                                        builder: (context) => AccountInputPage(
+                                          dto: dto,
+                                          loginMethod: 3,
+                                        ),
                                       ),
                                     );
                                   } else {
