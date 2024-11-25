@@ -38,9 +38,14 @@ class _IncompleteClassFeedbackState extends State<IncompleteClassFeedback> {
     setState(() {
       isLoading = true;
     });
-    final result = await httpService.fetchIncompleteFeedbackDates(
-      classId: widget.classId,
+
+    // 테스트용 더미 데이터 생성
+    await Future.delayed(const Duration(seconds: 1)); // 비동기 테스트
+    final List<DateTime> result = List.generate(
+      30, // 더미 데이터 수 (30개로 설정)
+          (index) => DateTime.now().subtract(Duration(days: index)),
     );
+
     setState(() {
       isLoading = false;
       incompleteFeedbackDates = result;
@@ -83,14 +88,18 @@ class _IncompleteClassFeedbackState extends State<IncompleteClassFeedback> {
             color: Colors.black54,
           ),
         if (!isLoading)
-          Column(
-            children: List.generate(
-              incompleteFeedbackDates.length,
-              (index) => IncompleteClassFeedbackTile(
-                classId: widget.classId,
-                classTitle: widget.classTitle,
-                date: incompleteFeedbackDates.elementAt(index),
-                onPop: fetchIncompleteFeedbackDates,
+          Expanded(
+            child: SingleChildScrollView( // 스크롤 가능하게 설정
+              child: Column(
+                children: List.generate(
+                  incompleteFeedbackDates.length,
+                      (index) => IncompleteClassFeedbackTile(
+                    classId: widget.classId,
+                    classTitle: widget.classTitle,
+                    date: incompleteFeedbackDates.elementAt(index),
+                    onPop: fetchIncompleteFeedbackDates,
+                  ),
+                ),
               ),
             ),
           ),

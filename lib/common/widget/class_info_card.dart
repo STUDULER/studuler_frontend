@@ -15,10 +15,10 @@ class ClassInfoCard extends StatefulWidget {
   final double completionRate;
   final Color themeColor; // 테마 색상 추가
   final Function(
-    String title,
-    List<ClassInfoItem> infoItems,
-    Color themeColor,
-  ) onUpdate;
+      String title,
+      List<ClassInfoItem> infoItems,
+      Color themeColor,
+      ) onUpdate;
 
   const ClassInfoCard({
     required this.title,
@@ -72,7 +72,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     sessionCountController =
         TextEditingController(text: widget.infoItems[5].value);
     nextPaymentDate =
-        widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
+    widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
     currentThemeColor = widget.themeColor; // 초기 테마 색상 설정
   }
 
@@ -136,123 +136,142 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16.0),
               ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${widget.currentIndex + 1} / ${widget.totalCards}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {},
-                              child: const Icon(
-                                Icons.share,
-                                color: Colors.grey,
-                                size: 20,
-                              ),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${widget.currentIndex + 1} / ${widget.totalCards}',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[600],
                             ),
-                            const SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: _editClassInfo,
-                              child: const Icon(
-                                Icons.edit,
-                                color: Colors.grey,
-                                size: 20,
+                          ),
+                          Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () {},
+                                child: const Icon(
+                                  Icons.share,
+                                  color: Colors.grey,
+                                  size: 20,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: () {},
-                              child: const Icon(
-                                Icons.delete,
-                                color: Colors.grey,
-                                size: 20,
+                              const SizedBox(width: 8),
+                              GestureDetector(
+                                onTap: _editClassInfo,
+                                child: const Icon(
+                                  Icons.edit,
+                                  color: Colors.grey,
+                                  size: 20,
+                                ),
                               ),
+                              const SizedBox(width: 8),
+                              GestureDetector(
+                                onTap: () {},
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: Colors.grey,
+                                  size: 20,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 50),
+                      Text(
+                        titleController.text,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            widget.code,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[500],
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 50),
-                    Text(
-                      titleController.text,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                          ),
+                          const SizedBox(width: 4),
+                          GestureDetector(
+                            onTap: _copyCodeToClipboard,
+                            child: const Icon(
+                              Icons.copy,
+                              size: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          widget.code,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[500],
+                      const Divider(),
+                      if (showIncompleteFeedbackList)
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.475,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: IncompleteClassFeedback(
+                              classTitle: widget.title,
+                              classId: 'dummyClassId',
+                              backToClassInfo: () {
+                                setState(() {
+                                  showIncompleteFeedbackList = false;
+                                });
+                              },
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 4),
-                        GestureDetector(
-                          onTap: _copyCodeToClipboard,
-                          child: const Icon(
-                            Icons.copy,
-                            size: 16,
-                            color: Colors.grey,
+                      if (!showIncompleteFeedbackList)
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.4,
+                          child: Wrap(
+                            spacing: 16.0,
+                            runSpacing: 16.0,
+                            children: widget.infoItems.map((item) {
+                              return SizedBox(
+                                width: (MediaQuery.of(context).size.width * 0.9 - 48) / 2,
+                                height: MediaQuery.of(context).size.height * 0.08,
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 26.0),
+                                    child: item,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ),
-                      ],
-                    ),
-                    const Divider(),
-                    if (showIncompleteFeedbackList)
-                      IncompleteClassFeedback(
-                        classTitle: widget.title,
-                        classId: 'dummyClassId',
-                        backToClassInfo: () {
-                          setState(() {
-                            showIncompleteFeedbackList = false;
-                          });
-                        }, 
-                      ),
-                    if (!showIncompleteFeedbackList)
-                      Column(
-                        children: widget.infoItems.map((item) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: item,
-                          );
-                        }).toList(),
-                      ),
-                    if (!showIncompleteFeedbackList) const SizedBox(height: 16),
-                    if (!showIncompleteFeedbackList)
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            showIncompleteFeedbackList = true;
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFC7B7A3),
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size.fromHeight(40),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(10), // 버튼 모서리 둥글게
+                      if (!showIncompleteFeedbackList) const SizedBox(height: 16),
+                      if (!showIncompleteFeedbackList)
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              showIncompleteFeedbackList = true;
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFC7B7A3),
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size.fromHeight(40),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
+                          child: const Text('미작성 피드백 바로가기'),
                         ),
-                        child: const Text('미작성 피드백 바로가기'),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -265,11 +284,11 @@ class _ClassInfoCardState extends State<ClassInfoCard>
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: Colors.transparent, // 원의 배경을 투명하게 설정
+                color: Colors.transparent,
                 border: Border.all(
-                  color: currentThemeColor.withOpacity(0.2), // 테두리에 투명도 적용
+                  color: currentThemeColor.withOpacity(0.2),
                   width: 1,
-                ), // 테두리 추가
+                ),
                 shape: BoxShape.circle,
               ),
               child: Stack(
@@ -283,7 +302,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                         painter: AnimatedWavePainter(
                           progress: widget.completionRate,
                           animation: _controller,
-                          waveColor: currentThemeColor, // 물결 애니메이션에 테마 색상 적용
+                          waveColor: currentThemeColor,
                         ),
                       );
                     },
