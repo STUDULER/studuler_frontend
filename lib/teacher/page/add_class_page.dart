@@ -207,7 +207,7 @@ class _AddClassPageState extends State<AddClassPage> {
                             inputTile: StudentNameInputTile(
                               currIndex: currIndex,
                               positionIndex: 1,
-                              studentNameController: classNameController,
+                              studentNameController: studentNameController,
                               beforeButton: beforeButton,
                               nextButton: nextButton,
                             ),
