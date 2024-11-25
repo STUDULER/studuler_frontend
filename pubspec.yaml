@@ -43,6 +43,9 @@ dependencies:
   card_swiper: ^3.0.1
   flutter_rating_bar: ^4.0.1
   table_calendar: ^3.1.2
+  board_datetime_picker: ^2.1.6
+  gap: ^3.0.1
+  jiffy: ^6.3.1
 
 dev_dependencies:
   flutter_test:

@@ -33,8 +33,8 @@ class _ClassThemeColorInputTileState extends State<ClassThemeColorInputTile> {
     const Color(0xFFDDBCFF), // Lavender shade
     const Color(0xFFFCCFCF), // Pink shade
     const Color(0xFFD9D9D9), // Light Gray shade
-    // const Color(0xFF545454), // Dark Gray shade
-    // const Color(0xFFB28F65), // Brown shade
+    const Color(0xFF545454), // Dark Gray shade
+    const Color(0xFFB28F65), // Brown shade
   ];
 
   @override
@@ -43,28 +43,36 @@ class _ClassThemeColorInputTileState extends State<ClassThemeColorInputTile> {
       child: widget.currIndex == widget.positionIndex
           ? Column(
               children: [
-                Wrap(
-                  spacing: 8.0,
-                  children: List.generate(
-                    themeColors.length,
-                    (index) => GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          widget.themeColorController.text = "$index";
-                        });
-                      },
-                      child: CircleAvatar(
-                        backgroundColor: themeColors.elementAt(index),
-                        radius: 15,
-                        child: widget.themeColorController.text == "$index"
-                            ? const Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 16,
-                              )
-                            : null,
+                const SizedBox(
+                  height: 10,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(
+                          5,
+                          (index) => selectableColorCircle(
+                            index,
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(
+                          5,
+                          (index) => selectableColorCircle(
+                            index + 5,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(
@@ -83,6 +91,27 @@ class _ClassThemeColorInputTileState extends State<ClassThemeColorInputTile> {
               ],
             )
           : const SizedBox.shrink(),
+    );
+  }
+
+  GestureDetector selectableColorCircle(int index) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          widget.themeColorController.text = "$index";
+        });
+      },
+      child: CircleAvatar(
+        backgroundColor: themeColors.elementAt(index),
+        radius: 15,
+        child: widget.themeColorController.text == "$index"
+            ? const Icon(
+                Icons.check,
+                color: Colors.white,
+                size: 16,
+              )
+            : null,
+      ),
     );
   }
 }
