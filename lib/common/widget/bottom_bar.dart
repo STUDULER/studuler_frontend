@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:studuler/common/page/teacher_home_page.dart';
-import 'package:studuler/common/page/teacher_schedule_page.dart';
-import 'package:studuler/common/page/teacher_settlement_page.dart';
 
+import '../../teacher/page/teacher_schedule_per_class_page.dart';
 import '../page/drawer_page.dart';
+import '../page/teacher_home_page.dart';
+import '../page/teacher_schedule_page.dart';
+import '../page/teacher_settlement_page.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
@@ -14,24 +15,38 @@ class BottomBar extends StatefulWidget {
 
 class _BottomBarState extends State<BottomBar> {
   int _selectedIndex = 0;
-
-  final List<Widget> _widgetOptions = <Widget>[
-    const TeacherSchedulePage(),
-    const TeacherHomePage(),
-    const TeacherSettlementPage(),
-  ];
+  bool perClassMode = false;
 
   void _onItemTapped(int index) {
+    perClassMode = false;
     setState(() {
       _selectedIndex = index;
     });
   }
 
+  void goToTeaccherSchedulPerClassPage() {
+    perClassMode = true;
+    setState(() {
+      _selectedIndex = 0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final List<Widget> widgetOptions = <Widget>[
+      if (perClassMode)
+        const TeacherSchedulePerClassPage()
+      else
+        const TeacherSchedulePage(),
+      TeacherHomePage(
+        goToPerClassPage: goToTeaccherSchedulPerClassPage,
+      ),
+      const TeacherSettlementPage(),
+    ];
+
     return Scaffold(
       body: SafeArea(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,

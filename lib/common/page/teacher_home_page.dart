@@ -8,7 +8,12 @@ import '../section/class_info_item.dart';
 import '../widget/background.dart';
 
 class TeacherHomePage extends StatefulWidget {
-  const TeacherHomePage({super.key});
+  const TeacherHomePage({
+    super.key,
+    required this.goToPerClassPage,
+  });
+
+  final VoidCallback goToPerClassPage;
 
   @override
   State<TeacherHomePage> createState() => _TeacherHomePageState();
@@ -161,6 +166,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                               updatedThemeColor; // 테마 색상 업데이트
                         });
                       },
+                      goToPerClassPage: widget.goToPerClassPage,
                     );
                   },
                   loop: false, // 마지막 카드에서 첫 번째 카드로 넘어가지 않도록 설정

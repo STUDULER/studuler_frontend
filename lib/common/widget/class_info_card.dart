@@ -15,10 +15,11 @@ class ClassInfoCard extends StatefulWidget {
   final double completionRate;
   final Color themeColor; // 테마 색상 추가
   final Function(
-      String title,
-      List<ClassInfoItem> infoItems,
-      Color themeColor,
-      ) onUpdate;
+    String title,
+    List<ClassInfoItem> infoItems,
+    Color themeColor,
+  ) onUpdate;
+  final VoidCallback goToPerClassPage;
 
   const ClassInfoCard({
     required this.title,
@@ -29,6 +30,7 @@ class ClassInfoCard extends StatefulWidget {
     required this.completionRate,
     required this.themeColor, // 초기 테마 색상
     required this.onUpdate,
+    required this.goToPerClassPage,
     super.key,
   });
 
@@ -72,7 +74,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     sessionCountController =
         TextEditingController(text: widget.infoItems[5].value);
     nextPaymentDate =
-    widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
+        widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
     currentThemeColor = widget.themeColor; // 초기 테마 색상 설정
   }
 
@@ -184,13 +186,18 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                         ],
                       ),
                       const SizedBox(height: 50),
-                      Text(
-                        titleController.text,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                      GestureDetector(
+                        onTap: () {
+                          widget.goToPerClassPage();
+                        },
+                        child: Text(
+                          titleController.text,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
                       Row(
@@ -252,7 +259,8 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                             }).toList(),
                           ),
                         ),
-                      if (!showIncompleteFeedbackList) const SizedBox(height: 16),
+                      if (!showIncompleteFeedbackList)
+                        const SizedBox(height: 16),
                       if (!showIncompleteFeedbackList)
                         ElevatedButton(
                           onPressed: () {
