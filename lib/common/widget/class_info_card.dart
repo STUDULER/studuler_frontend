@@ -19,7 +19,7 @@ class ClassInfoCard extends StatefulWidget {
     List<ClassInfoItem> infoItems,
     Color themeColor,
   ) onUpdate;
-  final VoidCallback goToPerClassPage;
+  final Function(String) goToPerClassPage;
 
   const ClassInfoCard({
     required this.title,
@@ -188,7 +188,9 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                       const SizedBox(height: 50),
                       GestureDetector(
                         onTap: () {
-                          widget.goToPerClassPage();
+                          widget.goToPerClassPage(
+                            titleController.text,
+                          );
                         },
                         child: Text(
                           titleController.text,
@@ -246,8 +248,12 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                             runSpacing: 16.0,
                             children: widget.infoItems.map((item) {
                               return SizedBox(
-                                width: (MediaQuery.of(context).size.width * 0.9 - 48) / 2,
-                                height: MediaQuery.of(context).size.height * 0.08,
+                                width:
+                                    (MediaQuery.of(context).size.width * 0.9 -
+                                            48) /
+                                        2,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.08,
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Padding(

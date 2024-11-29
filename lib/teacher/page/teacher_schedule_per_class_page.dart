@@ -8,7 +8,13 @@ import '../../main.dart';
 import '../section/calendar_month_with_some_weeks_of_next_month.dart';
 
 class TeacherSchedulePerClassPage extends StatefulWidget {
-  const TeacherSchedulePerClassPage({Key? key}) : super(key: key);
+  const TeacherSchedulePerClassPage({
+    super.key,
+    required this.className,
+  });
+
+  final String className;
+  // final int classId;
 
   @override
   State<TeacherSchedulePerClassPage> createState() =>
@@ -85,8 +91,8 @@ class _TeacherSchedulePerClassPageState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '전체 일정',
+                Text(
+                  widget.className,
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,

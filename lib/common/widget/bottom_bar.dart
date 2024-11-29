@@ -15,7 +15,9 @@ class BottomBar extends StatefulWidget {
 
 class _BottomBarState extends State<BottomBar> {
   int _selectedIndex = 0;
+
   bool perClassMode = false;
+  String className = "";
 
   void _onItemTapped(int index) {
     perClassMode = false;
@@ -24,8 +26,9 @@ class _BottomBarState extends State<BottomBar> {
     });
   }
 
-  void goToTeaccherSchedulPerClassPage() {
+  void goToTeaccherSchedulPerClassPage(String className) {
     perClassMode = true;
+    this.className = className;
     setState(() {
       _selectedIndex = 0;
     });
@@ -35,7 +38,7 @@ class _BottomBarState extends State<BottomBar> {
   Widget build(BuildContext context) {
     final List<Widget> widgetOptions = <Widget>[
       if (perClassMode)
-        const TeacherSchedulePerClassPage()
+        TeacherSchedulePerClassPage(className: className,)
       else
         const TeacherSchedulePage(),
       TeacherHomePage(
