@@ -199,7 +199,8 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
                   bottomSheetController: bottomSheetController,
                   maxBottomSheetFractionalValue: maxBottomSheetFractionalValue,
                   selectedDate: widget.selectedDate,
-                  classFeedback: widget.classFeedback,
+                  classFeedback: widget.classFeedback, 
+                  classDay: classDays,
                 ),
               ],
         );

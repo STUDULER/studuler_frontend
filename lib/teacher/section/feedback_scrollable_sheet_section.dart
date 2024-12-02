@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:jiffy/jiffy.dart';
 
 import '../../common/http/http_service.dart';
+import '../../common/model/class_day.dart';
 import '../../common/model/class_feedback.dart';
 import '../../common/widget/auth_text_field.dart';
 
@@ -14,12 +15,14 @@ class FeedbackScrollableSheetSection extends StatefulWidget {
     required this.maxBottomSheetFractionalValue,
     required this.selectedDate,
     required this.classFeedback,
+    required this.classDay,
   });
 
   final ValueNotifier<Jiffy> selectedDate;
   final ValueNotifier<ClassFeedback?> classFeedback;
   final DraggableScrollableController bottomSheetController;
   final double maxBottomSheetFractionalValue;
+  final List<ClassDay> classDay;
 
   @override
   State<FeedbackScrollableSheetSection> createState() =>
@@ -88,6 +91,19 @@ class _FeedbackScrollableSheetSectionState
               ClassFeedback? feedback,
               Widget? child,
             ) {
+              bool isClassDay = false;
+              for (ClassDay element in widget.classDay) {
+                if (element.day
+                    .isSame(widget.selectedDate.value, unit: Unit.day)) {
+                  isClassDay = true;
+                  break;
+                }
+              }
+              if (isClassDay == false) {
+                return const Center(
+                  child: Text("수업이 없는 날이에요."),
+                );
+              }
               if (feedback == null) return const SizedBox.shrink();
               welldoneController.text = feedback.workdone;
               attitudeController.text = feedback.attitude;
