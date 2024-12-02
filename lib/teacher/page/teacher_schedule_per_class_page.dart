@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:jiffy/jiffy.dart';
 
+import '../../common/http/http_service.dart';
+import '../../common/model/class_feedback.dart';
 import '../../common/section/calendar_date_section.dart';
 import '../../common/section/calendar_month_section.dart';
 import '../../common/widget/background.dart';
@@ -23,6 +25,8 @@ class TeacherSchedulePerClassPage extends StatefulWidget {
 
 class _TeacherSchedulePerClassPageState
     extends State<TeacherSchedulePerClassPage> {
+  final httpService = HttpService();
+
   final sidePadding = const EdgeInsets.symmetric(horizontal: 12);
 
   final PageController pageController = PageController(
@@ -33,10 +37,16 @@ class _TeacherSchedulePerClassPageState
 
   final weekMode = ValueNotifier<bool>(false);
   final selectedDate = ValueNotifier<Jiffy>(Jiffy.now());
+  final classFeedback = ValueNotifier<ClassFeedback?>(null);
 
   @override
   void initState() {
     super.initState();
+    selectedDate.addListener(() async {
+      classFeedback.value = await httpService.fetchClassFeedback(
+        date: selectedDate.value,
+      );
+    });
   }
 
   @override
@@ -160,6 +170,7 @@ class _TeacherSchedulePerClassPageState
                                       someWeeksOfNextMonth: true,
                                       weekMode: weekMode,
                                       selectedDate: selectedDate, 
+                                      classFeedback: classFeedback,
                                     );
                                   },
                                   onPageChanged: (value) async {

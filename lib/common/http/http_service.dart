@@ -5,6 +5,7 @@ import 'package:jiffy/jiffy.dart';
 import 'package:studuler/common/auth/oauth_user_dto.dart';
 
 import '../model/class_day.dart';
+import '../model/class_feedback.dart';
 
 class HttpService {
   final Dio call = Dio();
@@ -219,5 +220,33 @@ class HttpService {
         colorIdx: 0,
       ),
     ];
+  }
+
+  bool toggle = false;
+  Future<ClassFeedback> fetchClassFeedback({
+    required Jiffy date,
+  }) async {
+    await Future.delayed(Durations.long1);
+    print("toggle");
+    toggle = !toggle;
+    if (toggle) {
+      return ClassFeedback(
+        date: date.dateTime,
+        workdone: "굳굳굳",
+        attitude: "좋은 태도",
+        homework: 2,
+        memo: "최고임",
+        rate: 10,
+      );
+    } else {
+      return ClassFeedback(
+        date: date.dateTime,
+        workdone: "최악 또 최악",
+        attitude: "이루 말할 수 없는 최악",
+        homework: 0,
+        memo: "과외 그만 둘 거",
+        rate: 0,
+      );
+    }
   }
 }
