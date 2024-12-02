@@ -43,9 +43,11 @@ class _TeacherSchedulePerClassPageState
   void initState() {
     super.initState();
     selectedDate.addListener(() async {
-      classFeedback.value = await httpService.fetchClassFeedback(
-        date: selectedDate.value,
-      );
+      if (weekMode.value == true) {
+        classFeedback.value = await httpService.fetchClassFeedback(
+          date: selectedDate.value,
+        );
+      }
     });
   }
 
@@ -169,7 +171,7 @@ class _TeacherSchedulePerClassPageState
                                       date: date.add(months: index - 2400),
                                       someWeeksOfNextMonth: true,
                                       weekMode: weekMode,
-                                      selectedDate: selectedDate, 
+                                      selectedDate: selectedDate,
                                       classFeedback: classFeedback,
                                     );
                                   },
