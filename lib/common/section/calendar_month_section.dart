@@ -14,7 +14,7 @@ class CalendarMonthSection extends StatefulWidget {
     required this.date,
     this.someWeeksOfNextMonth = false,
     required this.weekMode,
-    required this.selectedDate, 
+    required this.selectedDate,
     required this.classFeedback,
   });
 
@@ -174,6 +174,11 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
                         return weekSections.elementAt(index);
                       }
                       return CalendarWeekSection(
+                        onTap: (int index, Jiffy date) {
+                          if (widget.weekMode.value == true) {
+                            widget.selectedDate.value = date;
+                          }
+                        },
                         month: selecttedDate.month,
                         startDayOfWeek: selecttedDate.startOf(Unit.week),
                         classDays: classDays,
@@ -186,7 +191,7 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
                 FeedbackScrollableSheetSection(
                   bottomSheetController: bottomSheetController,
                   maxBottomSheetFractionalValue: maxBottomSheetFractionalValue,
-                  selectedDate: widget.selectedDate, 
+                  selectedDate: widget.selectedDate,
                   classFeedback: widget.classFeedback,
                 ),
               ],
