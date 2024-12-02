@@ -1,6 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:studuler/common/auth/oauth_user_dto.dart';
+
+import '../model/class_day.dart';
 
 class HttpService {
   final Dio call = Dio();
@@ -182,5 +186,38 @@ class HttpService {
     // );
     // if (result.statusCode != 201) return null;
     // return result.data['feedbackId'];
+  }
+
+  Future<List<ClassDay>> fetchClassScheduleOFMonth({
+    required int classId,
+    required Jiffy date,
+  }) async {
+    await Future.delayed(Durations.medium1);
+    return [
+      ClassDay(
+        classId: classId,
+        day: Jiffy.parseFromList([date.year, date.month, 2]),
+        isPayDay: false,
+        colorIdx: 0,
+      ),
+      ClassDay(
+        classId: classId,
+        day: Jiffy.parseFromList([date.year, date.month, 9]),
+        isPayDay: false,
+        colorIdx: 0,
+      ),
+      ClassDay(
+        classId: classId,
+        day: Jiffy.parseFromList([date.year, date.month, 16]),
+        isPayDay: false,
+        colorIdx: 0,
+      ),
+      ClassDay(
+        classId: classId,
+        day: Jiffy.parseFromList([date.year, date.month, 23]),
+        isPayDay: true,
+        colorIdx: 0,
+      ),
+    ];
   }
 }

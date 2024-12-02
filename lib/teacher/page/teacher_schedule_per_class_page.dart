@@ -3,9 +3,9 @@ import 'package:gap/gap.dart';
 import 'package:jiffy/jiffy.dart';
 
 import '../../common/section/calendar_date_section.dart';
+import '../../common/section/calendar_month_section.dart';
 import '../../common/widget/background.dart';
 import '../../main.dart';
-import '../section/calendar_month_with_some_weeks_of_next_month.dart';
 
 class TeacherSchedulePerClassPage extends StatefulWidget {
   const TeacherSchedulePerClassPage({
@@ -23,11 +23,21 @@ class TeacherSchedulePerClassPage extends StatefulWidget {
 
 class _TeacherSchedulePerClassPageState
     extends State<TeacherSchedulePerClassPage> {
+  final sidePadding = const EdgeInsets.symmetric(horizontal: 12);
+
   final PageController pageController = PageController(
     initialPage: 2400,
   );
   Jiffy date = Jiffy.now();
   final currPageIndex = ValueNotifier<int>(2400);
+
+  final weekMode = ValueNotifier<bool>(false);
+  final selectedDate = ValueNotifier<Jiffy>(Jiffy.now());
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -37,40 +47,6 @@ class _TeacherSchedulePerClassPageState
 
   @override
   Widget build(BuildContext context) {
-    // 클래스 데이터 정의
-    final classData = [
-      {
-        'title': '대치동 수학 과외',
-        'code': 'REK45J2F',
-        'completionRate': 3 / 8,
-        'themeColor': const Color(0xFFB5C18E), // 수업 코드에 따른 색상
-        'infoItems': [
-          {'icon': Icons.person, 'title': '학생 이름', 'value': '홍길동'},
-          {'icon': Icons.access_time, 'title': '회당 시간', 'value': '3시간'},
-          {'icon': Icons.calendar_today, 'title': '요일', 'value': '월/수/금'},
-          {'icon': Icons.payment, 'title': '정산 방법', 'value': '선불'},
-          {'icon': Icons.attach_money, 'title': '시급', 'value': '12500원'},
-          {'icon': Icons.repeat, 'title': '수업 횟수', 'value': '8회'},
-          {'icon': Icons.calendar_today, 'title': '다음 정산일', 'value': '9월 18일'},
-        ],
-      },
-      {
-        'title': '서초동 영어 과외',
-        'code': 'ENG12345',
-        'completionRate': 3 / 4,
-        'themeColor': const Color(0xFFFCCFCF), // 수업 코드에 따른 색상
-        'infoItems': [
-          {'icon': Icons.person, 'title': '학생 이름', 'value': '이몽룡'},
-          {'icon': Icons.access_time, 'title': '회당 시간', 'value': '2시간'},
-          {'icon': Icons.calendar_today, 'title': '요일', 'value': '화/목'},
-          {'icon': Icons.payment, 'title': '정산 방법', 'value': '후불'},
-          {'icon': Icons.attach_money, 'title': '시급', 'value': '15000원'},
-          {'icon': Icons.repeat, 'title': '수업 횟수', 'value': '4회'},
-          {'icon': Icons.calendar_today, 'title': '다음 정산일', 'value': '10월 10일'},
-        ],
-      },
-    ];
-
     return Scaffold(
       body: Stack(
         children: [
@@ -104,47 +80,59 @@ class _TeacherSchedulePerClassPageState
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        padding: sidePadding,
                         child: Row(
                           children: [
-                            ValueListenableBuilder<int>(
-                              valueListenable: currPageIndex,
-                              builder: (BuildContext context, int value,
-                                  Widget? child) {
-                                final displayDate = date.add(
-                                  months: currPageIndex.value - 2400,
-                                );
+                            ValueListenableBuilder<Jiffy>(
+                              valueListenable: selectedDate,
+                              builder: (
+                                BuildContext context,
+                                Jiffy value,
+                                Widget? child,
+                              ) {
                                 return Text(
-                                  "${displayDate.year}년 ${displayDate.month}월",
+                                  "${value.year}년 ${value.month}월",
                                 );
                               },
                               // child: Text(displayDate.MMMMEEEEd)
                             ),
                             const Spacer(),
-                            GestureDetector(
-                              onTap: () {
-                                pageController.animateToPage(
-                                  currPageIndex.value - 1,
-                                  duration: Durations.long1,
-                                  curve: Curves.easeIn,
-                                );
+                            ValueListenableBuilder<bool>(
+                              valueListenable: weekMode,
+                              builder: (context, weekMode, child) {
+                                if (weekMode) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      selectedDate.value =
+                                          selectedDate.value.add(weeks: -1);
+                                    },
+                                    child: const Icon(
+                                      Icons.keyboard_arrow_left_outlined,
+                                    ),
+                                  );
+                                } else {
+                                  return prevMonthButton();
+                                }
                               },
-                              child: const Icon( 
-                                Icons.keyboard_arrow_up_outlined,
-                              ),
                             ),
                             const Gap(12),
-                            GestureDetector(
-                              onTap: () {
-                                pageController.animateToPage(
-                                  currPageIndex.value + 1,
-                                  duration: Durations.long1,
-                                  curve: Curves.easeIn,
-                                );
+                            ValueListenableBuilder<bool>(
+                              valueListenable: weekMode,
+                              builder: (context, weekMode, child) {
+                                if (weekMode) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      selectedDate.value =
+                                          selectedDate.value.add(weeks: 1);
+                                    },
+                                    child: const Icon(
+                                      Icons.keyboard_arrow_right_outlined,
+                                    ),
+                                  );
+                                } else {
+                                  return nextMonthButton();
+                                }
                               },
-                              child: const Icon(
-                                Icons.keyboard_arrow_down_outlined,
-                              ),
                             ),
                           ],
                         ),
@@ -167,11 +155,21 @@ class _TeacherSchedulePerClassPageState
                                   scrollDirection: Axis.vertical,
                                   controller: pageController,
                                   itemBuilder: (context, index) {
-                                    return CalendarMonthWithSomeWeeksOfNextMonth(
+                                    return CalendarMonthSection(
                                       date: date.add(months: index - 2400),
+                                      someWeeksOfNextMonth: true,
+                                      weekMode: weekMode,
+                                      selectedDate: selectedDate, 
                                     );
                                   },
-                                  onPageChanged: (value) {
+                                  onPageChanged: (value) async {
+                                    if (currPageIndex.value > value) {
+                                      selectedDate.value =
+                                          selectedDate.value.add(months: -1);
+                                    } else {
+                                      selectedDate.value =
+                                          selectedDate.value.add(months: 1);
+                                    }
                                     currPageIndex.value = value;
                                   },
                                 ),
@@ -187,6 +185,36 @@ class _TeacherSchedulePerClassPageState
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  GestureDetector nextMonthButton() {
+    return GestureDetector(
+      onTap: () {
+        pageController.animateToPage(
+          currPageIndex.value + 1,
+          duration: Durations.long1,
+          curve: Curves.easeIn,
+        );
+      },
+      child: const Icon(
+        Icons.keyboard_arrow_down_outlined,
+      ),
+    );
+  }
+
+  GestureDetector prevMonthButton() {
+    return GestureDetector(
+      onTap: () {
+        pageController.animateToPage(
+          currPageIndex.value - 1,
+          duration: Durations.long1,
+          curve: Curves.easeIn,
+        );
+      },
+      child: const Icon(
+        Icons.keyboard_arrow_up_outlined,
       ),
     );
   }
