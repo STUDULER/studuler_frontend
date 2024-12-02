@@ -7,19 +7,23 @@ import '../widget/day_cell.dart';
 class CalendarWeekSection extends StatelessWidget {
   const CalendarWeekSection({
     super.key,
+    required this.classId,
     required this.month,
     required this.startDayOfWeek,
     required this.classDays,
     this.opacity = 1.0,
     this.onTap,
+    this.afterAddOrDeleteClassDay,
   });
 
+  final int classId;
   final int month;
   final Jiffy startDayOfWeek;
   final List<ClassDay> classDays;
   final double opacity;
 
   final Function? onTap;
+  final Function(Jiffy)? afterAddOrDeleteClassDay;
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +37,13 @@ class CalendarWeekSection extends StatelessWidget {
           );
 
           return DayCell(
+            classId: classId,
             onTap: onTap,
             date: date,
             activated: date.month == month,
             opacity: opacity,
-            classDay: (idx != -1) ? classDays.elementAt(idx) : null,
+            classDay: (idx != -1) ? classDays.elementAt(idx) : null, 
+            afterAddOrDeleteClassDay: afterAddOrDeleteClassDay,
           );
         },
       ),

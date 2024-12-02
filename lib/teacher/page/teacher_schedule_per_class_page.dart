@@ -168,6 +168,7 @@ class _TeacherSchedulePerClassPageState
                                   controller: pageController,
                                   itemBuilder: (context, index) {
                                     return CalendarMonthSection(
+                                      classId: 0,
                                       date: date.add(months: index - 2400),
                                       someWeeksOfNextMonth: true,
                                       weekMode: weekMode,

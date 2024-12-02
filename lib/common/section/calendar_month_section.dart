@@ -11,13 +11,15 @@ import 'calendar_week_section.dart';
 class CalendarMonthSection extends StatefulWidget {
   const CalendarMonthSection({
     super.key,
+    required this.classId,
     required this.date,
     this.someWeeksOfNextMonth = false,
     required this.weekMode,
     required this.selectedDate,
-    required this.classFeedback,
+    required this.classFeedback, 
   });
 
+  final int classId;
   final Jiffy date;
   final bool? someWeeksOfNextMonth;
   final ValueNotifier<bool> weekMode;
@@ -106,6 +108,8 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
               });
             }
           },
+          afterAddOrDeleteClassDay: fetchClassDays,
+          classId: widget.classId,
           month: widget.date.month,
           startDayOfWeek:
               widget.date.startOf(Unit.month).startOf(Unit.week).add(weeks: i),
@@ -122,6 +126,7 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
         List.generate(
           numOfSomeWeeks,
           (index) => CalendarWeekSection(
+            classId: widget.classId,
             month: nextDate.month,
             startDayOfWeek: nextDate
                 .startOf(Unit.month)
@@ -179,6 +184,7 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
                             widget.selectedDate.value = date;
                           }
                         },
+                        classId: widget.classId,
                         month: selecttedDate.month,
                         startDayOfWeek: selecttedDate.startOf(Unit.week),
                         classDays: classDays,

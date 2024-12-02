@@ -194,32 +194,51 @@ class HttpService {
     required Jiffy date,
   }) async {
     await Future.delayed(Durations.medium1);
-    return [
-      ClassDay(
-        classId: classId,
-        day: Jiffy.parseFromList([date.year, date.month, 2]),
-        isPayDay: false,
-        colorIdx: 0,
-      ),
-      ClassDay(
-        classId: classId,
-        day: Jiffy.parseFromList([date.year, date.month, 9]),
-        isPayDay: false,
-        colorIdx: 0,
-      ),
-      ClassDay(
-        classId: classId,
-        day: Jiffy.parseFromList([date.year, date.month, 16]),
-        isPayDay: false,
-        colorIdx: 0,
-      ),
-      ClassDay(
-        classId: classId,
-        day: Jiffy.parseFromList([date.year, date.month, 23]),
-        isPayDay: true,
-        colorIdx: 0,
-      ),
-    ];
+    print("fetch");
+    toggle = !toggle;
+    if (toggle) {
+      return [
+        ClassDay(
+          classId: classId,
+          day: Jiffy.parseFromList([date.year, date.month, 2]),
+          isPayDay: false,
+          colorIdx: 0,
+        ),
+        ClassDay(
+          classId: classId,
+          day: Jiffy.parseFromList([date.year, date.month, 9]),
+          isPayDay: false,
+          colorIdx: 0,
+        ),
+        ClassDay(
+          classId: classId,
+          day: Jiffy.parseFromList([date.year, date.month, 16]),
+          isPayDay: false,
+          colorIdx: 0,
+        ),
+        ClassDay(
+          classId: classId,
+          day: Jiffy.parseFromList([date.year, date.month, 23]),
+          isPayDay: true,
+          colorIdx: 0,
+        ),
+      ];
+    } else {
+      return [
+        ClassDay(
+          classId: classId,
+          day: Jiffy.parseFromList([date.year, date.month, 2]),
+          isPayDay: false,
+          colorIdx: 0,
+        ),
+        ClassDay(
+          classId: classId,
+          day: Jiffy.parseFromList([date.year, date.month, 9]),
+          isPayDay: false,
+          colorIdx: 0,
+        ),
+      ];
+    }
   }
 
   bool toggle = false;
@@ -248,5 +267,23 @@ class HttpService {
         rate: 0,
       );
     }
+  }
+
+  Future<bool> deleteClassDay({
+    required int classId,
+    required Jiffy date,
+  }) async {
+    await Future.delayed(Durations.long1);
+    print("delete");
+    return true;
+  }
+
+  Future<bool> addClassDay({
+    required int classId,
+    required Jiffy date,
+  }) async {
+    await Future.delayed(Durations.long1);
+    print("add");
+    return true;
   }
 }
