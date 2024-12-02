@@ -114,14 +114,52 @@ class HttpService {
     // return true;
   }
 
-  Future<String?> createClass({
+  // Future<String?> createClass({
+  //   required String className,
+  //   required String numOfClassesToPay,
+  //   required String classPrice,
+  //   required String classSchedule,
+  //   required String hoursPerClass,
+  //   required String howToPay,
+  //   required String themeColor,
+  // }) async {
+  //   // TMP
+  //   // print("dd");
+  //   // await Future.delayed(const Duration(milliseconds: 300));
+  //   // return "dummyClassId";
+  //   final userId = await _secureStorage.read(key: "userId");
+  //   // final jwt = await _secureStorage.read(key: "jwt");
+
+  //   final response = await call.post(
+  //     "/home/createClass",
+  //     data: {
+  //       "classname": "나의 이름은",
+  //       "studnentname": "단한번",
+  //       "startdate": "2020-09-03",
+  //       "period": 10,
+  //       "time": 2,
+  //       "day": "월/화/수",
+  //       "hourlyrate": 15000,
+  //       "prepay": 0,
+  //       "themecolor": 1,
+  //       "teacherid": userId,
+  //     },
+  //   );
+  //   if (response.statusCode != 201) return null;
+  //   // return response.data['classId'];
+  //   return "good";
+  // }
+
+   Future<String?> createClass({
     required String className,
-    required String numOfClassesToPay,
-    required String classPrice,
+    required int numOfClassesToPay,
+    required int classPrice,
     required String classSchedule,
-    required String hoursPerClass,
-    required String howToPay,
-    required String themeColor,
+    required int hoursPerClass,
+    required int howToPay,
+    required int themeColor,
+    required String studentName,
+    required String classStartDate,
   }) async {
     // TMP
     // print("dd");
@@ -133,22 +171,23 @@ class HttpService {
     final response = await call.post(
       "/home/createClass",
       data: {
-        "classname": "나의 이름은",
-        "studnentname": "단한번",
-        "startdate": "2020-09-03",
-        "period": 10,
-        "time": 2,
-        "day": "월/화/수",
-        "hourlyrate": 15000,
-        "prepay": 0,
-        "themecolor": 1,
-        "teacherid": userId,
+        "classname": className,  // 사용자 입력값
+        "studentname": studentName,  // 사용자 이름
+        "startdate": classStartDate,  // 시작 날짜
+        "period": numOfClassesToPay,  // 결제할 수업 개수
+        "time": hoursPerClass,  // 수업 시간
+        "day": classSchedule,  // 수업 일정
+        "hourlyrate": classPrice,  // 수업 가격
+        "prepay": howToPay,  // 결제 방법
+        "themecolor": themeColor,  // 테마 색상
+        "teacherid": userId,  // 유저 아이디
       },
     );
     if (response.statusCode != 201) return null;
     // return response.data['classId'];
     return "good";
   }
+
 
   Future<List<DateTime>> fetchIncompleteFeedbackDates({
     required String classId,

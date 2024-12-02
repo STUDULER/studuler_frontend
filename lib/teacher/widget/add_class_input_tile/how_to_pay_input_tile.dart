@@ -39,15 +39,15 @@ class _HowToPayInputTileState extends State<HowToPayInputTile> {
                     const Spacer(),
                     TextButton.icon(
                       style: const ButtonStyle(
-                        foregroundColor: MaterialStatePropertyAll(
+                        foregroundColor: WidgetStatePropertyAll(
                           Colors.black87,
                         ),
-                        overlayColor: MaterialStatePropertyAll(
+                        overlayColor: WidgetStatePropertyAll(
                           Colors.transparent,
                         ),
                       ),
                       onPressed: () {
-                        widget.onPressed("선불");
+                        widget.onPressed('1');
                         buttonActivated = 1;
                       },
                       icon: AnimatedContainer(
@@ -73,15 +73,15 @@ class _HowToPayInputTileState extends State<HowToPayInputTile> {
                     ),
                     TextButton.icon(
                       style: const ButtonStyle(
-                        foregroundColor: MaterialStatePropertyAll(
+                        foregroundColor: WidgetStatePropertyAll(
                           Colors.black87,
                         ),
-                        overlayColor: MaterialStatePropertyAll(
+                        overlayColor: WidgetStatePropertyAll(
                           Colors.transparent,
                         ),
                       ),
                       onPressed: () {
-                        widget.onPressed("후불");
+                        widget.onPressed('0');
                         buttonActivated = 2;
                       },
                       icon: AnimatedContainer(

@@ -113,12 +113,14 @@ class _AddClassPageState extends State<AddClassPage> {
 
         final String? classId = await httpService.createClass(
           className: classNameController.text,
-          numOfClassesToPay: numOfClassesToPayController.text,
-          classPrice: classPriceController.text,
+          studentName: studentNameController.text,
+          classStartDate: classStartDateController.text,
+          numOfClassesToPay: int.parse(numOfClassesToPayController.text),
+          hoursPerClass: int.parse(hoursPerClassController.text),
           classSchedule: classScheduleController.text,
-          hoursPerClass: hoursPerClassController.text,
-          howToPay: howToPayController.text,
-          themeColor: themeColorController.text,
+          classPrice: int.parse(classPriceController.text),
+          howToPay: int.parse(howToPayController.text),
+          themeColor: int.parse(themeColorController.text),
         );
         if (classId != null && classId.isNotEmpty) {
           if (context.mounted) {
@@ -260,7 +262,7 @@ class _AddClassPageState extends State<AddClassPage> {
                               currIndex: currIndex,
                               positionIndex: 5,
                               classStartDateController:
-                                  classStartDateController,
+                              classStartDateController,
                               beforeButton: beforeButton,
                               nextButton: nextButton,
                             ),
