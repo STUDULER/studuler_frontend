@@ -13,6 +13,7 @@ class CalendarWeekSection extends StatelessWidget {
     required this.classDays,
     this.opacity = 1.0,
     this.onTap,
+    this.allowLongPress = false,
     this.afterAddOrDeleteClassDay,
   });
 
@@ -23,6 +24,7 @@ class CalendarWeekSection extends StatelessWidget {
   final double opacity;
 
   final Function? onTap;
+  final bool allowLongPress;
   final Function(Jiffy)? afterAddOrDeleteClassDay;
 
   @override
@@ -42,7 +44,8 @@ class CalendarWeekSection extends StatelessWidget {
             date: date,
             activated: date.month == month,
             opacity: opacity,
-            classDay: (idx != -1) ? classDays.elementAt(idx) : null, 
+            classDay: (idx != -1) ? classDays.elementAt(idx) : null,
+            allowLongPress: allowLongPress,
             afterAddOrDeleteClassDay: afterAddOrDeleteClassDay,
           );
         },

@@ -108,6 +108,7 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
               });
             }
           },
+          allowLongPress: true,
           afterAddOrDeleteClassDay: fetchClassDays,
           classId: widget.classId,
           month: widget.date.month,

@@ -12,6 +12,7 @@ class DayCell extends StatelessWidget {
     required this.date,
     required this.activated,
     this.opacity = 1.0,
+    this.allowLongPress = false,
     this.classDay,
     this.onTap,
     this.afterAddOrDeleteClassDay,
@@ -21,6 +22,7 @@ class DayCell extends StatelessWidget {
 
   final Function? onTap;
   final Function(Jiffy)? afterAddOrDeleteClassDay;
+  final bool allowLongPress;
 
   final bool activated;
   final Jiffy date;
@@ -54,7 +56,7 @@ class DayCell extends StatelessWidget {
           }
         },
         onLongPress: () {
-          if (activated && opacity == 1.0) {
+          if (activated && opacity == 1.0 && allowLongPress) {
             showDialog(
               context: context,
               builder: (_) => AlertDialog(
