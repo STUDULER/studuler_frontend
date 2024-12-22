@@ -17,6 +17,8 @@ class CalendarMonthSection extends StatefulWidget {
     required this.weekMode,
     required this.selectedDate,
     required this.classFeedback, 
+    required this.classDays, 
+    required this.fetchClassDaysFunction,
   });
 
   final int classId;
@@ -25,6 +27,8 @@ class CalendarMonthSection extends StatefulWidget {
   final ValueNotifier<bool> weekMode;
   final ValueNotifier<Jiffy> selectedDate;
   final ValueNotifier<ClassFeedback?> classFeedback;
+  final List<ClassDay> classDays;
+  final Function(Jiffy) fetchClassDaysFunction;
 
   @override
   State<CalendarMonthSection> createState() => _CalendarMonthSectionState();
@@ -41,7 +45,6 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
       DraggableScrollableController();
   double? lastBottomSheetSize;
 
-  List<ClassDay> classDays = [];
   Jiffy lastFetchTime = Jiffy.now();
 
   @override
@@ -59,25 +62,6 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
         lastBottomSheetSize = null;
       }
     });
-    fetchClassDays(widget.date);
-    widget.selectedDate.addListener(() {
-      if (lastFetchTime.add(seconds: 1).isBefore(Jiffy.now())) {
-        fetchClassDays(widget.selectedDate.value);
-      }
-    });
-  }
-
-  void fetchClassDays(Jiffy date) async {
-    final fetchedClassDays = await httpService.fetchClassScheduleOFMonth(
-      classId: 0,
-      date: date,
-    );
-    lastFetchTime = Jiffy.now();
-    if (mounted) {
-      setState(() {
-        classDays = fetchedClassDays;
-      });
-    }
   }
 
   @override
@@ -109,12 +93,12 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
             }
           },
           allowLongPress: true,
-          afterAddOrDeleteClassDay: fetchClassDays,
+          afterAddOrDeleteClassDay: widget.fetchClassDaysFunction,
           classId: widget.classId,
           month: widget.date.month,
           startDayOfWeek:
               widget.date.startOf(Unit.month).startOf(Unit.week).add(weeks: i),
-          classDays: classDays,
+          classDays: widget.classDays,
         ),
       );
     }
@@ -188,7 +172,7 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
                         classId: widget.classId,
                         month: selecttedDate.month,
                         startDayOfWeek: selecttedDate.startOf(Unit.week),
-                        classDays: classDays,
+                        classDays: widget.classDays,
                       );
                     },
                   ),
@@ -199,8 +183,8 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
                   bottomSheetController: bottomSheetController,
                   maxBottomSheetFractionalValue: maxBottomSheetFractionalValue,
                   selectedDate: widget.selectedDate,
-                  classFeedback: widget.classFeedback, 
-                  classDay: classDays,
+                  classFeedback: widget.classFeedback,
+                  classDay: widget.classDays,
                 ),
               ],
         );

@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:jiffy/jiffy.dart';
 
 import '../../common/http/http_service.dart';
+import '../../common/model/class_day.dart';
 import '../../common/model/class_feedback.dart';
 import '../../common/section/calendar_date_section.dart';
 import '../../common/section/calendar_month_section.dart';
@@ -41,6 +42,7 @@ class _TeacherSchedulePerClassPageState
 
   @override
   void initState() {
+    fetchClassDays(selectedDate.value);
     super.initState();
     selectedDate.addListener(() async {
       if (weekMode.value == true) {
@@ -48,7 +50,21 @@ class _TeacherSchedulePerClassPageState
           date: selectedDate.value,
         );
       }
+      fetchClassDays(selectedDate.value);
     });
+  }
+
+  List<ClassDay> classDays = [];
+  void fetchClassDays(Jiffy date) async {
+    final fetchedClassDays = await httpService.fetchClassScheduleOFMonth(
+      classId: 0,
+      date: date,
+    );
+    if (mounted) {
+      setState(() {
+        classDays = fetchedClassDays;
+      });
+    }
   }
 
   @override
@@ -174,6 +190,8 @@ class _TeacherSchedulePerClassPageState
                                       weekMode: weekMode,
                                       selectedDate: selectedDate,
                                       classFeedback: classFeedback,
+                                      classDays: classDays, 
+                                      fetchClassDaysFunction: fetchClassDays,
                                     );
                                   },
                                   onPageChanged: (value) async {
