@@ -8,17 +8,19 @@ class CalendarWeekSection extends StatelessWidget {
   const CalendarWeekSection({
     super.key,
     required this.classId,
+    required this.selectedDate,
     required this.month,
     required this.startDayOfWeek,
     required this.classDays,
     this.opacity = 1.0,
     this.onTap,
     this.allowLongPress = false,
-    this.afterAddOrDeleteClassDay,
+    this.afterAddOrDeleteClassDay, 
   });
 
   final int classId;
   final int month;
+  final Jiffy selectedDate;
   final Jiffy startDayOfWeek;
   final List<ClassDay> classDays;
   final double opacity;
@@ -42,11 +44,12 @@ class CalendarWeekSection extends StatelessWidget {
             classId: classId,
             onTap: onTap,
             date: date,
+            selectedDate: selectedDate,
             activated: date.month == month,
             opacity: opacity,
             classDay: (idx != -1) ? classDays.elementAt(idx) : null,
             allowLongPress: allowLongPress,
-            afterAddOrDeleteClassDay: afterAddOrDeleteClassDay,
+            afterAddOrDeleteClassDay: afterAddOrDeleteClassDay, 
           );
         },
       ),

@@ -95,10 +95,11 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
           allowLongPress: true,
           afterAddOrDeleteClassDay: widget.fetchClassDaysFunction,
           classId: widget.classId,
+          selectedDate: widget.selectedDate.value,
           month: widget.date.month,
           startDayOfWeek:
               widget.date.startOf(Unit.month).startOf(Unit.week).add(weeks: i),
-          classDays: widget.classDays,
+          classDays: widget.classDays, 
         ),
       );
     }
@@ -113,12 +114,13 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
           (index) => CalendarWeekSection(
             classId: widget.classId,
             month: nextDate.month,
+            selectedDate: widget.selectedDate.value,
             startDayOfWeek: nextDate
                 .startOf(Unit.month)
                 .startOf(Unit.week)
                 .add(weeks: index),
             opacity: 0.33,
-            classDays: const [],
+            classDays: const [], 
           ),
         ),
       );
@@ -159,7 +161,7 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
                   height: componentHeight,
                   child: ValueListenableBuilder(
                     valueListenable: widget.selectedDate,
-                    builder: (context, selecttedDate, child) {
+                    builder: (context, selectedDate, child) {
                       if (widget.weekMode.value == false) {
                         return weekSections.elementAt(index);
                       }
@@ -170,9 +172,10 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
                           }
                         },
                         classId: widget.classId,
-                        month: selecttedDate.month,
-                        startDayOfWeek: selecttedDate.startOf(Unit.week),
-                        classDays: widget.classDays,
+                        month: selectedDate.month,
+                        selectedDate: selectedDate,
+                        startDayOfWeek: selectedDate.startOf(Unit.week),
+                        classDays: widget.classDays, 
                       );
                     },
                   ),

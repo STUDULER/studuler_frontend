@@ -10,6 +10,7 @@ class DayCell extends StatelessWidget {
     super.key,
     required this.classId,
     required this.date,
+    required this.selectedDate,
     required this.activated,
     this.opacity = 1.0,
     this.allowLongPress = false,
@@ -26,6 +27,7 @@ class DayCell extends StatelessWidget {
 
   final bool activated;
   final Jiffy date;
+  final Jiffy selectedDate;
   final double opacity;
 
   final ClassDay? classDay;
@@ -130,21 +132,18 @@ class DayCell extends StatelessWidget {
                                 onTap: () async {
                                   final httpService = HttpService();
                                   if (classDay == null) {
-                                    final rst = await httpService.addClassDay(
+                                    await httpService.addClassDay(
                                       classId: classId,
                                       date: date,
                                     );
-                                    print(rst);
                                     if (context.mounted) {
                                       Navigator.pop(context);
                                     }
                                   } else {
-                                    final rst =
-                                        await httpService.deleteClassDay(
+                                    await httpService.deleteClassDay(
                                       classId: classId,
                                       date: date,
                                     );
-                                    print(rst);
                                     if (context.mounted) {
                                       Navigator.pop(context);
                                     }
@@ -187,9 +186,11 @@ class DayCell extends StatelessWidget {
                   Container(
                     width: MediaQuery.sizeOf(context).width / 7,
                     decoration: BoxDecoration(
-                      color: date.isSame(Jiffy.now(), unit: Unit.day)
-                          ? const Color(0xffc7b7a3).withOpacity(0.6)
-                          : Colors.white,
+                      color: date.isSame(selectedDate, unit: Unit.day)
+                          ? const Color(0xffc7b7a3).withOpacity(1)
+                          : date.isSame(Jiffy.now(), unit: Unit.day)
+                              ? const Color(0xffc7b7a3).withOpacity(0.6)
+                              : Colors.white,
                       shape: BoxShape.circle,
                     ),
                     child: Center(
