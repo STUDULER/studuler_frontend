@@ -181,6 +181,9 @@ class _TeacherSchedulePerClassPageState
                               Expanded(
                                 child: PageView.builder(
                                   scrollDirection: Axis.vertical,
+                                  physics: weekMode.value
+                                      ? const NeverScrollableScrollPhysics()
+                                      : const BouncingScrollPhysics(),
                                   controller: pageController,
                                   itemBuilder: (context, index) {
                                     return CalendarMonthSection(
@@ -190,7 +193,7 @@ class _TeacherSchedulePerClassPageState
                                       weekMode: weekMode,
                                       selectedDate: selectedDate,
                                       classFeedback: classFeedback,
-                                      classDays: classDays, 
+                                      classDays: classDays,
                                       fetchClassDaysFunction: fetchClassDays,
                                     );
                                   },
