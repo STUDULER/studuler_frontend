@@ -233,7 +233,6 @@ class HttpService {
     required Jiffy date,
   }) async {
     await Future.delayed(Durations.medium1);
-    print("fetch");
     toggle = !toggle;
     if (toggle) {
       return [
@@ -285,7 +284,6 @@ class HttpService {
     required Jiffy date,
   }) async {
     await Future.delayed(Durations.long1);
-    print("toggle");
     toggle = !toggle;
     if (toggle) {
       return ClassFeedback(
