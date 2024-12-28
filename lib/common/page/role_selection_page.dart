@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 import '../section/yellow_background.dart';
 import 'login_page.dart';
@@ -17,11 +18,19 @@ class RoleSelectionPage extends StatelessWidget {
               const Spacer(
                 flex: 2,
               ),
-              Text(
+              const Text(
                 "STUDULER",
-                style: Theme.of(context).textTheme.displayLarge,
+                style: TextStyle(
+                  fontSize: 52,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const Text("당신의 역할을 선택해주세요"),
+              Text(
+                "당신의 역할을 선택해주세요",
+                style: TextStyle(
+                  color: Colors.grey.shade800,
+                ),
+              ),
               const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -41,14 +50,31 @@ class RoleSelectionPage extends StatelessWidget {
                         child: Container(
                           width: MediaQuery.sizeOf(context).width / 2.5,
                           height: MediaQuery.sizeOf(context).width / 2.5,
-                          decoration: const BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(128)),
-                            color: Colors.amber,
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(128),
+                            ),
+                            color: Colors.brown.shade300.withOpacity(0.6),
+                          ),
+                          child: SizedBox.expand(
+                            child: FittedBox(
+                              fit: BoxFit.fill,
+                              child: Center(
+                                child: Image.asset(
+                                  'assets/teacher.png',
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                      const Text("선생님"),
+                      const Gap(12),
+                      const Text(
+                        "선생님",
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
                     ],
                   ),
                   Column(
@@ -66,14 +92,26 @@ class RoleSelectionPage extends StatelessWidget {
                         child: Container(
                           width: MediaQuery.sizeOf(context).width / 2.5,
                           height: MediaQuery.sizeOf(context).width / 2.5,
-                          decoration: const BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(128)),
-                            color: Colors.amber,
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(128),
+                            ),
+                            color: Colors.brown.shade300.withOpacity(0.6),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              'assets/study.png',
+                            ),
                           ),
                         ),
                       ),
-                      const Text("학부모"),
+                      const Gap(12),
+                      const Text(
+                        "학부모",
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
                     ],
                   ),
                 ],
