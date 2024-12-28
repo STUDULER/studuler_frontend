@@ -240,12 +240,11 @@ class HttpService {
   }
 
   bool toggle = false;
-  Future<ClassFeedback> fetchClassFeedback({
+  Future<ClassFeedback?> fetchClassFeedback({
     required Jiffy date,
   }) async {
     await Future.delayed(Durations.long1);
-    toggle = !toggle;
-    if (toggle) {
+    if (date.isSame(Jiffy.parse("2024-12-02"), unit: Unit.day)) {
       return ClassFeedback(
         date: date.dateTime,
         workdone: "굳굳굳",
@@ -255,15 +254,28 @@ class HttpService {
         rate: 10,
       );
     } else {
-      return ClassFeedback(
-        date: date.dateTime,
-        workdone: "최악 또 최악",
-        attitude: "이루 말할 수 없는 최악",
-        homework: 0,
-        memo: "과외 그만 둘 거",
-        rate: 0,
-      );
+      return null;
     }
+    // toggle = !toggle;
+    // if (toggle) {
+    //   return ClassFeedback(
+    //     date: date.dateTime,
+    //     workdone: "굳굳굳",
+    //     attitude: "좋은 태도",
+    //     homework: 2,
+    //     memo: "최고임",
+    //     rate: 10,
+    //   );
+    // } else {
+    //   return ClassFeedback(
+    //     date: date.dateTime,
+    //     workdone: "최악 또 최악",
+    //     attitude: "이루 말할 수 없는 최악",
+    //     homework: 0,
+    //     memo: "과외 그만 둘 거",
+    //     rate: 0,
+    //   );
+    // }
   }
 
   Future<bool> deleteClassDay({
