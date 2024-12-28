@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../main.dart';
 import '../../teacher/page/teacher_schedule_per_class_page.dart';
 import '../page/drawer_page.dart';
 import '../page/teacher_home_page.dart';
@@ -38,7 +39,9 @@ class _BottomBarState extends State<BottomBar> {
   Widget build(BuildContext context) {
     final List<Widget> widgetOptions = <Widget>[
       if (perClassMode)
-        TeacherSchedulePerClassPage(className: className,)
+        TeacherSchedulePerClassPage(
+          className: className,
+        )
       else
         const TeacherSchedulePage(),
       TeacherHomePage(
@@ -47,30 +50,33 @@ class _BottomBarState extends State<BottomBar> {
       const TeacherSettlementPage(),
     ];
 
+    bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom != 0.0;
+
     return Scaffold(
-      body: SafeArea(
-        child: widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: const Color(0xFFC7B7A3), // 선택된 아이템의 색상
-        unselectedItemColor: Colors.grey, // 선택되지 않은 아이템의 색상
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.schedule),
-            label: '스케줄',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '홈',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.money),
-            label: '정산하기',
-          ),
-        ],
-      ),
+      key: mainScaffoldKey,
+      body: widgetOptions.elementAt(_selectedIndex),
+      bottomNavigationBar: isKeyboardOpen
+          ? null
+          : BottomNavigationBar(
+              currentIndex: _selectedIndex,
+              onTap: _onItemTapped,
+              selectedItemColor: const Color(0xFFC7B7A3), // 선택된 아이템의 색상
+              unselectedItemColor: Colors.grey, // 선택되지 않은 아이템의 색상
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.schedule),
+                  label: '스케줄',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: '홈',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.money),
+                  label: '정산하기',
+                ),
+              ],
+            ),
       endDrawer: const DrawerPage(),
     );
   }

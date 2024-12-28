@@ -31,6 +31,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: AnimatedSwitcher(
         duration: const Duration(seconds: 1),
         child: _showSplash ? Stack(
