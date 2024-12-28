@@ -314,8 +314,16 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
-    await Future.delayed(Durations.long1);
-    print("delete");
+    // await Future.delayed(Durations.long1);
+    // return true;
+    final response = await call.put(
+      "/each/deleteLesson",
+      data: {
+        "classId": classId,
+        "dateToDelete": _jiffyToFormat(date),
+      },
+    );
+    if (response.statusCode != 201) return false;
     return true;
   }
 
@@ -323,8 +331,22 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
-    await Future.delayed(Durations.long1);
-    print("add");
+    // await Future.delayed(Durations.long1);
+    // return true;
+    final response = await call.post(
+      "/each/addLesson",
+      data: {
+        "classId": classId,
+        "newDate": _jiffyToFormat(date),
+      },
+    );
+    if (response.statusCode != 201) return false;
     return true;
+  }
+
+  String _jiffyToFormat(Jiffy date) {
+    return date.format(
+      pattern: 'yyyy-M-dd',
+    );
   }
 }
