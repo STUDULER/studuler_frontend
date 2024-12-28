@@ -18,7 +18,15 @@ class AuthService {
 
   Future<OAuthUserDto?> signIn({
     required AuthServiceType authServiceType,
+    required bool role,
   }) async {
+    if (role == true) {
+      // 선생
+      await _secureStorage.write(key: "role", value: "teacher");
+    } else {
+      // 학생
+      await _secureStorage.write(key: "role", value: "student");
+    }
     switch (authServiceType) {
       case AuthServiceType.google:
         final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -120,5 +128,13 @@ class AuthService {
       await _secureStorage.deleteAll();
       return false;
     }
+  }
+
+  Future<bool> isTeacher() async {
+    final role = await _secureStorage.read(key: "role");
+    if (role == "teacher") {
+      return true;
+    }
+    return false;
   }
 }

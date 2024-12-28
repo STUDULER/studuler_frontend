@@ -69,6 +69,7 @@ class LoginPage extends StatelessWidget {
                 onTap: () async {
                   final result = await _authService.signIn(
                     authServiceType: AuthServiceType.kakao,
+                    role: isTeacher,
                   );
                   if (result == null) return;
                   if (!context.mounted) return;
@@ -87,6 +88,7 @@ class LoginPage extends StatelessWidget {
                 onTap: () async {
                   final result = await _authService.signIn(
                     authServiceType: AuthServiceType.google,
+                    role: isTeacher,
                   );
                   if (result == null) return;
                   if (!context.mounted) return;
