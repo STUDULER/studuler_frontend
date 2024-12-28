@@ -77,7 +77,7 @@ class _BottomBarState extends State<BottomBar> {
                 ),
               ],
             ),
-      endDrawer: const DrawerPage(),
+      endDrawer: DrawerPage(),
     );
   }
 }

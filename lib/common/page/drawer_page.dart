@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../auth/auth_service.dart';
+import 'role_selection_page.dart';
+
 class DrawerPage extends StatelessWidget {
-  const DrawerPage({super.key});
+  DrawerPage({super.key});
+
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +41,20 @@ class DrawerPage extends StatelessWidget {
             onTap: () {
               print("설정");
             },
-          )
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout_rounded),
+            title: const Text("로그아웃"),
+            onTap: () {
+              _authService.signOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const RoleSelectionPage(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
