@@ -5,22 +5,20 @@ import '../auth/auth_service.dart';
 import '../auth/auth_service_type.dart';
 import '../auth/oauth_user_dto.dart';
 import '../http/http_service.dart';
-import '../section/login_with_email_or_sign_in_section.dart';
-import '../section/sign_up_with_email_or_login_section.dart';
+import '../section/login_with_email_or_sign_up_with_email_section.dart';
 import '../section/yellow_background.dart';
+import '../widget/app_title.dart';
 import 'account_input_page.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({
     super.key,
     required this.isTeacher,
-    required this.showLoginWithEmail,
   });
 
   final HttpService _httpService = HttpService();
   final AuthService _authService = AuthService();
   final bool isTeacher;
-  final bool showLoginWithEmail;
 
   Future<void> handleSuccessAuthService(
     BuildContext context,
@@ -65,10 +63,7 @@ class LoginPage extends StatelessWidget {
               const Spacer(
                 flex: 2,
               ),
-              Text(
-                "STUDULER",
-                style: Theme.of(context).textTheme.displayLarge,
-              ),
+              const AppTitle(),
               const Spacer(),
               GestureDetector(
                 onTap: () async {
@@ -106,13 +101,9 @@ class LoginPage extends StatelessWidget {
               const SizedBox(
                 height: 16,
               ),
-              showLoginWithEmail
-                  ? LoginWithEmailOrSignInSection(
-                      isTeacher: isTeacher,
-                    )
-                  : SignUpWithEmailOrLoginSection(
-                      isTeacher: isTeacher,
-                    ),
+              LoginWithEmailOrSignUpWithEmailSection(
+                isTeacher: isTeacher,
+              ),
               const Spacer(
                 flex: 3,
               ),

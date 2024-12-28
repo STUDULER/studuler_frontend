@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:studuler/common/page/login_page.dart';
-import 'package:studuler/common/page/login_with_email_page.dart';
 
-class LoginWithEmailOrSignInSection extends StatelessWidget {
-  const LoginWithEmailOrSignInSection({
+import '../page/login_with_email_page.dart';
+import '../page/sign_up_with_email_page.dart';
+
+class LoginWithEmailOrSignUpWithEmailSection extends StatelessWidget {
+  const LoginWithEmailOrSignUpWithEmailSection({
     super.key,
     required this.isTeacher,
   });
@@ -41,13 +42,12 @@ class LoginWithEmailOrSignInSection extends StatelessWidget {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => LoginPage(
+              builder: (context) => SignUpWithEmailPage(
                 isTeacher: isTeacher,
-                showLoginWithEmail: false,
               ),
             ),
           ),
-          child: const Text("회원가입"),
+          child: const Text("이메일로 회원가입"),
         ),
         const Spacer(),
       ],

@@ -38,7 +38,7 @@ class RoleSelectionPage extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (context) => LoginPage(
                               isTeacher: true,
-                              showLoginWithEmail: true,
+                              // showLoginWithEmail: true,
                             ),
                           ),
                         ),
@@ -80,7 +80,7 @@ class RoleSelectionPage extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (context) => LoginPage(
                               isTeacher: false,
-                              showLoginWithEmail: true,
+                              // showLoginWithEmail: true,
                             ),
                           ),
                         ),
