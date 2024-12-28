@@ -40,7 +40,7 @@ class _SplashPageState extends State<SplashPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: AnimatedSwitcher(
-        duration: splashDuration,
+        duration: Durations.extralong1,
         child: _showSplash
             ? SizedBox(
                 width: MediaQuery.sizeOf(context).width,
