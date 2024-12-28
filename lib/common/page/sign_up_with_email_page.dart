@@ -4,6 +4,7 @@ import 'package:studuler/common/auth/oauth_user_dto.dart';
 import '../http/http_service.dart';
 import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
+import '../widget/app_title.dart';
 import '../widget/auth_text_field.dart';
 import 'account_input_page.dart';
 import 'login_with_email_page.dart';
@@ -63,10 +64,7 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                       const Spacer(
                         flex: 3,
                       ),
-                      Text(
-                        "STUDULER",
-                        style: Theme.of(context).textTheme.displayLarge,
-                      ),
+                      const AppTitle(),
                       const Spacer(),
                       Container(
                         width: MediaQuery.sizeOf(context).width,

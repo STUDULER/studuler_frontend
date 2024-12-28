@@ -3,6 +3,7 @@ import 'package:studuler/main.dart';
 
 import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
+import '../widget/app_title.dart';
 import '../widget/auth_text_field.dart';
 
 class LoginWithEmailPage extends StatefulWidget {
@@ -37,10 +38,7 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
                   const Spacer(
                     flex: 3,
                   ),
-                  Text(
-                    "STUDULER",
-                    style: Theme.of(context).textTheme.displayLarge,
-                  ),
+                  const AppTitle(),
                   const Spacer(),
                   Container(
                     width: MediaQuery.sizeOf(context).width,

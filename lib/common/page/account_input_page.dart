@@ -5,6 +5,7 @@ import '../auth/oauth_user_dto.dart';
 import '../http/http_service.dart';
 import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
+import '../widget/app_title.dart';
 import '../widget/auth_text_field.dart';
 import 'bank_selection_page.dart';
 
@@ -72,10 +73,7 @@ class _AccountInputPageState extends State<AccountInputPage> {
                   const Spacer(
                     flex: 3,
                   ),
-                  Text(
-                    "STUDULER",
-                    style: Theme.of(context).textTheme.displayLarge,
-                  ),
+                  const AppTitle(),
                   const Spacer(),
                   Container(
                     width: MediaQuery.sizeOf(context).width,
