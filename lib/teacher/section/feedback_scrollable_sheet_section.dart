@@ -84,14 +84,6 @@ class _FeedbackScrollableSheetSectionState
     super.initState();
   }
 
-  @override
-  void dispose() {
-    welldoneController.dispose();
-    attitudeController.dispose();
-    memoController.dispose();
-    super.dispose();
-  }
-
   Widget cancelButton() {
     return GestureDectectorHidingKeyboard(
       onTap: () {
