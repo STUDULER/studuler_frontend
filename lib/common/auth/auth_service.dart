@@ -10,6 +10,14 @@ import 'package:studuler/common/auth/oauth_user_dto.dart';
 import 'auth_service_type.dart';
 
 class AuthService {
+
+  AuthService._privateConstructor();
+  static final AuthService _instance = AuthService._privateConstructor();
+
+  factory AuthService() {
+    return _instance;
+  }
+  
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
     aOptions: AndroidOptions(
       encryptedSharedPreferences: true,
