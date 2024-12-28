@@ -183,6 +183,7 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
               }).toList() +
               [
                 FeedbackScrollableSheetSection(
+                  classId: widget.classId,
                   bottomSheetController: bottomSheetController,
                   maxBottomSheetFractionalValue: maxBottomSheetFractionalValue,
                   selectedDate: widget.selectedDate,
