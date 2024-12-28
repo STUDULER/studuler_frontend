@@ -16,10 +16,14 @@ class HttpService {
     ),
   );
 
-  HttpService() {
-    call.options.baseUrl = "http://13.209.171.206";
-    // call.options.baseUrl = "http://localhost:8080";
+  HttpService._privateConstructor() {
+    _instance.call.options.baseUrl = "http://13.209.171.206";
     _initializeInterceptors();
+  }
+  static final HttpService _instance = HttpService._privateConstructor();
+
+  factory HttpService() {
+    return _instance;
   }
 
   void _initializeInterceptors() {
