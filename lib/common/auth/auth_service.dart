@@ -22,19 +22,18 @@ class AuthService {
     switch (authServiceType) {
       case AuthServiceType.google:
         final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-        if (googleUser != null) {
-          await _secureStorage.write(key: 'isLoggedIn', value: 'true');
-          await _secureStorage.write(
-            key: "authServiceType",
-            value: "google",
-          );
-        }
+        if (googleUser == null) return null;
+        await _secureStorage.write(key: 'isLoggedIn', value: 'true');
+        await _secureStorage.write(
+          key: "authServiceType",
+          value: "google",
+        );
         print(googleUser);
         print("sign in");
         return OAuthUserDto(
-          username: googleUser?.displayName ?? "", 
+          username: googleUser.displayName ?? "",
           password: "",
-          mail: googleUser?.email ?? "",
+          mail: googleUser.email,
           image: 1,
         );
 
