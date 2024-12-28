@@ -187,8 +187,16 @@ class _FeedbackScrollableSheetSectionState
                 }
               }
               if (isClassDay == false) {
-                return const Center(
-                  child: Text("수업이 없는 날이에요."),
+                return Padding(
+                  padding: sidePadding,
+                  child: const Column(
+                    children: [
+                      Divider(),
+                      Gap(200),
+                      Text("수업이 없는 날이에요."),
+                      Gap(200),
+                    ],
+                  ),
                 );
               }
               final readOnly = feedback != null;
