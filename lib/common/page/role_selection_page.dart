@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 import '../section/yellow_background.dart';
+import '../widget/app_title.dart';
 import 'login_page.dart';
 
 class RoleSelectionPage extends StatelessWidget {
@@ -18,13 +19,7 @@ class RoleSelectionPage extends StatelessWidget {
               const Spacer(
                 flex: 2,
               ),
-              const Text(
-                "STUDULER",
-                style: TextStyle(
-                  fontSize: 52,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              const AppTitle(),
               Text(
                 "당신의 역할을 선택해주세요",
                 style: TextStyle(
