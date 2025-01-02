@@ -11,7 +11,7 @@ class IncompleteClassFeedback extends StatefulWidget {
     required this.backToClassInfo,
   });
 
-  final String classId;
+  final int classId;
   final String classTitle;
   final VoidCallback backToClassInfo;
 
@@ -24,32 +24,41 @@ class _IncompleteClassFeedbackState extends State<IncompleteClassFeedback> {
   final HttpService httpService = HttpService();
   List<DateTime> incompleteFeedbackDates = [];
   bool isLoading = false;
+  String? errorMessage;
 
   @override
   void initState() {
     super.initState();
-
-    () async {
-      await fetchIncompleteFeedbackDates();
-    }();
+    fetchIncompleteFeedbackDates();
   }
 
   Future<void> fetchIncompleteFeedbackDates() async {
     setState(() {
       isLoading = true;
+      errorMessage = null;
     });
 
-    // 테스트용 더미 데이터 생성
-    await Future.delayed(const Duration(seconds: 1)); // 비동기 테스트
-    final List<DateTime> result = List.generate(
-      30, // 더미 데이터 수 (30개로 설정)
-          (index) => DateTime.now().subtract(Duration(days: index)),
-    );
+    try {
+      debugPrint("widget.classId: ${widget.classId} (${widget.classId.runtimeType})");
 
-    setState(() {
-      isLoading = false;
-      incompleteFeedbackDates = result;
-    });
+      final List<DateTime> result =
+      await httpService.fetchIncompleteFeedbackDates(classId: widget.classId);
+
+      setState(() {
+        incompleteFeedbackDates = result;
+        isLoading = false;
+      });
+    } catch (e, stackTrace) {
+      // 터미널에 오류 출력
+      debugPrint("Error fetching incomplete feedback dates: $e");
+      debugPrint("Stack Trace: $stackTrace");
+
+      debugPrint("Error fetching incomplete feedback dates: $e");
+      setState(() {
+        isLoading = false;
+        errorMessage = e.toString();
+      });
+    }
   }
 
   @override
@@ -87,19 +96,27 @@ class _IncompleteClassFeedbackState extends State<IncompleteClassFeedback> {
             strokeWidth: 2,
             color: Colors.black54,
           ),
-        if (!isLoading)
+        if (errorMessage != null)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "오류 발생: $errorMessage",
+              style: const TextStyle(color: Colors.red),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        if (!isLoading && errorMessage == null)
           Expanded(
-            child: SingleChildScrollView( // 스크롤 가능하게 설정
+            child: SingleChildScrollView(
               child: Column(
-                children: List.generate(
-                  incompleteFeedbackDates.length,
-                      (index) => IncompleteClassFeedbackTile(
+                children: incompleteFeedbackDates.map((date) {
+                  return IncompleteClassFeedbackTile(
                     classId: widget.classId,
                     classTitle: widget.classTitle,
-                    date: incompleteFeedbackDates.elementAt(index),
+                    date: date,
                     onPop: fetchIncompleteFeedbackDates,
-                  ),
-                ),
+                  );
+                }).toList(),
               ),
             ),
           ),

@@ -118,7 +118,7 @@ class _FeedbackScrollableSheetSectionState
         if (memoController.text.isEmpty) return;
 
         final feedbackId = await httpService.createClassFeedback(
-          classId: "${widget.classId}",
+          classId: widget.classId,
           date: widget.selectedDate.value.dateTime,
           did: welldoneController.text,
           attitude: attitudeController.text,

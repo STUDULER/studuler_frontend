@@ -122,9 +122,14 @@ class _AddClassPageState extends State<AddClassPage> {
           howToPay: int.parse(howToPayController.text),
           themeColor: int.parse(themeColorController.text),
         );
+
         if (classId != null && classId.isNotEmpty) {
           if (context.mounted) {
-            Navigator.pop(context);
+            Navigator.pop(context, true); // 성공적으로 추가된 경우 true 반환
+          }
+        } else {
+          if (context.mounted) {
+            Navigator.pop(context, false); // 추가 실패 시 false 반환
           }
         }
       },
@@ -145,6 +150,7 @@ class _AddClassPageState extends State<AddClassPage> {
         ),
       ),
     );
+
 
     void howToPayControllerUpdate(String text) {
       setState(() {
