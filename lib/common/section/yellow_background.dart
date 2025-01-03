@@ -17,7 +17,7 @@ class YellowBackground extends StatelessWidget {
           child: Container(
             width: MediaQuery.sizeOf(context).width,
             height: MediaQuery.sizeOf(context).height,
-            color: const Color(0xFFFFEC9E),
+            color: Colors.yellow.shade200,
           ),
         ),
         child
