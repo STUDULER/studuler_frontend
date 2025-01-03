@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 import '../../main.dart';
 import '../auth/auth_service.dart';
@@ -52,6 +53,8 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const double bannerSize = 60;
+    const double iconSize = 48;
     return Scaffold(
       body: YellowBackground(
         child: Center(
@@ -74,9 +77,36 @@ class LoginPage extends StatelessWidget {
                   await handleSuccessAuthService(context, result, 1);
                 },
                 child: Container(
-                  color: Colors.amber,
+                  decoration: BoxDecoration(
+                    // border: Border.all(),
+                    borderRadius: BorderRadius.circular(12),
+                    color: const Color(0xffFEE500),
+                  ),
                   width: MediaQuery.sizeOf(context).width * 0.8,
-                  height: 70,
+                  height: bannerSize,
+                  child: Row(
+                    children: [
+                      const Gap(bannerSize-iconSize),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: SizedBox(
+                          width: iconSize,
+                          child: Image.asset('assets/kakaotalk.png')),
+                      ),
+                      const Spacer(),
+                      const Text(
+                        "카카오로 시작하기",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: bannerSize,
+                      ),
+                      const Spacer(),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(
@@ -93,9 +123,34 @@ class LoginPage extends StatelessWidget {
                   await handleSuccessAuthService(context, result, 2);
                 },
                 child: Container(
-                  color: Colors.blue,
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 0.5),
+                    borderRadius: BorderRadius.circular(12),
+                    color: const Color.fromARGB(255, 245, 245, 245),
+                  ),
                   width: MediaQuery.sizeOf(context).width * 0.8,
-                  height: 70,
+                  height: bannerSize,
+                  child: Row(
+                    children: [
+                      const Gap(bannerSize-iconSize),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: SizedBox(
+                          width: iconSize,
+                          child: Image.asset('assets/google_square_icon.png')),
+                      ),
+                      const Spacer(),
+                      const Text(
+                        "Google로 시작하기",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const Gap(bannerSize),
+                      const Spacer(),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(
@@ -105,7 +160,7 @@ class LoginPage extends StatelessWidget {
                 isTeacher: isTeacher,
               ),
               const Spacer(
-                flex: 3,
+                flex: 2,
               ),
             ],
           ),
