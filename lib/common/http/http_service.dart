@@ -192,7 +192,7 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
-    await Future.delayed(Durations.medium1);
+    await Future.delayed(Durations.long1);
     toggle = !toggle;
     if (toggle) {
       return [
