@@ -118,27 +118,26 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                                   if (!isSamePassword()) {
                                     return;
                                   }
+                                  const emailLoginMethod = 3;
+                                  final dto = OAuthUserDto(
+                                    username: _nameController.text,
+                                    password: _passwordController.text,
+                                    mail: _emailController.text,
+                                    image: 0,
+                                  );
                                   if (widget.isTeacher) {
-                                    final dto = OAuthUserDto(
-                                      username: _nameController.text,
-                                      password: _passwordController.text,
-                                      mail: _emailController.text,
-                                      image: 1,
-                                    );
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => AccountInputPage(
                                           dto: dto,
-                                          loginMethod: 3,
+                                          loginMethod: emailLoginMethod,
                                         ),
                                       ),
                                     );
                                   } else {
-                                    final result =
-                                        await httpService.createParent(
-                                      "dummyName",
-                                    );
+                                    final result = await httpService
+                                        .createParent(dto, emailLoginMethod);
                                     if (result == false) return;
                                     if (!context.mounted) return;
                                     Navigator.pushReplacement(
