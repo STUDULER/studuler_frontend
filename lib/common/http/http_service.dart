@@ -4,6 +4,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:studuler/common/auth/oauth_user_dto.dart';
 
+import '../model/class_settlement.dart';
+import '../model/last_settlement.dart';
+import '../model/next_settlment.dart';
 import '../model/class_day.dart';
 import '../model/class_feedback.dart';
 
@@ -310,6 +313,53 @@ class HttpService {
     );
     if (response.statusCode != 201) return false;
     return true;
+  }
+
+  Future<List<ClassSettlement>> fetchClassSettlements() async {
+    // TMP
+    await Future.delayed(Durations.medium2);
+    return [
+      ClassSettlement(
+        classId: 11,
+        className: '대치동 수학 학원',
+        classColor: 1,
+        lastSettlements: [
+          LastSettlement(
+            date: Jiffy.now(),
+            price: 112302,
+            isPaid: true,
+          ),
+          LastSettlement(
+            date: Jiffy.now(),
+            price: 1102,
+            isPaid: true,
+          ),
+          LastSettlement(
+            date: Jiffy.now(),
+            price: 112301232332,
+            isPaid: false,
+          ),
+        ],
+        nextSettlment: NextSettlment(
+          date: Jiffy.now(),
+        ),
+      ),
+      ClassSettlement(
+        classId: 12,
+        className: '성수동 국어 학원',
+        classColor: 7,
+        lastSettlements: [
+          LastSettlement(
+            date: Jiffy.now(),
+            price: 1102,
+            isPaid: true,
+          ),
+        ],
+        nextSettlment: NextSettlment(
+          date: Jiffy.now(),
+        ),
+      ),
+    ];
   }
 
   String _jiffyToFormat(Jiffy date) {
