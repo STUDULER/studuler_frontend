@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 import '../../common/model/class_settlement.dart';
+import '../../common/util/get_color_by_index.dart';
 import '../widget/last_settlement_date_tile.dart';
 import '../widget/next_settlement_date_tile.dart';
 
@@ -22,7 +23,7 @@ class TeacherSettlementClassSection extends StatelessWidget {
             Icon(
               Icons.bookmark,
               size: 36,
-              color: Colors.blueGrey.shade400,
+              color: getColorByIndex(classSettlement.classColor),
             ),
             const Gap(4),
             Text(
