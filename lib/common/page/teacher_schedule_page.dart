@@ -1,47 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:studuler/common/widget/calendar_widget.dart';
 import '../../main.dart';
-import '../widget/background.dart'; // background.dart import
-import '../widget/calendar_widget.dart'; // 가상의 캘린더 위젯 import
-import '../widget/schedule_item.dart'; // 분리된 ScheduleItem 위젯 import
+import '../widget/background.dart';
+import '../widget/schedule_item.dart';
+import 'package:gap/gap.dart';
+import 'package:jiffy/jiffy.dart';
+
+import '../../common/http/http_service.dart';
+import '../../common/model/class_day.dart';
+import '../../common/model/class_feedback.dart';
+import '../../common/section/calendar_date_section.dart';
 
 class TeacherSchedulePage extends StatelessWidget {
   const TeacherSchedulePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // 클래스 데이터 정의
-    final classData = [
-      {
-        'title': '대치동 수학 과외',
-        'code': 'REK45J2F',
-        'completionRate': 3 / 8,
-        'themeColor': const Color(0xFFB5C18E), // 수업 코드에 따른 색상
-        'infoItems': [
-          {'icon': Icons.person, 'title': '학생 이름', 'value': '홍길동'},
-          {'icon': Icons.access_time, 'title': '회당 시간', 'value': '3시간'},
-          {'icon': Icons.calendar_today, 'title': '요일', 'value': '월/수/금'},
-          {'icon': Icons.payment, 'title': '정산 방법', 'value': '선불'},
-          {'icon': Icons.attach_money, 'title': '시급', 'value': '12500원'},
-          {'icon': Icons.repeat, 'title': '수업 횟수', 'value': '8회'},
-          {'icon': Icons.calendar_today, 'title': '다음 정산일', 'value': '9월 18일'},
-        ],
-      },
-      {
-        'title': '서초동 영어 과외',
-        'code': 'ENG12345',
-        'completionRate': 3 / 4,
-        'themeColor': const Color(0xFFFCCFCF), // 수업 코드에 따른 색상
-        'infoItems': [
-          {'icon': Icons.person, 'title': '학생 이름', 'value': '이몽룡'},
-          {'icon': Icons.access_time, 'title': '회당 시간', 'value': '2시간'},
-          {'icon': Icons.calendar_today, 'title': '요일', 'value': '화/목'},
-          {'icon': Icons.payment, 'title': '정산 방법', 'value': '후불'},
-          {'icon': Icons.attach_money, 'title': '시급', 'value': '15000원'},
-          {'icon': Icons.repeat, 'title': '수업 횟수', 'value': '4회'},
-          {'icon': Icons.calendar_today, 'title': '다음 정산일', 'value': '10월 10일'},
-        ],
-      },
-    ];
+    final httpService = HttpService();
+
+    final PageController pageController = PageController(
+      initialPage: 2400,
+    );
+    Jiffy date = Jiffy.now();
+    final currPageIndex = ValueNotifier<int>(2400);
+    final weekMode = ValueNotifier<bool>(false);
+    final selectedDate = ValueNotifier<Jiffy>(Jiffy.now());
+
+    List<ClassDay> classDays = [];
+    void fetchClassDays(Jiffy date) async {
+      final fetchedClassDays = await httpService.fetchClassScheduleOFMonth(
+        classId: 0,
+        date: date,
+      );
+      if (classDays.isNotEmpty) {
+        classDays = fetchedClassDays;
+      }
+    }
+
+    GestureDetector prevMonthButton() {
+      return GestureDetector(
+        onTap: () {
+          pageController.previousPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        },
+        child: const Icon(Icons.keyboard_arrow_left_outlined),
+      );
+    }
+
+    GestureDetector nextMonthButton() {
+      return GestureDetector(
+        onTap: () {
+          pageController.nextPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        },
+        child: const Icon(Icons.keyboard_arrow_right_outlined),
+      );
+    }
 
     return Scaffold(
       body: Stack(
@@ -53,53 +71,165 @@ class TeacherSchedulePage extends StatelessWidget {
                 onPressed: () => mainScaffoldKey.currentState?.openEndDrawer(),
               ),
             ],
-          ), // 배경 추가
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 100.0,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '전체 일정',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 16.0,
+              right: 16.0,
+              top: 100,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '전체 일정',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const Gap(20),
+                Row(
+                  children: [
+                    const SizedBox(width: 12), // 앞부분에 공간 추가
+                    ValueListenableBuilder<Jiffy>(
+                      valueListenable: selectedDate,
+                      builder: (context, value, child) {
+                        return Text(
+                          "${value.year}년 ${value.month}월",
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
+                        );
+                      },
+                    ),
+                    const Spacer(),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: weekMode,
+                      builder: (context, weekMode, child) {
+                        return weekMode
+                            ? GestureDetector(
+                          onTap: () {
+                            selectedDate.value =
+                                selectedDate.value.subtract(weeks: 1);
+                          },
+                          child: const Icon(
+                              Icons.keyboard_arrow_left_outlined),
+                        )
+                            : prevMonthButton();
+                      },
+                    ),
+                    const SizedBox(width: 16),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: weekMode,
+                      builder: (context, weekMode, child) {
+                        return weekMode
+                            ? GestureDetector(
+                          onTap: () {
+                            selectedDate.value =
+                                selectedDate.value.add(weeks: 1);
+                          },
+                          child: const Icon(Icons.keyboard_arrow_right_outlined),
+                        )
+                            : nextMonthButton();
+                      },
+                    ),
+                  ],
+                ),
+                const Gap(8), // 아래쪽 공간 줄임
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.45,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        children: [
+                          const Gap(16),
+                          const CalendarDateSection(),
+                          Expanded(
+                            child: PageView.builder(
+                              scrollDirection: Axis.vertical,
+                              physics: weekMode.value
+                                  ? const NeverScrollableScrollPhysics()
+                                  : const BouncingScrollPhysics(),
+                              controller: pageController,
+                              itemBuilder: (context, index) {
+                                return CalendarWidget(
+                                  classId: 0,
+                                  date: date.add(months: index - 2400),
+                                  someWeeksOfNextMonth: false,
+                                  weekMode: weekMode,
+                                  selectedDate: selectedDate,
+                                  classDays: classDays,
+                                  fetchClassDaysFunction: fetchClassDays,
+                                );
+                              },
+                              onPageChanged: (value) async {
+                                if (currPageIndex.value > value) {
+                                  selectedDate.value =
+                                      selectedDate.value.subtract(months: 1);
+                                } else {
+                                  selectedDate.value =
+                                      selectedDate.value.add(months: 1);
+                                }
+                                currPageIndex.value = value;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  CalendarWidget(classData: classData), // 가상의 캘린더 위젯 추가
-                  const SizedBox(height: 20),
-                  const Divider(),
-                  const SizedBox(height: 10),
-                  const Text(
-                    '2024년 9월 8일 일요일',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // ScheduleItem 위젯들
-                  ScheduleItem(
-                    title: '대치동 수학 과외',
-                    label: '피드백 완료',
-                    isFeedbackComplete: true,
-                    dotColor: const Color(0xFFB5C18E), // 수업 코드 색상
-                  ),
-                  ScheduleItem(
-                    title: '신길동 영어 과외',
-                    label: '피드백 미완료',
-                    isFeedbackComplete: false,
-                    dotColor: const Color(0xFFFCCFCF), // 수업 코드 색상
-                  ),
-                ],
-              ),
+                ),
+                const Gap(16),
+                const Divider(),
+                const SizedBox(height: 10),
+                ValueListenableBuilder<Jiffy>(
+                  valueListenable: selectedDate,
+                  builder: (context, value, child) {
+                    // 영어 요일을 한국어로 매핑
+                    final dayInKorean = {
+                      'Monday': '월요일',
+                      'Tuesday': '화요일',
+                      'Wednesday': '수요일',
+                      'Thursday': '목요일',
+                      'Friday': '금요일',
+                      'Saturday': '토요일',
+                      'Sunday': '일요일',
+                    };
+
+                    final dayInEnglish = value.format(pattern: 'EEEE');
+                    final dayKorean = dayInKorean[dayInEnglish] ?? dayInEnglish;
+
+                    return Text(
+                      '${value.format(pattern: 'yyyy년 MM월 dd일')} $dayKorean', // 변환된 요일 사용
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 10),
+                ScheduleItem(
+                  title: '대치동 수학 과외',
+                  label: '피드백 완료',
+                  isFeedbackComplete: true,
+                  dotColor: const Color(0xFFB5C18E),
+                ),
+                ScheduleItem(
+                  title: '신길동 영어 과외',
+                  label: '피드백 미완료',
+                  isFeedbackComplete: false,
+                  dotColor: const Color(0xFFFCCFCF),
+                ),
+              ],
             ),
           ),
         ],
