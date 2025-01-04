@@ -5,7 +5,6 @@ import '../../main.dart';
 import '../../teacher/page/add_class_page.dart';
 import '../http/http_service.dart';
 import '../widget/class_info_card.dart';
-import '../section/class_info_item.dart';
 import '../widget/background.dart';
 
 class TeacherHomePage extends StatefulWidget {

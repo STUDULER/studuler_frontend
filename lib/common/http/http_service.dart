@@ -18,7 +18,7 @@ class HttpService {
   );
 
   HttpService._privateConstructor() {
-    call.options.baseUrl = "http://13.209.171.206";
+    call.options.baseUrl = "http://13.209.171.206:8443";
     _initializeInterceptors();
   }
   static final HttpService _instance = HttpService._privateConstructor();
@@ -227,7 +227,12 @@ class HttpService {
               ClassInfoItem(
                 icon: Icons.calendar_today,
                 title: '다음 정산일',
-                value: classInfo['dateofpayment'] ?? '정보 없음',
+                value: classInfo['dateofpayment'] != null
+                    ? DateTime.parse(classInfo['dateofpayment'])
+                    .toLocal()
+                    .toString()
+                    .split(' ')[0] // '2025-01-13T00:00:00.000Z' -> '2025-01-13'
+                    : '정보 없음',
               ),
             ],
           };
@@ -245,9 +250,13 @@ class HttpService {
 
   Future<bool> deleteClass(int classId) async {
     try {
-      final response = await call.delete('/home/deleteClass', data: {
+      print("Delete Class - Request Data: classId = $classId");
+      final response = await call.delete('/home/removeClass', data: {
         "classId": classId,
       });
+
+      print("Delete Class - Response Status: ${response.statusCode}");
+      print("Delete Class - Response Data: ${response.data}");
 
       if (response.statusCode == 200) {
         print("Class deleted successfully");
@@ -280,6 +289,48 @@ class HttpService {
       }
     } catch (e) {
       throw Exception("Error in fetchIncompleteFeedbackDates: $e");
+    }
+  }
+
+  Future<List<ClassDay>> fetchCalendarForMonth({
+    required int year,
+    required int month,
+  }) async {
+    try {
+      final response = await call.get(
+        "/total/calendarT",
+        queryParameters: {"year": year, "month": month},
+      );
+
+      if (response.statusCode == 200) {
+        final List data = response.data;
+
+        return data.map((item) {
+          return ClassDay(
+            classId: item['classid'],
+            day: Jiffy.parse(item['date'], pattern: 'yyyy-MM-dd'),
+            isPayDay: item['dateofpayment'] != null,
+            colorIdx: item['themecolor'] ?? -1,
+          );
+        }).toList();
+      } else {
+        throw Exception("Failed to fetch calendar data.");
+      }
+    } catch (e) {
+      throw Exception("Error in fetchCalendarForMonth: $e");
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchClassesByDate(String date) async {
+    final response = await call.get(
+      '/total/classByDateT',
+      queryParameters: {'date': date},
+    );
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(response.data);
+    } else {
+      throw Exception('Failed to fetch classes by date');
     }
   }
 

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'edit_item_dialog.dart';
 import '../../teacher/section/incomplete_class_feedback.dart';
 import '../http/http_service.dart';
 import '../section/class_info_item.dart';
 import '../section/animated_wave_painter.dart';
-import 'edit_class_info_modal.dart';
 
 class ClassInfoCard extends StatefulWidget {
   final String title;
@@ -95,28 +94,64 @@ class _ClassInfoCardState extends State<ClassInfoCard>
   }
 
   void _editClassInfo() {
-    showModalBottomSheet(
+    EditItemDialog.showSelectItemDialog(
       context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return EditClassInfoModal(
-          titleController: titleController,
-          studentNameController: studentNameController,
-          sessionDurationController: sessionDurationController,
-          daysController: daysController,
-          paymentMethodController: paymentMethodController,
-          hourlyRateController: hourlyRateController,
-          sessionCountController: sessionCountController,
-          nextPaymentDate: nextPaymentDate,
-          themeColor: currentThemeColor,
-          onUpdate: (title, infoItems, themeColor) {
+      items: [
+        {
+          'title': '학생 이름',
+          'controller': studentNameController,
+          'onUpdate': (String newValue) {
             setState(() {
-              currentThemeColor = themeColor;
-              widget.onUpdate(title, infoItems, themeColor);
+              studentNameController.text = newValue;
             });
           },
-        );
-      },
+        },
+        {
+          'title': '회당 시간',
+          'controller': sessionDurationController,
+          'onUpdate': (String newValue) {
+            setState(() {
+              sessionDurationController.text = newValue;
+            });
+          },
+        },
+        {
+          'title': '요일',
+          'controller': daysController,
+          'onUpdate': (String newValue) {
+            setState(() {
+              daysController.text = newValue;
+            });
+          },
+        },
+        {
+          'title': '정산 방법',
+          'controller': paymentMethodController,
+          'onUpdate': (String newValue) {
+            setState(() {
+              paymentMethodController.text = newValue;
+            });
+          },
+        },
+        {
+          'title': '시급',
+          'controller': hourlyRateController,
+          'onUpdate': (String newValue) {
+            setState(() {
+              hourlyRateController.text = newValue;
+            });
+          },
+        },
+        {
+          'title': '수업 횟수',
+          'controller': sessionCountController,
+          'onUpdate': (String newValue) {
+            setState(() {
+              sessionCountController.text = newValue;
+            });
+          },
+        },
+      ],
     );
   }
 
@@ -148,15 +183,8 @@ class _ClassInfoCardState extends State<ClassInfoCard>
       );
 
       if (confirmed == true) {
-        final code = int.tryParse(widget.code);
-        if (code == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("유효하지 않은 수업 코드입니다.")),
-          );
-          return;
-        }
+        final success = await HttpService().deleteClass(widget.classId);
 
-        final success = await HttpService().deleteClass(code);
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("수업이 삭제되었습니다.")),
@@ -169,8 +197,8 @@ class _ClassInfoCardState extends State<ClassInfoCard>
         }
       }
     } catch (e, stackTrace) {
-      debugPrint('Error deleting class: $e');
-      debugPrint('Stack Trace: $stackTrace');
+      print('Error deleting class: $e');
+      print('Stack Trace: $stackTrace');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("알 수 없는 오류가 발생했습니다.")),
       );
@@ -301,12 +329,11 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                             runSpacing: 16.0,
                             children: widget.infoItems.map((item) {
                               return SizedBox(
-                                width:
-                                (MediaQuery.of(context).size.width * 0.9 -
+                                width: (MediaQuery.of(context).size.width * 0.9 -
                                     48) /
                                     2,
-                                height:
-                                MediaQuery.of(context).size.height * 0.08,
+                                height: MediaQuery.of(context).size.height *
+                                    0.08,
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Padding(
