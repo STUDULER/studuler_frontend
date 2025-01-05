@@ -484,25 +484,30 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
+    await Future.delayed(Durations.long1);
     List<ClassDay> rst = [];
-    final response = await call.get(
-      "/each/calendarT",
-      data: {
-        "classId": classId,
-        "year": date.year,
-        "month": date.month,
-      },
-    );
-    for (var data in response.data) {
-      final classDay = ClassDay(
-        classId: classId,
-        day: Jiffy.parse(data['date']),
-        isPayDay: false,
-        colorIdx: data['themecolor'],
+    try {
+      final response = await call.get(
+        "/each/calendarT",
+        data: {
+          "classId": classId,
+          "year": date.year,
+          "month": date.month,
+        },
       );
-      rst.add(classDay);
+      for (var data in response.data) {
+        final classDay = ClassDay(
+          classId: classId,
+          day: Jiffy.parse(data['date']),
+          isPayDay: false,
+          colorIdx: data['themecolor'],
+        );
+        rst.add(classDay);
+      }
+      return rst;
+    } catch (e) {
+      return [];
     }
-    return rst;
   }
 
   bool toggle = false;
