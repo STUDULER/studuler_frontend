@@ -283,7 +283,9 @@ class HttpService {
         },
       );
 
-      if (response.statusCode == 200 && response.data['message'] == 'Class information updated successfully.') {
+      if (response.statusCode == 200 &&
+          response.data['message'] ==
+              'Class information updated successfully.') {
         return true;
       } else {
         return false;
@@ -479,44 +481,28 @@ class HttpService {
     }
   }
 
-  bool toggle = false;
   Future<ClassFeedback?> fetchClassFeedback({
     required int classId,
     required Jiffy date,
   }) async {
-    await Future.delayed(Durations.long1);
-    if (date.isSame(Jiffy.parse("2024-12-02"), unit: Unit.day)) {
-      return ClassFeedback(
-        date: date.dateTime,
-        workdone: "굳굳굳",
-        attitude: "좋은 태도",
-        homework: 2,
-        memo: "최고임",
-        rate: 10,
-      );
-    } else {
-      return null;
-    }
-    // toggle = !toggle;
-    // if (toggle) {
-    //   return ClassFeedback(
-    //     date: date.dateTime,
-    //     workdone: "굳굳굳",
-    //     attitude: "좋은 태도",
-    //     homework: 2,
-    //     memo: "최고임",
-    //     rate: 10,
-    //   );
-    // } else {
-    //   return ClassFeedback(
-    //     date: date.dateTime,
-    //     workdone: "최악 또 최악",
-    //     attitude: "이루 말할 수 없는 최악",
-    //     homework: 0,
-    //     memo: "과외 그만 둘 거",
-    //     rate: 0,
-    //   );
-    // }
+    final response = await call.get(
+      '/each/feedbackByDateT',
+      data: {
+        'classId': classId,
+        'date': _jiffyToFormat(date),
+      },
+    );
+    final data = response.data as List;
+    if (data.isEmpty) return null;
+    final feedback = data.first;
+    return ClassFeedback(
+      date: Jiffy.parse(feedback['date']).dateTime,
+      workdone: feedback['workdone'],
+      attitude: feedback['attitude'],
+      homework: feedback['homework'],
+      memo: feedback['memo'],
+      rate: int.parse(feedback['rate'].toString()),
+    );
   }
 
   Future<bool> deleteClassDay({
