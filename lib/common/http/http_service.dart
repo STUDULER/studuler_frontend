@@ -480,6 +480,31 @@ class HttpService {
     }
   }
 
+  Future<List<ClassDay>> fetchClassSchedulePerPageOFMonth({
+    required int classId,
+    required Jiffy date,
+  }) async {
+    List<ClassDay> rst = [];
+    final response = await call.get(
+      "/each/calendarT",
+      data: {
+        "classId": classId,
+        "year": date.year,
+        "month": date.month,
+      },
+    );
+    for (var data in response.data) {
+      final classDay = ClassDay(
+        classId: classId,
+        day: Jiffy.parse(data['date']),
+        isPayDay: false,
+        colorIdx: data['themecolor'],
+      );
+      rst.add(classDay);
+    }
+    return rst;
+  }
+
   bool toggle = false;
   Future<ClassFeedback?> fetchClassFeedback({
     required Jiffy date,

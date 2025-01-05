@@ -20,7 +20,7 @@ class ClassInfoCard extends StatefulWidget {
       List<ClassInfoItem> infoItems,
       Color themeColor,
       ) onUpdate;
-  final Function(String) goToPerClassPage;
+  final Function(int, String) goToPerClassPage;
   final Function(int classId) onDelete;
 
   const ClassInfoCard({
@@ -289,6 +289,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                       GestureDetector(
                         onTap: () {
                           widget.goToPerClassPage(
+                            widget.classId,
                             titleController.text,
                           );
                         },
