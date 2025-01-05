@@ -1,34 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'edit_item_dialog.dart';
 import '../../teacher/section/incomplete_class_feedback.dart';
+import '../http/http_service.dart';
 import '../section/class_info_item.dart';
 import '../section/animated_wave_painter.dart';
-import 'edit_class_info_modal.dart';
 
 class ClassInfoCard extends StatefulWidget {
   final String title;
   final String code;
+  final int classId;
   final int currentIndex;
   final int totalCards;
   final List<ClassInfoItem> infoItems;
   final double completionRate;
-  final Color themeColor; // 테마 색상 추가
+  final Color themeColor;
   final Function(
-    String title,
-    List<ClassInfoItem> infoItems,
-    Color themeColor,
-  ) onUpdate;
+      String title,
+      List<ClassInfoItem> infoItems,
+      Color themeColor,
+      ) onUpdate;
   final Function(String) goToPerClassPage;
 
   const ClassInfoCard({
     required this.title,
     required this.code,
+    required this.classId,
     required this.currentIndex,
     required this.totalCards,
     required this.infoItems,
     required this.completionRate,
-    required this.themeColor, // 초기 테마 색상
+    required this.themeColor,
     required this.onUpdate,
     required this.goToPerClassPage,
     super.key,
@@ -49,7 +51,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
   late TextEditingController hourlyRateController;
   late TextEditingController sessionCountController;
   late String nextPaymentDate;
-  late Color currentThemeColor; // 현재 테마 색상
+  late Color currentThemeColor;
 
   bool showIncompleteFeedbackList = false;
 
@@ -74,8 +76,8 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     sessionCountController =
         TextEditingController(text: widget.infoItems[5].value);
     nextPaymentDate =
-        widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
-    currentThemeColor = widget.themeColor; // 초기 테마 색상 설정
+    widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
+    currentThemeColor = widget.themeColor;
   }
 
   @override
@@ -92,28 +94,81 @@ class _ClassInfoCardState extends State<ClassInfoCard>
   }
 
   void _editClassInfo() {
-    showModalBottomSheet(
+    // 클래스 관련 데이터 구성 (예제 데이터)
+    final Map<String, dynamic> classData = {
+      'name': '링가링',
+      'classid': widget.classId,
+      'classcode': widget.code,
+      'classname': widget.title,
+      'day': widget.infoItems[2].value, // 요일 정보
+      'time': widget.infoItems[1].value, // 회당 시간
+      'period': widget.infoItems[5].value, // 기간
+      'dateofpayment': nextPaymentDate,
+      'hourlyrate': widget.infoItems[4].value, // 시급
+      'prepay': '1',
+      'themecolor': widget.themeColor.value,
+      'finished_lessons': '0',
+    };
+
+    EditItemDialog.showSelectItemDialog(
       context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return EditClassInfoModal(
-          titleController: titleController,
-          studentNameController: studentNameController,
-          sessionDurationController: sessionDurationController,
-          daysController: daysController,
-          paymentMethodController: paymentMethodController,
-          hourlyRateController: hourlyRateController,
-          sessionCountController: sessionCountController,
-          nextPaymentDate: nextPaymentDate,
-          themeColor: currentThemeColor, // 현재 테마 색상 전달
-          onUpdate: (title, infoItems, themeColor) {
+      classData: classData, // 추가된 classData 전달
+      items: [
+        {
+          'title': '학생 이름',
+          'controller': studentNameController,
+          'onUpdate': (String newValue) {
             setState(() {
-              currentThemeColor = themeColor; // 테마 색상 업데이트
-              widget.onUpdate(title, infoItems, themeColor);
+              studentNameController.text = newValue;
             });
           },
-        );
-      },
+        },
+        {
+          'title': '회당 시간',
+          'controller': sessionDurationController,
+          'onUpdate': (String newValue) {
+            setState(() {
+              sessionDurationController.text = newValue;
+            });
+          },
+        },
+        {
+          'title': '요일',
+          'controller': daysController,
+          'onUpdate': (String newValue) {
+            setState(() {
+              daysController.text = newValue;
+            });
+          },
+        },
+        {
+          'title': '정산 방법',
+          'controller': paymentMethodController,
+          'onUpdate': (String newValue) {
+            setState(() {
+              paymentMethodController.text = newValue;
+            });
+          },
+        },
+        {
+          'title': '시급',
+          'controller': hourlyRateController,
+          'onUpdate': (String newValue) {
+            setState(() {
+              hourlyRateController.text = newValue;
+            });
+          },
+        },
+        {
+          'title': '수업 횟수',
+          'controller': sessionCountController,
+          'onUpdate': (String newValue) {
+            setState(() {
+              sessionCountController.text = newValue;
+            });
+          },
+        },
+      ],
     );
   }
 
@@ -122,6 +177,49 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("수업 코드가 클립보드에 복사되었습니다.")),
     );
+  }
+
+  void _deleteClass() async {
+    try {
+      final confirmed = await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("수업 삭제"),
+          content: const Text("정말로 이 수업을 삭제하시겠습니까?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text("취소"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("삭제"),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed == true) {
+        final success = await HttpService().deleteClass(widget.classId);
+
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("수업이 삭제되었습니다.")),
+          );
+          widget.onUpdate(widget.title, widget.infoItems, widget.themeColor);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("수업 삭제에 실패했습니다.")),
+          );
+        }
+      }
+    } catch (e, stackTrace) {
+      print('Error deleting class: $e');
+      print('Stack Trace: $stackTrace');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("알 수 없는 오류가 발생했습니다.")),
+      );
+    }
   }
 
   @override
@@ -174,7 +272,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                               ),
                               const SizedBox(width: 8),
                               GestureDetector(
-                                onTap: () {},
+                                onTap: _deleteClass,
                                 child: const Icon(
                                   Icons.delete,
                                   color: Colors.grey,
@@ -231,7 +329,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                             padding: const EdgeInsets.all(16.0),
                             child: IncompleteClassFeedback(
                               classTitle: widget.title,
-                              classId: 'dummyClassId',
+                              classId: widget.classId,
                               backToClassInfo: () {
                                 setState(() {
                                   showIncompleteFeedbackList = false;
@@ -248,12 +346,11 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                             runSpacing: 16.0,
                             children: widget.infoItems.map((item) {
                               return SizedBox(
-                                width:
-                                    (MediaQuery.of(context).size.width * 0.9 -
-                                            48) /
-                                        2,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.08,
+                                width: (MediaQuery.of(context).size.width * 0.9 -
+                                    48) /
+                                    2,
+                                height: MediaQuery.of(context).size.height *
+                                    0.08,
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Padding(

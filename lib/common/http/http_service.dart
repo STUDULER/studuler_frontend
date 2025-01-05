@@ -6,6 +6,7 @@ import 'package:studuler/common/auth/oauth_user_dto.dart';
 
 import '../model/class_day.dart';
 import '../model/class_feedback.dart';
+import '../section/class_info_item.dart';
 
 class HttpService {
   final Dio call = Dio();
@@ -17,7 +18,7 @@ class HttpService {
   );
 
   HttpService._privateConstructor() {
-    call.options.baseUrl = "http://13.209.171.206";
+    call.options.baseUrl = "http://13.209.171.206:8443";
     _initializeInterceptors();
   }
   static final HttpService _instance = HttpService._privateConstructor();
@@ -149,18 +150,234 @@ class HttpService {
     return response.data['classId'].toString();
   }
 
-  Future<List<DateTime>> fetchIncompleteFeedbackDates({
-    required String classId,
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return [
-      DateTime.utc(2024, 11, 12),
-      DateTime.now(),
+  Future<List<Map<String, dynamic>>> fetchClasses() async {
+    // 색상 팔레트 정의
+    const List<Color> colorPalette = [
+      Color(0xFFC96868), // Red shade
+      Color(0xFFFFBB70), // Peach shade
+      Color(0xFFB5C18E), // Green shade
+      Color(0xFFCFEFFC), // Light Blue shade
+      Color(0xFF5A72A0), // Blue shade
+      Color(0xFFDDBCFF), // Lavender shade
+      Color(0xFFFCCFCF), // Pink shade
+      Color(0xFFD9D9D9), // Light Gray shade
+      Color(0xFF545454), // Dark Gray shade
+      Color(0xFFB28F65), // Brown shade
     ];
+
+    try {
+      final response = await call.get('/home/eachClassT');
+
+      // 응답 데이터 출력 (디버깅용)
+      print("Response status: ${response.statusCode}");
+      print("Response data: ${response.data}");
+
+      if (response.statusCode == 200) {
+        final data = List<Map<String, dynamic>>.from(response.data);
+        if (data.isEmpty) {
+          throw Exception("No classes available for the teacher.");
+        }
+        return data.map((classInfo) {
+          // 색상 매핑
+          int colorIndex = classInfo['themecolor'] ?? -1;
+          Color mappedColor = (colorIndex >= 0 && colorIndex < colorPalette.length)
+              ? colorPalette[colorIndex]
+              : const Color(0xFFFFFFFF); // 기본 색상 (화이트)
+
+          return {
+            'classId': classInfo['classid'] ?? 0, // classId 추가
+            'title': classInfo['classname'] ?? '제목 없음',
+            'code': classInfo['classcode'] ?? '코드 없음',
+            'completionRate': classInfo['finished_lessons'] != null &&
+                classInfo['period'] != null
+                ? classInfo['finished_lessons'] / classInfo['period']
+                : 0.0,
+            'themeColor': mappedColor, // 매핑된 색상
+            'infoItems': [
+              ClassInfoItem(
+                icon: Icons.person,
+                title: '학생 이름',
+                value: classInfo['name'] ?? '정보 없음',
+              ),
+              ClassInfoItem(
+                icon: Icons.access_time,
+                title: '회당 시간',
+                value: '${classInfo['time'] ?? 0}시간',
+              ),
+              ClassInfoItem(
+                icon: Icons.calendar_today,
+                title: '요일',
+                value: classInfo['day'] ?? '요일 없음',
+              ),
+              ClassInfoItem(
+                icon: Icons.payment,
+                title: '정산 방법',
+                value: classInfo['prepay'] == true ? '선불' : '후불',
+              ),
+              ClassInfoItem(
+                icon: Icons.attach_money,
+                title: '시급',
+                value: '${classInfo['hourlyrate'] ?? 0}원',
+              ),
+              ClassInfoItem(
+                icon: Icons.repeat,
+                title: '수업 횟수',
+                value: '${classInfo['period'] ?? 0}회',
+              ),
+              ClassInfoItem(
+                icon: Icons.calendar_today,
+                title: '다음 정산일',
+                value: classInfo['dateofpayment'] != null
+                    ? DateTime.parse(classInfo['dateofpayment'])
+                    .toLocal()
+                    .toString()
+                    .split(' ')[0] // '2025-01-13T00:00:00.000Z' -> '2025-01-13'
+                    : '정보 없음',
+              ),
+            ],
+          };
+        }).toList();
+      } else if (response.statusCode == 404) {
+        throw Exception("API endpoint not found.");
+      } else {
+        throw Exception("Failed to fetch classes. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Error in fetchClasses: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> updateClass({
+    required String classCode,
+    required String studentName,
+    required String className,
+    required String day,
+    required int time,
+    required int period,
+    required String dateOfPayment,
+    required int hourlyRate,
+    required int prepay,
+    required int themeColor,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updateClassT",
+        data: {
+          "classcode": classCode,
+          "studentname": studentName,
+          "classname": className,
+          "day": day,
+          "time": time,
+          "period": period,
+          "dateofpayment": dateOfPayment,
+          "hourlyrate": hourlyRate,
+          "prepay": prepay,
+          "themecolor": themeColor,
+        },
+      );
+
+      if (response.statusCode == 200 && response.data['message'] == 'Class information updated successfully.') {
+        print("Class information updated successfully.");
+        return true;
+      } else {
+        print("Failed to update class information: ${response.data}");
+        return false;
+      }
+    } catch (e) {
+      print("Error in updateClass: $e");
+      return false;
+    }
+  }
+
+  Future<bool> deleteClass(int classId) async {
+    try {
+      print("Delete Class - Request Data: classId = $classId, Type: ${classId.runtimeType}");
+      final response = await call.delete('/home/removeClass', data: {
+        "classId": classId,
+      });
+
+      print("Delete Class - Response Status: ${response.statusCode}");
+      print("Delete Class - Response Data: ${response.data}");
+
+      if (response.statusCode == 200) {
+        print("Class deleted successfully");
+        return true;
+      } else {
+        print("Failed to delete class: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print("Error in deleteClass: $e");
+      return false;
+    }
+  }
+
+  Future<List<DateTime>> fetchIncompleteFeedbackDates({
+    required int classId,
+  }) async {
+    try {
+      final response = await call.get('/home/noFeedback', queryParameters: {
+        "classId": classId,
+      });
+
+      if (response.statusCode == 200) {
+        final data = List<Map<String, dynamic>>.from(response.data);
+        return data.map((item) {
+          return DateTime.parse(item['date']);
+        }).toList();
+      } else {
+        throw Exception("Failed to fetch incomplete feedback dates.");
+      }
+    } catch (e) {
+      throw Exception("Error in fetchIncompleteFeedbackDates: $e");
+    }
+  }
+
+  Future<List<ClassDay>> fetchCalendarForMonth({
+    required int year,
+    required int month,
+  }) async {
+    try {
+      final response = await call.get(
+        "/total/calendarT",
+        queryParameters: {"year": year, "month": month},
+      );
+
+      if (response.statusCode == 200) {
+        final List data = response.data;
+
+        return data.map((item) {
+          return ClassDay(
+            classId: item['classid'],
+            day: Jiffy.parse(item['date'], pattern: 'yyyy-MM-dd'),
+            isPayDay: item['dateofpayment'] != null,
+            colorIdx: item['themecolor'] ?? -1,
+          );
+        }).toList();
+      } else {
+        throw Exception("Failed to fetch calendar data.");
+      }
+    } catch (e) {
+      throw Exception("Error in fetchCalendarForMonth: $e");
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchClassesByDate(String date) async {
+    final response = await call.get(
+      '/total/classByDateT',
+      queryParameters: {'date': date},
+    );
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(response.data);
+    } else {
+      throw Exception('Failed to fetch classes by date');
+    }
   }
 
   Future<String?> createClassFeedback({
-    required String classId,
+    required int classId,
     required DateTime date,
     required String did,
     required String attitude,

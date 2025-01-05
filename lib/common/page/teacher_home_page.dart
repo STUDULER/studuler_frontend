@@ -3,8 +3,8 @@ import 'package:card_swiper/card_swiper.dart';
 
 import '../../main.dart';
 import '../../teacher/page/add_class_page.dart';
+import '../http/http_service.dart';
 import '../widget/class_info_card.dart';
-import '../section/class_info_item.dart';
 import '../widget/background.dart';
 
 class TeacherHomePage extends StatefulWidget {
@@ -20,82 +20,32 @@ class TeacherHomePage extends StatefulWidget {
 }
 
 class _TeacherHomePageState extends State<TeacherHomePage> {
-  late List<Map<String, dynamic>> classData;
-  int currentIndex = 0; // 현재 카드의 인덱스를 추적
+  Future<List<Map<String, dynamic>>>? futureClassData;
+  int currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    classData = [
-      {
-        'title': '대치동 수학 과외',
-        'code': 'REK45J2F',
-        'completionRate': 3 / 8,
-        'themeColor': const Color(0xFFB5C18E), // 초기 테마 색상 추가
-        'infoItems': [
-          const ClassInfoItem(icon: Icons.person, title: '학생 이름', value: '홍길동'),
-          const ClassInfoItem(
-              icon: Icons.access_time, title: '회당 시간', value: '3시간'),
-          const ClassInfoItem(
-              icon: Icons.calendar_today, title: '요일', value: '월/수/금'),
-          const ClassInfoItem(icon: Icons.payment, title: '정산 방법', value: '선불'),
-          const ClassInfoItem(
-              icon: Icons.attach_money, title: '시급', value: '12500원'),
-          const ClassInfoItem(icon: Icons.repeat, title: '수업 횟수', value: '8회'),
-          const ClassInfoItem(
-              icon: Icons.calendar_today, title: '다음 정산일', value: '9월 18일'),
-        ],
-      },
-      {
-        'title': '서초동 영어 과외',
-        'code': 'ENG12345',
-        'completionRate': 3 / 4,
-        'themeColor': const Color(0xFFFCCFCF), // 초기 테마 색상 추가
-        'infoItems': [
-          const ClassInfoItem(
-            icon: Icons.person,
-            title: '학생 이름',
-            value: '이몽룡',
-          ),
-          const ClassInfoItem(
-            icon: Icons.access_time,
-            title: '회당 시간',
-            value: '2시간',
-          ),
-          const ClassInfoItem(
-            icon: Icons.calendar_today,
-            title: '요일',
-            value: '화/목',
-          ),
-          const ClassInfoItem(
-            icon: Icons.payment,
-            title: '정산 방법',
-            value: '후불',
-          ),
-          const ClassInfoItem(
-            icon: Icons.attach_money,
-            title: '시급',
-            value: '15000원',
-          ),
-          const ClassInfoItem(
-            icon: Icons.repeat,
-            title: '수업 횟수',
-            value: '4회',
-          ),
-          const ClassInfoItem(
-            icon: Icons.calendar_today,
-            title: '다음 정산일',
-            value: '10월 10일',
-          ),
-        ],
-      },
-    ];
+    _refreshClassData();
+  }
+
+  void _refreshClassData() {
+    setState(() {
+      futureClassData = null; // 먼저 future를 null로 초기화
+    });
+
+    // 새로운 데이터를 가져와 future에 할당
+    Future.delayed(Duration.zero, () {
+      setState(() {
+        futureClassData = HttpService().fetchClasses();
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height; // 화면 높이 가져오기
-    final screenWidth = MediaQuery.of(context).size.width; // 화면 너비 가져오기
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       body: Stack(
@@ -104,13 +54,17 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
             iconActionButtons: [
               IconButton(
                 icon: const Icon(Icons.add, color: Colors.black),
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  // AddClassPage로 이동하고 돌아올 때 데이터 갱신
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const AddClassPage(),
                     ),
                   );
+                  if (result != null && result == true) {
+                    _refreshClassData(); // 데이터를 갱신
+                  }
                 },
               ),
               IconButton(
@@ -119,66 +73,74 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
               ),
             ],
           ),
-          Column(
-            children: [
-              SizedBox(height: screenHeight * 0.13), // 화면 높이의 10%
-              // 커스텀 인디케이터 추가 (카드 위쪽)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(classData.length, (index) {
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    margin: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.01,
-                    ), // 화면 너비의 1%
-                    width: currentIndex == index
-                        ? screenWidth * 0.06
-                        : screenWidth * 0.02, // 인덱스에 따라 너비 조절
-                    height: screenHeight * 0.01, // 화면 높이의 1%
-                    decoration: BoxDecoration(
-                      color: currentIndex == index
-                          ? Colors.grey[600]
-                          : Colors.grey[400],
-                      borderRadius: BorderRadius.circular(4.0),
+          FutureBuilder<List<Map<String, dynamic>>>(
+            future: futureClassData,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('에러 발생: ${snapshot.error}'));
+              } else if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
+                final classData = snapshot.data!;
+                return Column(
+                  children: [
+                    SizedBox(height: screenHeight * 0.13), // 상단 여백 비율 유지
+                    // 인디케이터
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(classData.length, (index) {
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
+                          width: currentIndex == index ? screenWidth * 0.06 : screenWidth * 0.02,
+                          height: screenHeight * 0.01,
+                          decoration: BoxDecoration(
+                            color: currentIndex == index ? Colors.grey[600] : Colors.grey[400],
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                        );
+                      }),
                     ),
-                  );
-                }),
-              ),
-              SizedBox(height: screenHeight * 0.06), // 화면 높이의 6%
-              Expanded(
-                child: Swiper(
-                  itemCount: classData.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ClassInfoCard(
-                      title: classData[index]['title'],
-                      code: classData[index]['code'],
-                      currentIndex: index,
-                      totalCards: classData.length,
-                      completionRate: classData[index]['completionRate'],
-                      themeColor: classData[index]['themeColor'], // 테마 색상 전달
-                      infoItems: classData[index]['infoItems'],
-                      onUpdate:
-                          (updatedTitle, updatedInfoItems, updatedThemeColor) {
-                        setState(() {
-                          classData[index]['title'] = updatedTitle;
-                          classData[index]['infoItems'] = updatedInfoItems;
-                          classData[index]['themeColor'] =
-                              updatedThemeColor; // 테마 색상 업데이트
-                        });
-                      },
-                      goToPerClassPage: widget.goToPerClassPage,
-                    );
-                  },
-                  loop: false, // 마지막 카드에서 첫 번째 카드로 넘어가지 않도록 설정
-                  onIndexChanged: (index) {
-                    setState(() {
-                      currentIndex = index; // 현재 인덱스 업데이트
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
+                    SizedBox(height: screenHeight * 0.06), // 인디케이터 아래 여백 비율 유지
+                    Expanded(
+                      child: Swiper(
+                        itemCount: classData.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final classItem = classData[index];
+                          return ClassInfoCard(
+                            title: classItem['title'],
+                            code: classItem['code'],
+                            classId: classItem['classId'],
+                            currentIndex: index,
+                            totalCards: classData.length,
+                            completionRate: classItem['completionRate'],
+                            themeColor: classItem['themeColor'],
+                            infoItems: classItem['infoItems'],
+                            onUpdate: (updatedTitle, updatedInfoItems, updatedThemeColor) {
+                              setState(() {
+                                classData[index]['title'] = updatedTitle;
+                                classData[index]['infoItems'] = updatedInfoItems;
+                                classData[index]['themeColor'] = updatedThemeColor;
+                              });
+                            },
+                            goToPerClassPage: widget.goToPerClassPage,
+                          );
+                        },
+                        loop: false,
+                        onIndexChanged: (index) {
+                          setState(() {
+                            currentIndex = index;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return const Center(child: Text('수업 데이터가 없습니다.'));
+              }
+            },
+          )
         ],
       ),
     );

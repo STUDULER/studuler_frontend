@@ -15,7 +15,7 @@ class WriteClassFeedbackPage extends StatefulWidget {
     required this.onPop,
   });
 
-  final String classId;
+  final int classId;
   final String classTitle;
   final DateTime date;
   final Function onPop;
