@@ -578,50 +578,61 @@ class HttpService {
   }
 
   Future<List<ClassSettlement>> fetchClassSettlements() async {
-    // TMP
-    await Future.delayed(Durations.medium2);
-    return [
-      ClassSettlement(
-        classId: 11,
-        className: '대치동 수학 학원',
-        classColor: 1,
-        lastSettlements: [
-          LastSettlement(
-            date: Jiffy.now(),
-            price: 112302,
-            isPaid: true,
-          ),
-          LastSettlement(
-            date: Jiffy.now(),
-            price: 1102,
-            isPaid: true,
-          ),
-          LastSettlement(
-            date: Jiffy.now(),
-            price: 112301232332,
-            isPaid: false,
-          ),
-        ],
-        nextSettlment: NextSettlment(
-          date: Jiffy.now(),
+    final response = await call.get('/home/classIdT');
+    final paymentResponse = await call.get('/payment/unpaid');
+
+    final List<ClassSettlement> classSettlement = [];
+    for (var classData in response.data) {
+      var paymentData = paymentResponse.data["${classData['classid']}"];
+      List<LastSettlement> lastSettlements = [];
+      if (paymentData['unpaid'] == false) {
+        if (paymentData['dates'] != null) {
+          lastSettlements.add(
+            LastSettlement(
+              date: Jiffy.parse(paymentData['dates']['date']),
+              price: paymentData['dates']['cost'],
+              isPaid: true,
+            ),
+          );
+        }
+      } else {
+        List paymentDates = paymentData['dates'] as List;
+        for (var paymentDate in paymentDates) {
+          lastSettlements.add(
+            LastSettlement(
+              date: Jiffy.parse(paymentDate['date']),
+              price: paymentDate['cost'],
+              isPaid: false,
+            ),
+          );
+        }
+      }
+      final nextPaymentResponse = await call.get(
+        "/payment/nextpayment",
+        data: {
+          "classId": classData['classid'],
+        },
+      );
+      bool isUnpaid = false;
+      if (nextPaymentResponse.data['nextPayment']['unpay'] == 1) {
+        isUnpaid = true;
+      }
+      final nextSettlment = NextSettlment(
+        date: Jiffy.parse(nextPaymentResponse.data['nextPayment']['date']),
+        isUnpaid: isUnpaid,
+      );
+      classSettlement.add(
+        ClassSettlement(
+          classId: classData['classid'],
+          className: classData['classname'],
+          classColor: classData['themecolor'],
+          lastSettlements: lastSettlements,
+          nextSettlment: nextSettlment,
         ),
-      ),
-      ClassSettlement(
-        classId: 12,
-        className: '성수동 국어 학원',
-        classColor: 7,
-        lastSettlements: [
-          LastSettlement(
-            date: Jiffy.now(),
-            price: 1102,
-            isPaid: true,
-          ),
-        ],
-        nextSettlment: NextSettlment(
-          date: Jiffy.now(),
-        ),
-      ),
-    ];
+      );
+    }
+
+    return classSettlement;
   }
 
   String _jiffyToFormat(Jiffy date) {
