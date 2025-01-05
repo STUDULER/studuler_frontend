@@ -148,13 +148,35 @@ class _FeedbackScrollableSheetSectionState
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
+                  duration: Durations.medium2,
                   content: Text("피드백 작성이 완료되었습니다."),
                 ),
               );
             }
           }
         } else {
-          // Todo - 피드백 업데이트
+          final feedbackId = await httpService.updateClassFeedback(
+            feedbackId: widget.classFeedback.value?.feedbackId ?? 0,
+            did: welldoneController.text,
+            attitude: attitudeController.text,
+            homework: homework,
+            memo: memoController.text,
+            rating: rating,
+          );
+          if (feedbackId != null) {
+            widget.classFeedback.value = await httpService.fetchClassFeedback(
+              classId: widget.classId,
+              date: widget.selectedDate.value,
+            );
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  duration: Durations.medium2,
+                  content: Text("피드백 수정이 완료되었습니다."),
+                ),
+              );
+            }
+          }
         }
       },
       child: Container(

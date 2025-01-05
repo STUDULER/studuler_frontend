@@ -384,7 +384,6 @@ class HttpService {
     required String memo,
     required int rating,
   }) async {
-    // TMP
     int homeworkParam = 0;
     switch (homework) {
       case "미완료":
@@ -412,6 +411,43 @@ class HttpService {
       },
     );
     if (result.statusCode != 201) return null;
+    return result.data['feedbackId'];
+  }
+
+  Future<int?> updateClassFeedback({
+    required int feedbackId,
+    required String did,
+    required String attitude,
+    required String homework,
+    required String memo,
+    required int rating,
+  }) async {
+    int homeworkParam = 0;
+    switch (homework) {
+      case "미완료":
+        homeworkParam = 0;
+        break;
+      case "부분완료":
+        homeworkParam = 1;
+        break;
+      case "완료":
+      default:
+        homeworkParam = 2;
+        break;
+    }
+
+    final result = await call.put(
+      "/each/editFeedback",
+      data: {
+        "feedbackId": feedbackId,
+        "workdone": did,
+        "attitude": attitude,
+        "homework": homeworkParam,
+        "memo": memo,
+        "rate": rating,
+      },
+    );
+    if (result.statusCode != 200) return null;
     return result.data['feedbackId'];
   }
 
@@ -497,6 +533,7 @@ class HttpService {
     final feedback = data.first;
     if (feedback['feedbackid'] == null) return null;
     return ClassFeedback(
+      feedbackId: feedback['feedbackid'],
       date: Jiffy.parse(feedback['date']).dateTime,
       workdone: feedback['workdone'],
       attitude: feedback['attitude'],
