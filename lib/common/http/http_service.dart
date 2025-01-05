@@ -175,10 +175,6 @@ class HttpService {
     try {
       final response = await call.get('/home/eachClassT');
 
-      // 응답 데이터 출력 (디버깅용)
-      print("Response status: ${response.statusCode}");
-      print("Response data: ${response.data}");
-
       if (response.statusCode == 200) {
         final data = List<Map<String, dynamic>>.from(response.data);
         if (data.isEmpty) {
@@ -285,10 +281,8 @@ class HttpService {
       );
 
       if (response.statusCode == 200 && response.data['message'] == 'Class information updated successfully.') {
-        print("Class information updated successfully.");
         return true;
       } else {
-        print("Failed to update class information: ${response.data}");
         return false;
       }
     } catch (e) {
@@ -299,23 +293,16 @@ class HttpService {
 
   Future<bool> deleteClass(int classId) async {
     try {
-      print("Delete Class - Request Data: classId = $classId, Type: ${classId.runtimeType}");
       final response = await call.delete('/home/removeClass', data: {
         "classId": classId,
       });
 
-      print("Delete Class - Response Status: ${response.statusCode}");
-      print("Delete Class - Response Data: ${response.data}");
-
       if (response.statusCode == 200) {
-        print("Class deleted successfully");
         return true;
       } else {
-        print("Failed to delete class: ${response.statusCode}");
         return false;
       }
     } catch (e) {
-      print("Error in deleteClass: $e");
       return false;
     }
   }

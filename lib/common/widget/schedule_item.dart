@@ -23,7 +23,7 @@ class ScheduleItem extends StatelessWidget {
     final feedbackDotColor = const Color(0xFFF1F1F1); // 피드백 상태 조그마한 원 색상
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 2.0),
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
       padding: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
         color: Colors.white,
