@@ -512,6 +512,7 @@ class HttpService {
 
   bool toggle = false;
   Future<ClassFeedback?> fetchClassFeedback({
+    required int classId,
     required Jiffy date,
   }) async {
     await Future.delayed(Durations.long1);

@@ -50,6 +50,7 @@ class _TeacherSchedulePerClassPageState
     selectedDate.addListener(() async {
       if (weekMode.value == true) {
         classFeedback.value = await httpService.fetchClassFeedback(
+          classId: widget.classId,
           date: selectedDate.value,
         );
       }
@@ -191,7 +192,7 @@ class _TeacherSchedulePerClassPageState
                                   controller: pageController,
                                   itemBuilder: (context, index) {
                                     return CalendarMonthSection(
-                                      classId: 0,
+                                      classId: widget.classId,
                                       date: date.add(months: index - 2400),
                                       someWeeksOfNextMonth: true,
                                       weekMode: weekMode,
