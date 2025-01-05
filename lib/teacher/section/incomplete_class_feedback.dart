@@ -39,10 +39,13 @@ class _IncompleteClassFeedbackState extends State<IncompleteClassFeedback> {
     });
 
     try {
-      debugPrint("widget.classId: ${widget.classId} (${widget.classId.runtimeType})");
+      debugPrint(
+          "widget.classId: ${widget.classId} (${widget.classId.runtimeType})");
 
       final List<DateTime> result =
-      await httpService.fetchIncompleteFeedbackDates(classId: widget.classId);
+      await httpService.fetchIncompleteFeedbackDates(
+        classId: widget.classId,
+      );
 
       setState(() {
         incompleteFeedbackDates = result;
@@ -53,7 +56,6 @@ class _IncompleteClassFeedbackState extends State<IncompleteClassFeedback> {
       debugPrint("Error fetching incomplete feedback dates: $e");
       debugPrint("Stack Trace: $stackTrace");
 
-      debugPrint("Error fetching incomplete feedback dates: $e");
       setState(() {
         isLoading = false;
         errorMessage = e.toString();
@@ -106,20 +108,38 @@ class _IncompleteClassFeedbackState extends State<IncompleteClassFeedback> {
             ),
           ),
         if (!isLoading && errorMessage == null)
-          Expanded(
-            child: SingleChildScrollView(
+          if (incompleteFeedbackDates.isEmpty)
+            Expanded(
               child: Column(
-                children: incompleteFeedbackDates.map((date) {
-                  return IncompleteClassFeedbackTile(
-                    classId: widget.classId,
-                    classTitle: widget.classTitle,
-                    date: date,
-                    onPop: fetchIncompleteFeedbackDates,
-                  );
-                }).toList(),
+                children: [
+                  const Spacer(flex: 4), // 위쪽 공간 비율
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      "현재 미작성된 피드백이 없습니다.",
+                      style: TextStyle(fontSize: 14, color: Colors.black54),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const Spacer(flex: 6), // 아래쪽 공간 비율
+                ],
+              ),
+            )
+          else
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: incompleteFeedbackDates.map((date) {
+                    return IncompleteClassFeedbackTile(
+                      classId: widget.classId,
+                      classTitle: widget.classTitle,
+                      date: date,
+                      onPop: fetchIncompleteFeedbackDates,
+                    );
+                  }).toList(),
+                ),
               ),
             ),
-          ),
       ],
     );
   }

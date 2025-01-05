@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jiffy/jiffy.dart';
@@ -196,6 +197,8 @@ class HttpService {
                     classInfo['period'] != null
                 ? classInfo['finished_lessons'] / classInfo['period']
                 : 0.0,
+            'finishedLessons':classInfo['finished_lessons'],
+            'period': classInfo['period'],
             'themeColor': mappedColor, // 매핑된 색상
             'infoItems': [
               ClassInfoItem(
@@ -316,12 +319,18 @@ class HttpService {
     required int classId,
   }) async {
     try {
+      // 오늘 날짜를 YYYY-MM-DD 형식으로 포맷
+      final String todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      debugPrint('Requesting incomplete feedback dates with: classId=$classId, fromDate=$todayDate');
+
       final response = await call.get('/home/noFeedback', queryParameters: {
         "classId": classId,
+        "fromDate": todayDate, // 오늘 날짜를 fromDate로 설정
       });
 
       if (response.statusCode == 200) {
         final data = List<Map<String, dynamic>>.from(response.data);
+        debugPrint('Response data: $data');
         return data.map((item) {
           return DateTime.parse(item['date']);
         }).toList();
@@ -329,6 +338,7 @@ class HttpService {
         throw Exception("Failed to fetch incomplete feedback dates.");
       }
     } catch (e) {
+      debugPrint("Error in fetchIncompleteFeedbackDates: $e");
       throw Exception("Error in fetchIncompleteFeedbackDates: $e");
     }
   }
