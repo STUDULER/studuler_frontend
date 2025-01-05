@@ -73,6 +73,7 @@ class _BottomBarState extends State<BottomBar> {
         return true; // 뒤로가기 허용 (앱 종료)
       },
       child: Scaffold(
+        key: mainScaffoldKey,
         body: widgetOptions.elementAt(_selectedIndex),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
@@ -94,6 +95,7 @@ class _BottomBarState extends State<BottomBar> {
             ),
           ],
         ),
+        endDrawer: DrawerPage(),
       ),
     );
   }
