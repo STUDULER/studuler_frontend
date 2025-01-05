@@ -109,7 +109,7 @@ class _FeedbackScrollableSheetSectionState
     );
   }
 
-  Widget completeButton() {
+  Widget completeButton(BuildContext context) {
     return GestureDectectorHidingKeyboard(
       onTap: () async {
         if (welldoneController.text.isEmpty) return;
@@ -117,19 +117,31 @@ class _FeedbackScrollableSheetSectionState
         if (homework.isEmpty) return;
         if (memoController.text.isEmpty) return;
 
-        final feedbackId = await httpService.createClassFeedback(
-          classId: widget.classId,
-          date: widget.selectedDate.value.dateTime,
-          did: welldoneController.text,
-          attitude: attitudeController.text,
-          homework: homework,
-          memo: memoController.text,
-          rating: rating,
-        );
-        if (feedbackId != null) {
-          widget.classFeedback.value = await httpService.fetchClassFeedback(
-            date: widget.selectedDate.value,
+        if (widget.classFeedback.value == null) {
+          final feedbackId = await httpService.createClassFeedback(
+            classId: widget.classId,
+            date: widget.selectedDate.value.dateTime,
+            did: welldoneController.text,
+            attitude: attitudeController.text,
+            homework: homework,
+            memo: memoController.text,
+            rating: rating,
           );
+          if (feedbackId != null) {
+            widget.classFeedback.value = await httpService.fetchClassFeedback(
+              classId: widget.classId,
+              date: widget.selectedDate.value,
+            );
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("피드백 작성이 완료되었습니다."),
+                ),
+              );
+            }
+          }
+        } else {
+          // Todo - 피드백 업데이트
         }
       },
       child: Container(
@@ -139,9 +151,9 @@ class _FeedbackScrollableSheetSectionState
           borderRadius: BorderRadius.circular(10),
           color: const Color(0xFFC7B7A3),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
-            "완료",
+            widget.classFeedback.value == null ? "완료" : "변경",
             style: TextStyle(
               color: Colors.white,
             ),
@@ -191,8 +203,6 @@ class _FeedbackScrollableSheetSectionState
                   ),
                 );
               }
-              final readOnly = feedback != null;
-              final showCursor = !readOnly;
               return Container(
                 color: Colors.white,
                 child: Padding(
@@ -216,16 +226,12 @@ class _FeedbackScrollableSheetSectionState
                         controller: welldoneController,
                         label: "오늘 한 일",
                         hintText: "오늘 한 일을 적어주세요.",
-                        readOnly: readOnly,
-                        showCursor: showCursor,
                       ),
                       const Gap(16),
                       AuthTextField(
                         controller: attitudeController,
                         label: "태도",
                         hintText: "태도를 적어주세요.",
-                        readOnly: readOnly,
-                        showCursor: showCursor,
                       ),
                       const Gap(16),
                       Text(
@@ -237,9 +243,8 @@ class _FeedbackScrollableSheetSectionState
                         children: [
                           TextButton.icon(
                             onPressed: () {
-                              if (readOnly) return;
                               setState(() {
-                                homework = "0";
+                                homework = "완료";
                               });
                             },
                             style: const ButtonStyle(
@@ -259,7 +264,7 @@ class _FeedbackScrollableSheetSectionState
                                   color: const Color(0xffffec9e),
                                 ),
                                 borderRadius: BorderRadius.circular(20),
-                                color: homework == "0"
+                                color: homework == "완료"
                                     ? const Color(0xffffec9e)
                                     : Colors.white70,
                               ),
@@ -268,9 +273,8 @@ class _FeedbackScrollableSheetSectionState
                           ),
                           TextButton.icon(
                             onPressed: () {
-                              if (readOnly) return;
                               setState(() {
-                                homework = "1";
+                                homework = "부분완료";
                               });
                             },
                             style: const ButtonStyle(
@@ -290,7 +294,7 @@ class _FeedbackScrollableSheetSectionState
                                   color: const Color(0xffffec9e),
                                 ),
                                 borderRadius: BorderRadius.circular(20),
-                                color: homework == "1"
+                                color: homework == "부분완료"
                                     ? const Color(0xffffec9e)
                                     : Colors.white70,
                               ),
@@ -299,9 +303,8 @@ class _FeedbackScrollableSheetSectionState
                           ),
                           TextButton.icon(
                             onPressed: () {
-                              if (readOnly) return;
                               setState(() {
-                                homework = "2";
+                                homework = "미완료";
                               });
                             },
                             style: const ButtonStyle(
@@ -321,7 +324,7 @@ class _FeedbackScrollableSheetSectionState
                                   color: const Color(0xffffec9e),
                                 ),
                                 borderRadius: BorderRadius.circular(20),
-                                color: homework == "2"
+                                color: homework == "미완료"
                                     ? const Color(0xffffec9e)
                                     : Colors.white70,
                               ),
@@ -335,8 +338,6 @@ class _FeedbackScrollableSheetSectionState
                         controller: memoController,
                         label: "메모",
                         hintText: "메모를 적어주세요.",
-                        readOnly: readOnly,
-                        showCursor: showCursor,
                       ),
                       const Gap(16),
                       Text(
@@ -344,7 +345,6 @@ class _FeedbackScrollableSheetSectionState
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       RatingBar.builder(
-                        ignoreGestures: readOnly,
                         initialRating: rating.toDouble(),
                         minRating: 0,
                         direction: Axis.horizontal,
@@ -356,26 +356,24 @@ class _FeedbackScrollableSheetSectionState
                           color: Colors.amber,
                         ),
                         onRatingUpdate: (newRating) {
-                          if (readOnly) return;
                           rating = newRating.toInt();
                         },
                       ),
                       const Gap(16),
-                      if (!readOnly)
-                        Row(
-                          children: [
-                            const Spacer(),
-                            cancelButton(),
-                            const SizedBox(
-                              width: 16,
-                            ),
-                            completeButton(),
-                            const SizedBox(
-                              width: 16,
-                            ),
-                          ],
-                        ),
-                      if (!readOnly) const Gap(16),
+                      Row(
+                        children: [
+                          const Spacer(),
+                          cancelButton(),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          completeButton(context),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                        ],
+                      ),
+                      const Gap(16),
                     ],
                   ),
                 ),
