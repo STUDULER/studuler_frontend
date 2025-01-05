@@ -21,6 +21,7 @@ class ClassInfoCard extends StatefulWidget {
       Color themeColor,
       ) onUpdate;
   final Function(String) goToPerClassPage;
+  final Function(int classId) onDelete;
 
   const ClassInfoCard({
     required this.title,
@@ -33,6 +34,7 @@ class ClassInfoCard extends StatefulWidget {
     required this.themeColor,
     required this.onUpdate,
     required this.goToPerClassPage,
+    required this.onDelete,
     super.key,
   });
 
@@ -203,10 +205,10 @@ class _ClassInfoCardState extends State<ClassInfoCard>
         final success = await HttpService().deleteClass(widget.classId);
 
         if (success) {
+          widget.onDelete(widget.classId); // 삭제 알림 전달
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("수업이 삭제되었습니다.")),
           );
-          widget.onUpdate(widget.title, widget.infoItems, widget.themeColor);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("수업 삭제에 실패했습니다.")),

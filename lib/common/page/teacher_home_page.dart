@@ -21,6 +21,7 @@ class TeacherHomePage extends StatefulWidget {
 
 class _TeacherHomePageState extends State<TeacherHomePage> {
   Future<List<Map<String, dynamic>>>? futureClassData;
+  List<Map<String, dynamic>>? classData; // 수업 데이터를 로컬에 유지
   int currentIndex = 0;
 
   @override
@@ -31,14 +32,21 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
 
   void _refreshClassData() {
     setState(() {
-      futureClassData = null; // 먼저 future를 null로 초기화
-    });
-
-    // 새로운 데이터를 가져와 future에 할당
-    Future.delayed(Duration.zero, () {
-      setState(() {
-        futureClassData = HttpService().fetchClasses();
+      futureClassData = HttpService().fetchClasses().then((data) {
+        setState(() {
+          classData = data; // 로컬에 데이터 저장
+        });
+        return data;
       });
+    });
+  }
+
+  void _removeClass(int classId) {
+    setState(() {
+      classData?.removeWhere((classItem) => classItem['classId'] == classId);
+      if (currentIndex >= (classData?.length ?? 1)) {
+        currentIndex = (classData?.length ?? 1) - 1; // 인덱스 조정
+      }
     });
   }
 
@@ -55,7 +63,6 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
               IconButton(
                 icon: const Icon(Icons.add, color: Colors.black),
                 onPressed: () async {
-                  // AddClassPage로 이동하고 돌아올 때 데이터 갱신
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -63,7 +70,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                     ),
                   );
                   if (result != null && result == true) {
-                    _refreshClassData(); // 데이터를 갱신
+                    _refreshClassData();
                   }
                 },
               ),
@@ -79,16 +86,21 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                return Center(child: Text('에러 발생: ${snapshot.error}'));
-              } else if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
-                final classData = snapshot.data!;
+                final errorMessage = snapshot.error.toString();
+                if (errorMessage.contains('No classes available for the teacher')) {
+                  // 특정 에러 메시지일 경우 빈 카드 표시
+                  return _buildEmptyCard(screenHeight, screenWidth);
+                } else {
+                  // 그 외의 에러는 에러 메시지 표시
+                  return Center(child: Text('에러 발생: $errorMessage'));
+                }
+              } else if (classData != null && classData!.isNotEmpty) {
                 return Column(
                   children: [
-                    SizedBox(height: screenHeight * 0.13), // 상단 여백 비율 유지
-                    // 인디케이터
+                    SizedBox(height: screenHeight * 0.13),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(classData.length, (index) {
+                      children: List.generate(classData!.length, (index) {
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
@@ -101,29 +113,30 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                         );
                       }),
                     ),
-                    SizedBox(height: screenHeight * 0.06), // 인디케이터 아래 여백 비율 유지
+                    SizedBox(height: screenHeight * 0.06),
                     Expanded(
                       child: Swiper(
-                        itemCount: classData.length,
+                        itemCount: classData!.length,
                         itemBuilder: (BuildContext context, int index) {
-                          final classItem = classData[index];
+                          final classItem = classData![index];
                           return ClassInfoCard(
                             title: classItem['title'],
                             code: classItem['code'],
                             classId: classItem['classId'],
                             currentIndex: index,
-                            totalCards: classData.length,
+                            totalCards: classData!.length,
                             completionRate: classItem['completionRate'],
                             themeColor: classItem['themeColor'],
                             infoItems: classItem['infoItems'],
                             onUpdate: (updatedTitle, updatedInfoItems, updatedThemeColor) {
                               setState(() {
-                                classData[index]['title'] = updatedTitle;
-                                classData[index]['infoItems'] = updatedInfoItems;
-                                classData[index]['themeColor'] = updatedThemeColor;
+                                classData![index]['title'] = updatedTitle;
+                                classData![index]['infoItems'] = updatedInfoItems;
+                                classData![index]['themeColor'] = updatedThemeColor;
                               });
                             },
                             goToPerClassPage: widget.goToPerClassPage,
+                            onDelete: _removeClass, // 삭제 콜백 전달
                           );
                         },
                         loop: false,
@@ -137,11 +150,46 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                   ],
                 );
               } else {
-                return const Center(child: Text('수업 데이터가 없습니다.'));
+                // 빈 카드 표시
+                return _buildEmptyCard(screenHeight, screenWidth);
               }
             },
-          )
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyCard(double screenHeight, double screenWidth) {
+    return Center(
+      child: GestureDetector(
+        onTap: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddClassPage(),
+            ),
+          );
+          if (result != null && result == true) {
+            _refreshClassData();
+          }
+        },
+        child: Container(
+          width: screenWidth * 0.93, // 화면 가로 길이의 93%
+          height: screenHeight * 0.67, // 화면 세로 길이의 67%
+          margin: EdgeInsets.only(top: screenHeight * 0.22), // 카드 위치 아래로 이동
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Center(
+            child: Icon(
+              Icons.add,
+              size: screenHeight * 0.08, // 화면 세로 길이의 8% 크기의 아이콘
+              color: Colors.grey[600],
+            ),
+          ),
+        ),
       ),
     );
   }
