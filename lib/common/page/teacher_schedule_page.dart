@@ -29,6 +29,28 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
   List<ClassDay> classDays = [];
   List<Map<String, dynamic>> scheduleItems = []; // 선택된 날짜의 일정 데이터
 
+  // 색상 매핑 함수
+  Color getColorFromIndex(int colorIdx) {
+    const List<Color> colorPalette = [
+      Color(0xFFC96868), // Red shade
+      Color(0xFFFFBB70), // Peach shade
+      Color(0xFFB5C18E), // Green shade
+      Color(0xFFCFEFFC), // Light Blue shade
+      Color(0xFF5A72A0), // Blue shade
+      Color(0xFFDDBCFF), // Lavender shade
+      Color(0xFFFCCFCF), // Pink shade
+      Color(0xFFD9D9D9), // Light Gray shade
+      Color(0xFF545454), // Dark Gray shade
+      Color(0xFFB28F65), // Brown shade
+    ];
+
+    if (colorIdx < 0 || colorIdx >= colorPalette.length) {
+      return const Color(0xFF000000); // Default black color
+    }
+
+    return colorPalette[colorIdx];
+  }
+
   // 월별 일정 가져오기
   void fetchClassDays(Jiffy date) async {
     final fetchedClassDays = await httpService.fetchClassScheduleOFMonth(
@@ -44,8 +66,18 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
   Future<void> fetchScheduleForSelectedDate(String date) async {
     try {
       final response = await httpService.fetchClassesByDate(date);
+
+
       setState(() {
-        scheduleItems = response;
+        scheduleItems = response.map((item) {
+          final themecolor = item['themecolor'] ?? -1;
+          final mappedColor = getColorFromIndex(themecolor);
+
+          return {
+            ...item,
+            'mappedColor': mappedColor,
+          };
+        }).toList();
       });
     } catch (e) {
       print("Error fetching schedule: $e");
@@ -220,9 +252,9 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
                     ),
                   ),
                 ),
-                const Gap(16),
+                const Gap(10),
                 const Divider(),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 ValueListenableBuilder<Jiffy>(
                   valueListenable: selectedDate,
                   builder: (context, value, child) {
@@ -249,27 +281,37 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
                     );
                   },
                 ),
-                const SizedBox(height: 10),
-                // 기본 예시 "대치동 수학 과외"를 항상 표시
-                const ScheduleItem(
-                  title: "대치동 수학 과외",
-                  label: "피드백 완료",
-                  isFeedbackComplete: true,
-                  dotColor: Color(0xFFB5C18E),
-                ),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: scheduleItems.length,
-                    itemBuilder: (context, index) {
-                      final schedule = scheduleItems[index];
-                      return ScheduleItem(
-                        title: schedule['classname'],
-                        label: schedule['feedbackStatus'],
-                        isFeedbackComplete:
-                        schedule['feedbackStatus'] == '피드백 완료',
-                        dotColor: Color(schedule['themecolor']),
-                      );
-                    },
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8.0), // 상단 여백 최소화
+                    child: scheduleItems.isEmpty
+                        ? const Center(
+                      child: Text(
+                        "수업이 없는 날입니다.",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    )
+                        : ListView.builder(
+                      physics: const BouncingScrollPhysics(), // 부드러운 스크롤 추가
+                      padding: const EdgeInsets.all(0), // ListView 자체의 여백 제거
+                      itemCount: scheduleItems.length,
+                      itemBuilder: (context, index) {
+                        final schedule = scheduleItems[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 0.0), // 카드 간의 간격 최소화
+                          child: ScheduleItem(
+                            title: schedule['classname'],
+                            label: schedule['feedbackStatus'],
+                            isFeedbackComplete:
+                            schedule['feedbackStatus'] == '피드백 완료',
+                            dotColor: schedule['mappedColor'], // 매핑된 색상 사용
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ],

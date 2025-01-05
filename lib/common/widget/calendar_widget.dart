@@ -4,7 +4,6 @@ import 'package:jiffy/jiffy.dart';
 import '../http/http_service.dart';
 import '../model/class_day.dart';
 import '../util/weeks_of_month_calendar.dart';
-import '../../common/section/calendar_week_section.dart';
 
 class CalendarWidget extends StatefulWidget {
   const CalendarWidget({
@@ -16,7 +15,7 @@ class CalendarWidget extends StatefulWidget {
     required this.selectedDate,
     required this.classDays,
     required this.fetchClassDaysFunction,
-    required this.onDateSelected, // 날짜 클릭 시 호출할 콜백 추가
+    required this.onDateSelected,
   });
 
   final int classId;
@@ -26,7 +25,7 @@ class CalendarWidget extends StatefulWidget {
   final ValueNotifier<Jiffy> selectedDate;
   final List<ClassDay> classDays;
   final Function(Jiffy) fetchClassDaysFunction;
-  final Function(String) onDateSelected; // 클릭된 날짜를 부모에게 전달하는 콜백
+  final Function(String) onDateSelected;
 
   @override
   State<CalendarWidget> createState() => _CalendarWidgetState();
@@ -34,10 +33,6 @@ class CalendarWidget extends StatefulWidget {
 
 class _CalendarWidgetState extends State<CalendarWidget> {
   final httpService = HttpService();
-
-  final sidePadding = const EdgeInsets.symmetric(horizontal: 12);
-
-  Jiffy lastFetchTime = Jiffy.now();
 
   // 색상 매핑 함수
   Color getColorFromIndex(int colorIdx) {
@@ -54,151 +49,100 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       Color(0xFFB28F65), // Brown shade
     ];
 
-    if (colorIdx >= 0 && colorIdx < colorPalette.length) {
-      return colorPalette[colorIdx];
-    } else {
+    if (colorIdx < 0 || colorIdx >= colorPalette.length) {
       return const Color(0xFF000000); // Default black color
     }
-  }
 
-  @override
-  void initState() {
-    super.initState();
-    // _logClassDays();
-  }
-
-  // 디버깅 메시지를 추가하여 classDays 정보를 로깅
-  void _logClassDays() {
-    print("Initializing CalendarWidget...");
-    print("Class ID: ${widget.classId}");
-    print("Selected Date: ${widget.selectedDate.value.format(pattern: 'yyyy-MM-dd')}");
-    print("Class Days Loaded: ${widget.classDays.length}");
-    for (var day in widget.classDays) {
-      print(
-          "ClassDay -> Date: ${day.day.format(pattern: 'yyyy-MM-dd')}, ColorIdx: ${day.colorIdx}");
-    }
-    print("Initialization complete.\n");
+    return colorPalette[colorIdx];
   }
 
   @override
   Widget build(BuildContext context) {
-    List<CalendarWeekSection> weekSections = [];
-
-    for (var i = 0; i < weeksOfMonthOnCalendar(widget.date); i++) {
-      final weekStart = widget.date.startOf(Unit.month).startOf(Unit.week).add(weeks: i);
-
-      weekSections.add(
-        CalendarWeekSection(
-          onTap: (int index, Jiffy date) {
-            setState(() {
-              widget.selectedDate.value = date;
-            });
-            print("Date selected: ${date.format(pattern: 'yyyy-MM-dd')}");
-            fetchClassDetailsByDate(date.format(pattern: 'yyyy-MM-dd'));
-            widget.onDateSelected(date.format(pattern: 'yyyy-MM-dd')); // 부모로 날짜 전달
-          },
-          allowLongPress: true,
-          afterAddOrDeleteClassDay: widget.fetchClassDaysFunction,
-          classId: widget.classId,
-          selectedDate: widget.selectedDate.value,
-          month: widget.date.month,
-          startDayOfWeek: weekStart,
-          classDays: widget.classDays.map((classDay) {
-            /*
-            print(
-                "Mapping ClassDay: Date: ${classDay.day.format(pattern: 'yyyy-MM-dd')}, ColorIdx: ${classDay.colorIdx}");
-
-             */
-            return ClassDay(
-              classId: classDay.classId,
-              day: classDay.day,
-              isPayDay: classDay.isPayDay,
-              colorIdx: classDay.colorIdx, // 매핑된 색상 사용
-            );
-          }).toList(),
-        ),
-      );
-    }
-
-    if (widget.someWeeksOfNextMonth == true) {
-      const numOfWeeksToDisplay = 8;
-      final numOfSomeWeeks =
-          numOfWeeksToDisplay - weeksOfMonthOnCalendar(widget.date);
-      final Jiffy nextDate = widget.date.add(months: 1);
-
-      print("Adding Overflow Weeks from Next Month: $numOfSomeWeeks");
-
-      weekSections.addAll(
-        List.generate(
-          numOfSomeWeeks,
-              (index) => CalendarWeekSection(
-            classId: widget.classId,
-            month: nextDate.month,
-            selectedDate: widget.selectedDate.value,
-            startDayOfWeek: nextDate
-                .startOf(Unit.month)
-                .startOf(Unit.week)
-                .add(weeks: index),
-            opacity: 0.33,
-            classDays: const [],
-          ),
-        ),
-      );
-    }
-
     return LayoutBuilder(
       builder: (context, constraints) {
         final parentHeight = constraints.maxHeight;
-        final componentHeight = parentHeight / weekSections.length;
+        final weekSections = weeksOfMonthOnCalendar(widget.date);
 
-        print("Final Layout: ${weekSections.length} weeks, Component Height: $componentHeight");
+        return Column(
+          children: List.generate(weekSections, (weekIndex) {
+            final startDayOfWeek = widget.date.startOf(Unit.month).startOf(Unit.week).add(weeks: weekIndex);
+            final daysInWeek = List.generate(7, (dayIndex) => startDayOfWeek.add(days: dayIndex));
 
-        return Stack(
-          children: List<Widget>.generate(weekSections.length, (index) {
-            final topPosition = componentHeight * index;
+            return Expanded(
+              child: Row(
+                children: daysInWeek.map((day) {
+                  final matchingDays = widget.classDays
+                      .where((classDay) => classDay.day.isSame(day, unit: Unit.day))
+                      .toList();
 
-            print("Positioning Week Section $index at Top: $topPosition");
+                  // 점 색상 리스트 생성
+                  final dotColors = matchingDays.map((classDay) => getColorFromIndex(classDay.colorIdx)).toList();
 
-            return Positioned(
-              top: topPosition,
-              left: 0,
-              right: 0,
-              height: componentHeight,
-              child: ValueListenableBuilder(
-                valueListenable: widget.selectedDate,
-                builder: (context, selectedDate, child) {
-                  return weekSections.elementAt(index);
-                },
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          widget.selectedDate.value = day;
+                        });
+                        widget.onDateSelected(day.format(pattern: 'yyyy-MM-dd'));
+                      },
+                      child: Container(
+                        color: Colors.transparent, // 셀 전체를 터치 가능하게 만듦
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // 날짜 표시
+                            Container(
+                              width: MediaQuery.of(context).size.width / 7,
+                              decoration: BoxDecoration(
+                                color: day.isSame(widget.selectedDate.value, unit: Unit.day)
+                                    ? const Color(0xffc7b7a3) // 클릭한 날짜: 갈색 동그라미
+                                    : day.isSame(Jiffy.now(), unit: Unit.day)
+                                    ? const Color(0xffc7b7a3).withOpacity(0.6) // 오늘 날짜: 투명도 낮은 갈색
+                                    : Colors.white, // 나머지 날짜: 흰색 배경
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "${day.date}",
+                                    style: TextStyle(
+                                      color: day.month == widget.date.month
+                                          ? Colors.black
+                                          : Colors.grey, // 다음 달/이전 달은 회색
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            // 점 표시
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(dotColors.length, (index) {
+                                return Container(
+                                  width: 6,
+                                  height: 6,
+                                  margin: const EdgeInsets.symmetric(horizontal: 1),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: dotColors[index],
+                                  ),
+                                );
+                              }),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
             );
           }),
         );
       },
     );
-  }
-
-  Future<void> fetchClassDetailsByDate(String date) async {
-    try {
-      print("Fetching class details for date: $date...");
-      final response = await httpService.call.get(
-        '/total/classByDateT',
-        queryParameters: {'date': date},
-      );
-
-      if (response.statusCode == 200) {
-        final List classDetails = response.data;
-        print("Fetched ${classDetails.length} classes for date: $date.");
-        for (var detail in classDetails) {
-          print(
-              "ClassId: ${detail['classid']}, ClassName: ${detail['classname']}, "
-                  "ThemeColor: ${detail['themecolor']}, FeedbackStatus: ${detail['feedbackStatus']}");
-        }
-      } else {
-        print(
-            "Failed to fetch class details for date: $date. Status code: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Error fetching class details for date: $date -> $e");
-    }
   }
 }

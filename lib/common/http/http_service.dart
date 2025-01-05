@@ -175,10 +175,6 @@ class HttpService {
     try {
       final response = await call.get('/home/eachClassT');
 
-      // 응답 데이터 출력 (디버깅용)
-      print("Response status: ${response.statusCode}");
-      print("Response data: ${response.data}");
-
       if (response.statusCode == 200) {
         final data = List<Map<String, dynamic>>.from(response.data);
         if (data.isEmpty) {
@@ -287,13 +283,9 @@ class HttpService {
         },
       );
 
-      if (response.statusCode == 200 &&
-          response.data['message'] ==
-              'Class information updated successfully.') {
-        print("Class information updated successfully.");
+      if (response.statusCode == 200 && response.data['message'] == 'Class information updated successfully.') {
         return true;
       } else {
-        print("Failed to update class information: ${response.data}");
         return false;
       }
     } catch (e) {
@@ -304,24 +296,16 @@ class HttpService {
 
   Future<bool> deleteClass(int classId) async {
     try {
-      print(
-          "Delete Class - Request Data: classId = $classId, Type: ${classId.runtimeType}");
       final response = await call.delete('/home/removeClass', data: {
         "classId": classId,
       });
 
-      print("Delete Class - Response Status: ${response.statusCode}");
-      print("Delete Class - Response Data: ${response.data}");
-
       if (response.statusCode == 200) {
-        print("Class deleted successfully");
         return true;
       } else {
-        print("Failed to delete class: ${response.statusCode}");
         return false;
       }
     } catch (e) {
-      print("Error in deleteClass: $e");
       return false;
     }
   }
@@ -433,50 +417,35 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
-    await Future.delayed(Durations.long1);
-    toggle = !toggle;
-    if (toggle) {
-      return [
-        ClassDay(
-          classId: classId,
-          day: Jiffy.parseFromList([date.year, date.month, 2]),
-          isPayDay: false,
-          colorIdx: 0,
-        ),
-        ClassDay(
-          classId: classId,
-          day: Jiffy.parseFromList([date.year, date.month, 9]),
-          isPayDay: false,
-          colorIdx: 0,
-        ),
-        ClassDay(
-          classId: classId,
-          day: Jiffy.parseFromList([date.year, date.month, 16]),
-          isPayDay: false,
-          colorIdx: 0,
-        ),
-        ClassDay(
-          classId: classId,
-          day: Jiffy.parseFromList([date.year, date.month, 23]),
-          isPayDay: true,
-          colorIdx: 0,
-        ),
-      ];
-    } else {
-      return [
-        ClassDay(
-          classId: classId,
-          day: Jiffy.parseFromList([date.year, date.month, 2]),
-          isPayDay: false,
-          colorIdx: 0,
-        ),
-        ClassDay(
-          classId: classId,
-          day: Jiffy.parseFromList([date.year, date.month, 9]),
-          isPayDay: false,
-          colorIdx: 0,
-        ),
-      ];
+    try {
+      final queryParameters = {
+        "year": date.year,
+        "month": date.month,
+      };
+
+      // GET 요청
+      final response = await call.get(
+        "/total/calendarT",
+        queryParameters: queryParameters,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+
+        // 응답 데이터 처리 및 변환
+        return data.map((item) {
+          return ClassDay(
+            classId: item['classid'],
+            day: Jiffy.parse(item['date'], pattern: 'yyyy-MM-dd'),
+            isPayDay: item['dateofpayment'] != null,
+            colorIdx: item['themecolor'] ?? -1,
+          );
+        }).toList();
+      } else {
+        throw Exception("Failed to fetch class schedule.");
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 

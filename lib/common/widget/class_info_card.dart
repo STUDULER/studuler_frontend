@@ -217,8 +217,6 @@ class _ClassInfoCardState extends State<ClassInfoCard>
         }
       }
     } catch (e, stackTrace) {
-      print('Error deleting class: $e');
-      print('Stack Trace: $stackTrace');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("알 수 없는 오류가 발생했습니다.")),
       );
