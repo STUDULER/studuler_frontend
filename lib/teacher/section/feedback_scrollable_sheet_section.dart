@@ -77,11 +77,24 @@ class _FeedbackScrollableSheetSectionState
     widget.classFeedback.addListener(() {
       welldoneController.text = widget.classFeedback.value?.workdone ?? "";
       attitudeController.text = widget.classFeedback.value?.attitude ?? "";
-      homework = widget.classFeedback.value?.homework.toString() ?? "";
+      homework = _homeworkMapper(widget.classFeedback.value?.homework);
       memoController.text = widget.classFeedback.value?.memo ?? "";
       rating = widget.classFeedback.value?.rate ?? 5;
     });
     super.initState();
+  }
+
+  String _homeworkMapper(int? homework) {
+    switch (homework) {
+      case 0:
+        return "미완료";
+      case 1:
+        return "부분완료";
+      case 2:
+        return "완료";
+      default:
+        return "";
+    }
   }
 
   Widget cancelButton() {
