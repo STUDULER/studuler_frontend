@@ -11,7 +11,9 @@ import '../../common/model/class_day.dart';
 import '../../common/section/calendar_date_section.dart';
 
 class TeacherSchedulePage extends StatefulWidget {
-  const TeacherSchedulePage({Key? key}) : super(key: key);
+  final Function(int, String, int) goToPerClassPage;
+
+  const TeacherSchedulePage({Key? key, required this.goToPerClassPage}) : super(key: key);
 
   @override
   State<TeacherSchedulePage> createState() => _TeacherSchedulePageState();
@@ -66,7 +68,6 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
   Future<void> fetchScheduleForSelectedDate(String date) async {
     try {
       final response = await httpService.fetchClassesByDate(date);
-
 
       setState(() {
         scheduleItems = response.map((item) {
@@ -286,9 +287,9 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
                     padding: const EdgeInsets.only(top: 8.0), // 상단 여백 최소화
                     child: scheduleItems.isEmpty
                         ? const Center(
-                      child: Text(
-                        "수업이 없는 날입니다.",
-                        style: TextStyle(
+                          child: Text(
+                          "수업이 없는 날입니다.",
+                          style: TextStyle(
                           fontSize: 16,
                           color: Colors.black54,
                         ),
@@ -302,12 +303,25 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
                         final schedule = scheduleItems[index];
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 0.0), // 카드 간의 간격 최소화
-                          child: ScheduleItem(
-                            title: schedule['classname'],
-                            label: schedule['feedbackStatus'],
-                            isFeedbackComplete:
-                            schedule['feedbackStatus'] == '피드백 완료',
-                            dotColor: schedule['mappedColor'], // 매핑된 색상 사용
+                          child: GestureDetector(
+                            onTap: () {
+                              print("classid: ${schedule['classid']}");
+                              print("classname: ${schedule['classname']}");
+                              print("themecolor: ${schedule['themecolor']}");
+
+                              // 페이지 이동 트리거
+                              widget.goToPerClassPage(
+                                schedule['classid'],
+                                schedule['classname'],
+                                schedule['themecolor'],
+                              );
+                            },
+                            child: ScheduleItem(
+                              title: schedule['classname'],
+                              label: schedule['feedbackStatus'],
+                              isFeedbackComplete: schedule['feedbackStatus'] == '피드백 완료',
+                              dotColor: schedule['mappedColor'], // 매핑된 색상 사용
+                            ),
                           ),
                         );
                       },
