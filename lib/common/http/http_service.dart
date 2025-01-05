@@ -495,6 +495,7 @@ class HttpService {
     final data = response.data as List;
     if (data.isEmpty) return null;
     final feedback = data.first;
+    if (feedback['feedbackid'] == null) return null;
     return ClassFeedback(
       date: Jiffy.parse(feedback['date']).dateTime,
       workdone: feedback['workdone'],
