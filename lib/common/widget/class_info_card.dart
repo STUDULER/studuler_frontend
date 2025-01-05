@@ -97,17 +97,16 @@ class _ClassInfoCardState extends State<ClassInfoCard>
   }
 
   void _editClassInfo() {
-    // 클래스 관련 데이터 구성 (예제 데이터)
     final Map<String, dynamic> classData = {
       'name': '링가링',
       'classid': widget.classId,
       'classcode': widget.code,
       'classname': widget.title,
-      'day': widget.infoItems[2].value, // 요일 정보
-      'time': widget.infoItems[1].value, // 회당 시간
-      'period': widget.infoItems[5].value, // 기간
+      'day': widget.infoItems[2].value,
+      'time': widget.infoItems[1].value,
+      'period': widget.infoItems[5].value,
       'dateofpayment': nextPaymentDate,
-      'hourlyrate': widget.infoItems[4].value, // 시급
+      'hourlyrate': widget.infoItems[4].value,
       'prepay': '1',
       'themecolor': widget.themeColor.value,
       'finished_lessons': '0',
@@ -115,7 +114,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
 
     EditItemDialog.showSelectItemDialog(
       context: context,
-      classData: classData, // 추가된 classData 전달
+      classData: classData,
       items: [
         {
           'title': '학생 이름',
@@ -206,7 +205,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
         final success = await HttpService().deleteClass(widget.classId);
 
         if (success) {
-          widget.onDelete(widget.classId); // 삭제 알림 전달
+          widget.onDelete(widget.classId);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("수업이 삭제되었습니다.")),
           );
@@ -216,7 +215,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
           );
         }
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("알 수 없는 오류가 발생했습니다.")),
       );
@@ -290,7 +289,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                           widget.goToPerClassPage(
                             widget.classId,
                             titleController.text,
-                            getIndexByColor(currentThemeColor)
+                            getIndexByColor(currentThemeColor),
                           );
                         },
                         child: Text(
@@ -391,44 +390,53 @@ class _ClassInfoCardState extends State<ClassInfoCard>
             ),
           ),
         ),
-        Positioned(
-          top: 0,
-          child: ClipOval(
-            child: Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                border: Border.all(
-                  color: currentThemeColor.withOpacity(0.2),
-                  width: 1,
+        GestureDetector(
+          onTap: () {
+            widget.goToPerClassPage(
+              widget.classId,
+              titleController.text,
+              getIndexByColor(currentThemeColor),
+            );
+          },
+          child: Positioned(
+            top: 0,
+            child: ClipOval(
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(
+                    color: currentThemeColor.withOpacity(0.2),
+                    width: 1,
+                  ),
+                  shape: BoxShape.circle,
                 ),
-                shape: BoxShape.circle,
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  AnimatedBuilder(
-                    animation: _controller,
-                    builder: (context, child) {
-                      return CustomPaint(
-                        size: const Size(100, 100),
-                        painter: AnimatedWavePainter(
-                          progress: widget.completionRate,
-                          animation: _controller,
-                          waveColor: currentThemeColor,
-                        ),
-                      );
-                    },
-                  ),
-                  Text(
-                    '${(widget.completionRate * 100).toInt()}%',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    AnimatedBuilder(
+                      animation: _controller,
+                      builder: (context, child) {
+                        return CustomPaint(
+                          size: const Size(100, 100),
+                          painter: AnimatedWavePainter(
+                            progress: widget.completionRate,
+                            animation: _controller,
+                            waveColor: currentThemeColor,
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                ],
+                    Text(
+                      '${(widget.completionRate * 100).toInt()}%',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
