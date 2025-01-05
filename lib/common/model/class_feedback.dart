@@ -1,4 +1,5 @@
 class ClassFeedback {
+  final int? feedbackId;
   final DateTime date;
   final String workdone;
   final String attitude;
@@ -7,6 +8,7 @@ class ClassFeedback {
   final int rate;
 
   ClassFeedback({
+    this.feedbackId,
     required this.date,
     required this.workdone,
     required this.attitude,

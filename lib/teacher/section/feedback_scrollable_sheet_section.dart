@@ -77,11 +77,24 @@ class _FeedbackScrollableSheetSectionState
     widget.classFeedback.addListener(() {
       welldoneController.text = widget.classFeedback.value?.workdone ?? "";
       attitudeController.text = widget.classFeedback.value?.attitude ?? "";
-      homework = widget.classFeedback.value?.homework.toString() ?? "";
+      homework = _homeworkMapper(widget.classFeedback.value?.homework);
       memoController.text = widget.classFeedback.value?.memo ?? "";
       rating = widget.classFeedback.value?.rate ?? 5;
     });
     super.initState();
+  }
+
+  String _homeworkMapper(int? homework) {
+    switch (homework) {
+      case 0:
+        return "미완료";
+      case 1:
+        return "부분완료";
+      case 2:
+        return "완료";
+      default:
+        return "";
+    }
   }
 
   Widget cancelButton() {
@@ -135,13 +148,35 @@ class _FeedbackScrollableSheetSectionState
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
+                  duration: Durations.medium2,
                   content: Text("피드백 작성이 완료되었습니다."),
                 ),
               );
             }
           }
         } else {
-          // Todo - 피드백 업데이트
+          final feedbackId = await httpService.updateClassFeedback(
+            feedbackId: widget.classFeedback.value?.feedbackId ?? 0,
+            did: welldoneController.text,
+            attitude: attitudeController.text,
+            homework: homework,
+            memo: memoController.text,
+            rating: rating,
+          );
+          if (feedbackId != null) {
+            widget.classFeedback.value = await httpService.fetchClassFeedback(
+              classId: widget.classId,
+              date: widget.selectedDate.value,
+            );
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  duration: Durations.medium2,
+                  content: Text("피드백 수정이 완료되었습니다."),
+                ),
+              );
+            }
+          }
         }
       },
       child: Container(
