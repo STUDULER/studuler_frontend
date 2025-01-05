@@ -197,6 +197,8 @@ class HttpService {
                     classInfo['period'] != null
                 ? classInfo['finished_lessons'] / classInfo['period']
                 : 0.0,
+            'finishedLessons':classInfo['finished_lessons'],
+            'period': classInfo['period'],
             'themeColor': mappedColor, // 매핑된 색상
             'infoItems': [
               ClassInfoItem(

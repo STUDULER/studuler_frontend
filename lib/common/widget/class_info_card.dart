@@ -15,6 +15,8 @@ class ClassInfoCard extends StatefulWidget {
   final int totalCards;
   final List<ClassInfoItem> infoItems;
   final double completionRate;
+  final int finishedLessons;
+  final int period;
   final Color themeColor;
   final Function(
       String title,
@@ -32,6 +34,8 @@ class ClassInfoCard extends StatefulWidget {
     required this.totalCards,
     required this.infoItems,
     required this.completionRate,
+    required this.finishedLessons,
+    required this.period,
     required this.themeColor,
     required this.onUpdate,
     required this.goToPerClassPage,
@@ -429,7 +433,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                       },
                     ),
                     Text(
-                      '${(widget.completionRate * 100).toInt()}%',
+                      '${widget.finishedLessons} / ${widget.period}',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

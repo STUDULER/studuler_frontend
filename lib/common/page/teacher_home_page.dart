@@ -133,6 +133,8 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                             currentIndex: index,
                             totalCards: classData!.length,
                             completionRate: classItem['completionRate'],
+                            finishedLessons: classItem['finishedLessons'],
+                            period: classItem['period'],
                             themeColor: classItem['themeColor'],
                             infoItems: classItem['infoItems'],
                             onUpdate: (updatedTitle, updatedInfoItems, updatedThemeColor) {
