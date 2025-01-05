@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../main.dart';
 import '../../teacher/page/teacher_schedule_per_class_page.dart';
+import '../../teacher/page/teacher_settlement_page.dart';
 import '../page/drawer_page.dart';
 import '../page/teacher_home_page.dart';
 import '../page/teacher_schedule_page.dart';
-import '../page/teacher_settlement_page.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});

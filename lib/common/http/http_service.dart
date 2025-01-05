@@ -4,6 +4,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:studuler/common/auth/oauth_user_dto.dart';
 
+import '../model/class_settlement.dart';
+import '../model/last_settlement.dart';
+import '../model/next_settlment.dart';
 import '../model/class_day.dart';
 import '../model/class_feedback.dart';
 import '../section/class_info_item.dart';
@@ -102,21 +105,25 @@ class HttpService {
     return true;
   }
 
-  Future<bool> createParent(String name) async {
-    // TMP
-    await Future.delayed(const Duration(milliseconds: 300));
+  Future<bool> createParent(OAuthUserDto dto, int loginMethod) async {
+    final response = await call.post(
+      "/students/signup",
+      data: {
+        "username": dto.username,
+        "password": dto.password,
+        "mail": dto.mail,
+        "loginMethod": loginMethod,
+        "image": dto.image,
+      },
+    );
+    if (response.statusCode != 201) {
+      return false;
+    }
+    String jwt = response.data['token'];
+    int userId = response.data['userId'];
+    await _secureStorage.write(key: "userId", value: "$userId");
+    await _secureStorage.write(key: "jwt", value: jwt);
     return true;
-
-    // final response = await call.post(
-    //   "/api/parents",
-    //   data: {
-    //     "name": name,
-    //   },
-    // );
-    // if (response.statusCode != 200) {
-    //   return false;
-    // }
-    // return true;
   }
 
   Future<String?> createClass({
@@ -409,7 +416,7 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
-    await Future.delayed(Durations.medium1);
+    await Future.delayed(Durations.long1);
     toggle = !toggle;
     if (toggle) {
       return [
@@ -527,6 +534,53 @@ class HttpService {
     );
     if (response.statusCode != 201) return false;
     return true;
+  }
+
+  Future<List<ClassSettlement>> fetchClassSettlements() async {
+    // TMP
+    await Future.delayed(Durations.medium2);
+    return [
+      ClassSettlement(
+        classId: 11,
+        className: '대치동 수학 학원',
+        classColor: 1,
+        lastSettlements: [
+          LastSettlement(
+            date: Jiffy.now(),
+            price: 112302,
+            isPaid: true,
+          ),
+          LastSettlement(
+            date: Jiffy.now(),
+            price: 1102,
+            isPaid: true,
+          ),
+          LastSettlement(
+            date: Jiffy.now(),
+            price: 112301232332,
+            isPaid: false,
+          ),
+        ],
+        nextSettlment: NextSettlment(
+          date: Jiffy.now(),
+        ),
+      ),
+      ClassSettlement(
+        classId: 12,
+        className: '성수동 국어 학원',
+        classColor: 7,
+        lastSettlements: [
+          LastSettlement(
+            date: Jiffy.now(),
+            price: 1102,
+            isPaid: true,
+          ),
+        ],
+        nextSettlment: NextSettlment(
+          date: Jiffy.now(),
+        ),
+      ),
+    ];
   }
 
   String _jiffyToFormat(Jiffy date) {
