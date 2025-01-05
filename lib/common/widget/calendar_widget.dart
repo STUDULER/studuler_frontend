@@ -151,13 +151,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         final parentHeight = constraints.maxHeight;
         final componentHeight = parentHeight / weekSections.length;
 
-        print("Final Layout: ${weekSections.length} weeks, Component Height: $componentHeight");
-
         return Stack(
           children: List<Widget>.generate(weekSections.length, (index) {
             final topPosition = componentHeight * index;
-
-            print("Positioning Week Section $index at Top: $topPosition");
 
             return Positioned(
               top: topPosition,

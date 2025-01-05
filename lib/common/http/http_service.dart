@@ -416,50 +416,35 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
-    await Future.delayed(Durations.long1);
-    toggle = !toggle;
-    if (toggle) {
-      return [
-        ClassDay(
-          classId: classId,
-          day: Jiffy.parseFromList([date.year, date.month, 2]),
-          isPayDay: false,
-          colorIdx: 0,
-        ),
-        ClassDay(
-          classId: classId,
-          day: Jiffy.parseFromList([date.year, date.month, 9]),
-          isPayDay: false,
-          colorIdx: 0,
-        ),
-        ClassDay(
-          classId: classId,
-          day: Jiffy.parseFromList([date.year, date.month, 16]),
-          isPayDay: false,
-          colorIdx: 0,
-        ),
-        ClassDay(
-          classId: classId,
-          day: Jiffy.parseFromList([date.year, date.month, 23]),
-          isPayDay: true,
-          colorIdx: 0,
-        ),
-      ];
-    } else {
-      return [
-        ClassDay(
-          classId: classId,
-          day: Jiffy.parseFromList([date.year, date.month, 2]),
-          isPayDay: false,
-          colorIdx: 0,
-        ),
-        ClassDay(
-          classId: classId,
-          day: Jiffy.parseFromList([date.year, date.month, 9]),
-          isPayDay: false,
-          colorIdx: 0,
-        ),
-      ];
+    try {
+      final queryParameters = {
+        "year": date.year,
+        "month": date.month,
+      };
+
+      // GET 요청
+      final response = await call.get(
+        "/total/calendarT",
+        queryParameters: queryParameters,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+
+        // 응답 데이터 처리 및 변환
+        return data.map((item) {
+          return ClassDay(
+            classId: item['classid'],
+            day: Jiffy.parse(item['date'], pattern: 'yyyy-MM-dd'),
+            isPayDay: item['dateofpayment'] != null,
+            colorIdx: item['themecolor'] ?? -1,
+          );
+        }).toList();
+      } else {
+        throw Exception("Failed to fetch class schedule.");
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 
