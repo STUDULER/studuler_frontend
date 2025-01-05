@@ -43,10 +43,16 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
 
   void _removeClass(int classId) {
     setState(() {
+      // 데이터 삭제
       classData?.removeWhere((classItem) => classItem['classId'] == classId);
-      if (currentIndex >= (classData?.length ?? 1)) {
-        currentIndex = (classData?.length ?? 1) - 1; // 인덱스 조정
+
+      // 현재 인덱스를 삭제된 데이터 이후로 조정
+      if (currentIndex >= (classData?.length ?? 0)) {
+        currentIndex = (classData?.length ?? 1) - 1;
       }
+
+      // Swiper를 강제로 재빌드
+      futureClassData = Future.value(classData);
     });
   }
 
@@ -116,6 +122,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                     SizedBox(height: screenHeight * 0.06),
                     Expanded(
                       child: Swiper(
+                        key: ValueKey(classData), // classData가 변경될 때마다 Swiper 재렌더링
                         itemCount: classData!.length,
                         itemBuilder: (BuildContext context, int index) {
                           final classItem = classData![index];
@@ -136,7 +143,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                               });
                             },
                             goToPerClassPage: widget.goToPerClassPage,
-                            onDelete: _removeClass, // 삭제 콜백 전달
+                            onDelete: _removeClass,
                           );
                         },
                         loop: false,

@@ -203,8 +203,8 @@ class _ClassInfoCardState extends State<ClassInfoCard>
 
       if (confirmed == true) {
         final success = await HttpService().deleteClass(widget.classId);
-
         if (success) {
+          // 부모 위젯에 삭제를 알림
           widget.onDelete(widget.classId);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("수업이 삭제되었습니다.")),
