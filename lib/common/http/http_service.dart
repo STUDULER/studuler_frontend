@@ -248,9 +248,51 @@ class HttpService {
     }
   }
 
+  Future<bool> updateClass({
+    required String classCode,
+    required String studentName,
+    required String className,
+    required String day,
+    required int time,
+    required int period,
+    required String dateOfPayment,
+    required int hourlyRate,
+    required int prepay,
+    required int themeColor,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updateClassT",
+        data: {
+          "classcode": classCode,
+          "studentname": studentName,
+          "classname": className,
+          "day": day,
+          "time": time,
+          "period": period,
+          "dateofpayment": dateOfPayment,
+          "hourlyrate": hourlyRate,
+          "prepay": prepay,
+          "themecolor": themeColor,
+        },
+      );
+
+      if (response.statusCode == 200 && response.data['message'] == 'Class information updated successfully.') {
+        print("Class information updated successfully.");
+        return true;
+      } else {
+        print("Failed to update class information: ${response.data}");
+        return false;
+      }
+    } catch (e) {
+      print("Error in updateClass: $e");
+      return false;
+    }
+  }
+
   Future<bool> deleteClass(int classId) async {
     try {
-      print("Delete Class - Request Data: classId = $classId");
+      print("Delete Class - Request Data: classId = $classId, Type: ${classId.runtimeType}");
       final response = await call.delete('/home/removeClass', data: {
         "classId": classId,
       });

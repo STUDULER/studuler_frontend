@@ -94,8 +94,25 @@ class _ClassInfoCardState extends State<ClassInfoCard>
   }
 
   void _editClassInfo() {
+    // 클래스 관련 데이터 구성 (예제 데이터)
+    final Map<String, dynamic> classData = {
+      'name': '링가링',
+      'classid': widget.classId,
+      'classcode': widget.code,
+      'classname': widget.title,
+      'day': widget.infoItems[2].value, // 요일 정보
+      'time': widget.infoItems[1].value, // 회당 시간
+      'period': widget.infoItems[5].value, // 기간
+      'dateofpayment': nextPaymentDate,
+      'hourlyrate': widget.infoItems[4].value, // 시급
+      'prepay': '1',
+      'themecolor': widget.themeColor.value,
+      'finished_lessons': '0',
+    };
+
     EditItemDialog.showSelectItemDialog(
       context: context,
+      classData: classData, // 추가된 classData 전달
       items: [
         {
           'title': '학생 이름',
