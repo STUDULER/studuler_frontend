@@ -23,8 +23,8 @@ class _BottomBarState extends State<BottomBar> {
   int classColor = 0;
 
   void _onItemTapped(int index) {
-    perClassMode = false;
     setState(() {
+      perClassMode = false;
       _selectedIndex = index;
     });
   }
@@ -34,12 +34,12 @@ class _BottomBarState extends State<BottomBar> {
     String className,
     int classColor,
   ) {
-    perClassMode = true;
-    this.classId = classId;
-    this.className = className;
-    this.classColor = classColor;
     setState(() {
       _selectedIndex = 0;
+      perClassMode = true;
+      this.classId = classId;
+      this.className = className;
+      this.classColor = classColor;
     });
   }
 
@@ -53,7 +53,7 @@ class _BottomBarState extends State<BottomBar> {
           classColor: classColor,
         )
       else
-        const TeacherSchedulePage(),
+        TeacherSchedulePage(goToPerClassPage: goToTeaccherSchedulPerClassPage,),
       TeacherHomePage(
         goToPerClassPage: goToTeaccherSchedulPerClassPage,
       ),
@@ -62,32 +62,39 @@ class _BottomBarState extends State<BottomBar> {
 
     bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom != 0.0;
 
-    return Scaffold(
-      key: mainScaffoldKey,
-      body: widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: isKeyboardOpen
-          ? null
-          : BottomNavigationBar(
-              currentIndex: _selectedIndex,
-              onTap: _onItemTapped,
-              selectedItemColor: const Color(0xFFC7B7A3), // 선택된 아이템의 색상
-              unselectedItemColor: Colors.grey, // 선택되지 않은 아이템의 색상
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.schedule),
-                  label: '스케줄',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: '홈',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.money),
-                  label: '정산하기',
-                ),
-              ],
+    return WillPopScope(
+      onWillPop: () async {
+        if (perClassMode) {
+          setState(() {
+            perClassMode = false; // 뒤로가기 시 전체 캘린더로 전환
+          });
+          return false; // 뒤로가기 동작 중단 (앱 종료 방지)
+        }
+        return true; // 뒤로가기 허용 (앱 종료)
+      },
+      child: Scaffold(
+        body: widgetOptions.elementAt(_selectedIndex),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          selectedItemColor: const Color(0xFFC7B7A3), // 선택된 아이템 색상
+          unselectedItemColor: Colors.grey, // 선택되지 않은 아이템 색상
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.schedule),
+              label: '스케줄',
             ),
-      endDrawer: DrawerPage(),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: '홈',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.money),
+              label: '정산하기',
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
