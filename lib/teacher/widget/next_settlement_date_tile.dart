@@ -24,6 +24,7 @@ class NextSettlementDateTile extends StatelessWidget {
           ),
           const Gap(12),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 nextSettlment.isUnpaid ? "다음 정산일" : "미리 정산된 회차",
