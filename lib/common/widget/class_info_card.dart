@@ -189,26 +189,90 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     try {
       final confirmed = await showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("수업 삭제"),
-          content: const Text("정말로 이 수업을 삭제하시겠습니까?"),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text("취소"),
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12), // 모서리를 덜 둥글게
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12), // 모서리를 덜 둥글게
             ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text("삭제"),
+            child: Stack(
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 22), // 텍스트 위쪽 여백 추가
+                    const Text(
+                      "수업을 삭제하시겠습니까?",
+                      style: TextStyle(
+                        fontSize: 24, // 텍스트 크기 더 키움
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 48), // 텍스트와 버튼 사이의 간격 추가
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end, // 버튼을 오른쪽 정렬
+                      children: [
+                        SizedBox(
+                          width: 60, // 버튼 가로 길이
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor:
+                              const Color(0xFFC7B7A3).withOpacity(0.34), // 취소 버튼 배경
+                              foregroundColor: const Color(0xFFC7B7A3), // 텍스트 색상
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6), // 덜 둥근 모서리
+                              ),
+                            ),
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text("취소"),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        SizedBox(
+                          width: 60, // 버튼 가로 길이
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: const Color(0xFFC7B7A3), // 확인 버튼 배경
+                              foregroundColor: Colors.white, // 텍스트 색상
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6), // 덜 둥근 모서리
+                              ),
+                            ),
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text("확인"),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16), // 버튼 하단 여백 추가
+                  ],
+                ),
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(context, false), // X 아이콘 눌렀을 때 팝업 닫기
+                    child: const Icon(
+                      Icons.close,
+                      size: 20,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       );
 
       if (confirmed == true) {
         final success = await HttpService().deleteClass(widget.classId);
         if (success) {
-          // 부모 위젯에 삭제를 알림
           widget.onDelete(widget.classId);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("수업이 삭제되었습니다.")),
