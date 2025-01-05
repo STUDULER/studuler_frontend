@@ -197,7 +197,7 @@ class HttpService {
                     classInfo['period'] != null
                 ? classInfo['finished_lessons'] / classInfo['period']
                 : 0.0,
-            'finishedLessons':classInfo['finished_lessons'],
+            'finishedLessons': classInfo['finished_lessons'],
             'period': classInfo['period'],
             'themeColor': mappedColor, // 매핑된 색상
             'infoItems': [
@@ -321,7 +321,8 @@ class HttpService {
     try {
       // 오늘 날짜를 YYYY-MM-DD 형식으로 포맷
       final String todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-      debugPrint('Requesting incomplete feedback dates with: classId=$classId, fromDate=$todayDate');
+      debugPrint(
+          'Requesting incomplete feedback dates with: classId=$classId, fromDate=$todayDate');
 
       final response = await call.get('/home/noFeedback', queryParameters: {
         "classId": classId,
@@ -557,8 +558,7 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
-    // await Future.delayed(Durations.long1);
-    // return true;
+    if (date.isBefore(Jiffy.now(), unit: Unit.day)) return false;
     final response = await call.put(
       "/each/deleteLesson",
       data: {
@@ -574,8 +574,19 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
-    // await Future.delayed(Durations.long1);
-    // return true;
+    final validationResponse = await call.get(
+      '/each/prevLastDate',
+      data: {
+        "classId": classId,
+      },
+    );
+    if (validationResponse.data['lastDateOfPrevious'] != null &&
+        date.isSameOrBefore(
+          Jiffy.parse(validationResponse.data['lastDateOfPrevious']),
+          unit: Unit.day,
+        )) {
+      return false;
+    }
     final response = await call.post(
       "/each/addLesson",
       data: {
