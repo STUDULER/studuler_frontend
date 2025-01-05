@@ -87,30 +87,30 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                         widget.onDateSelected(day.format(pattern: 'yyyy-MM-dd'));
                       },
                       child: Container(
-                        color: Colors.transparent, // 셀 전체를 터치 가능하게 만듦
+                        color: Colors.transparent,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            const Spacer(), // 상단 공간 확보
                             // 날짜 표시
-                            Container(
-                              width: MediaQuery.of(context).size.width / 7,
-                              decoration: BoxDecoration(
-                                color: day.isSame(widget.selectedDate.value, unit: Unit.day)
-                                    ? const Color(0xffc7b7a3) // 클릭한 날짜: 갈색 동그라미
-                                    : day.isSame(Jiffy.now(), unit: Unit.day)
-                                    ? const Color(0xffc7b7a3).withOpacity(0.6) // 오늘 날짜: 투명도 낮은 갈색
-                                    : Colors.white, // 나머지 날짜: 흰색 배경
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                            SizedBox(
+                              height: parentHeight / (weekSections * 2.5), // 날짜 표시 영역 높이 동적 설정
+                              child: Container(
+                                width: MediaQuery.of(context).size.width / 7,
+                                decoration: BoxDecoration(
+                                  color: day.isSame(widget.selectedDate.value, unit: Unit.day)
+                                      ? const Color(0xffc7b7a3) // 클릭한 날짜: 갈색 동그라미
+                                      : day.isSame(Jiffy.now(), unit: Unit.day)
+                                      ? const Color(0xffc7b7a3).withOpacity(0.6) // 오늘 날짜: 투명도 낮은 갈색
+                                      : Colors.white, // 나머지 날짜: 흰색 배경
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
                                   child: Text(
                                     "${day.date}",
                                     style: TextStyle(
                                       color: day.month == widget.date.month
                                           ? Colors.black
-                                          : Colors.grey, // 다음 달/이전 달은 회색
+                                          : Colors.grey, // 다른 달의 날짜는 회색
                                     ),
                                   ),
                                 ),
@@ -118,20 +118,24 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                             ),
                             const SizedBox(height: 4),
                             // 점 표시
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: List.generate(dotColors.length, (index) {
-                                return Container(
-                                  width: 6,
-                                  height: 6,
-                                  margin: const EdgeInsets.symmetric(horizontal: 1),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: dotColors[index],
-                                  ),
-                                );
-                              }),
+                            SizedBox(
+                              height: parentHeight / (weekSections * 5), // 점 영역 높이 동적 설정
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: List.generate(dotColors.length, (index) {
+                                  return Container(
+                                    width: 6,
+                                    height: 6,
+                                    margin: const EdgeInsets.symmetric(horizontal: 1),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: dotColors[index],
+                                    ),
+                                  );
+                                }),
+                              ),
                             ),
+                            const Spacer(), // 하단 공간 확보
                           ],
                         ),
                       ),
