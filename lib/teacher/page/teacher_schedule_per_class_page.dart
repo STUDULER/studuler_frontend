@@ -13,12 +13,14 @@ import '../../main.dart';
 class TeacherSchedulePerClassPage extends StatefulWidget {
   const TeacherSchedulePerClassPage({
     super.key,
-    required this.className, 
-    required this.classId,
+    required this.className,
+    required this.classId, 
+    required this.classColor,
   });
 
   final String className;
   final int classId;
+  final int classColor;
 
   @override
   State<TeacherSchedulePerClassPage> createState() =>
@@ -80,6 +82,7 @@ class _TeacherSchedulePerClassPageState
       body: Stack(
         children: [
           Background(
+            colorIndex: widget.classColor,
             iconActionButtons: [
               IconButton(
                 icon: const Icon(Icons.menu, color: Colors.black),

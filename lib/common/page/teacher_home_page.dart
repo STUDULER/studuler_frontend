@@ -13,7 +13,7 @@ class TeacherHomePage extends StatefulWidget {
     required this.goToPerClassPage,
   });
 
-  final Function(int, String) goToPerClassPage;
+  final Function(int, String, int) goToPerClassPage;
 
   @override
   State<TeacherHomePage> createState() => _TeacherHomePageState();
