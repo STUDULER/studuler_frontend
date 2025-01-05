@@ -187,16 +187,17 @@ class HttpService {
         return data.map((classInfo) {
           // 색상 매핑
           int colorIndex = classInfo['themecolor'] ?? -1;
-          Color mappedColor = (colorIndex >= 0 && colorIndex < colorPalette.length)
-              ? colorPalette[colorIndex]
-              : const Color(0xFFFFFFFF); // 기본 색상 (화이트)
+          Color mappedColor =
+              (colorIndex >= 0 && colorIndex < colorPalette.length)
+                  ? colorPalette[colorIndex]
+                  : const Color(0xFFFFFFFF); // 기본 색상 (화이트)
 
           return {
             'classId': classInfo['classid'] ?? 0, // classId 추가
             'title': classInfo['classname'] ?? '제목 없음',
             'code': classInfo['classcode'] ?? '코드 없음',
             'completionRate': classInfo['finished_lessons'] != null &&
-                classInfo['period'] != null
+                    classInfo['period'] != null
                 ? classInfo['finished_lessons'] / classInfo['period']
                 : 0.0,
             'themeColor': mappedColor, // 매핑된 색상
@@ -236,9 +237,10 @@ class HttpService {
                 title: '다음 정산일',
                 value: classInfo['dateofpayment'] != null
                     ? DateTime.parse(classInfo['dateofpayment'])
-                    .toLocal()
-                    .toString()
-                    .split(' ')[0] // '2025-01-13T00:00:00.000Z' -> '2025-01-13'
+                            .toLocal()
+                            .toString()
+                            .split(' ')[
+                        0] // '2025-01-13T00:00:00.000Z' -> '2025-01-13'
                     : '정보 없음',
               ),
             ],
@@ -247,7 +249,8 @@ class HttpService {
       } else if (response.statusCode == 404) {
         throw Exception("API endpoint not found.");
       } else {
-        throw Exception("Failed to fetch classes. Status code: ${response.statusCode}");
+        throw Exception(
+            "Failed to fetch classes. Status code: ${response.statusCode}");
       }
     } catch (e) {
       print('Error in fetchClasses: $e');
@@ -284,7 +287,9 @@ class HttpService {
         },
       );
 
-      if (response.statusCode == 200 && response.data['message'] == 'Class information updated successfully.') {
+      if (response.statusCode == 200 &&
+          response.data['message'] ==
+              'Class information updated successfully.') {
         print("Class information updated successfully.");
         return true;
       } else {
@@ -299,7 +304,8 @@ class HttpService {
 
   Future<bool> deleteClass(int classId) async {
     try {
-      print("Delete Class - Request Data: classId = $classId, Type: ${classId.runtimeType}");
+      print(
+          "Delete Class - Request Data: classId = $classId, Type: ${classId.runtimeType}");
       final response = await call.delete('/home/removeClass', data: {
         "classId": classId,
       });
@@ -383,7 +389,7 @@ class HttpService {
     }
   }
 
-  Future<String?> createClassFeedback({
+  Future<int?> createClassFeedback({
     required int classId,
     required DateTime date,
     required String did,
@@ -393,23 +399,34 @@ class HttpService {
     required int rating,
   }) async {
     // TMP
-    await Future.delayed(const Duration(milliseconds: 300));
-    return "dummyFeedbackId";
+    int homeworkParam = 0;
+    switch (homework) {
+      case "미완료":
+        homeworkParam = 0;
+        break;
+      case "부분완료":
+        homeworkParam = 1;
+        break;
+      case "완료":
+      default:
+        homeworkParam = 2;
+        break;
+    }
 
-    // final result = await call.post(
-    //   "/api/class/feedback",
-    //   data: {
-    //     "classId": classId,
-    //     "date": date,
-    //     "did": did,
-    //     "attitude": attitude,
-    //     "homework": homework,
-    //     "memo": memo,
-    //     "rating": rating,
-    //   },
-    // );
-    // if (result.statusCode != 201) return null;
-    // return result.data['feedbackId'];
+    final result = await call.post(
+      "/each/createFeedback",
+      data: {
+        "classid": classId,
+        "date": _jiffyToFormat(Jiffy.parseFromDateTime(date)),
+        "workdone": did,
+        "attitude": attitude,
+        "homework": homeworkParam,
+        "memo": memo,
+        "rate": rating,
+      },
+    );
+    if (result.statusCode != 201) return null;
+    return result.data['feedbackId'];
   }
 
   Future<List<ClassDay>> fetchClassScheduleOFMonth({
