@@ -19,6 +19,8 @@ class _BottomBarState extends State<BottomBar> {
 
   bool perClassMode = false;
   String className = "";
+  int classId = 0;
+  int classColor = 0;
 
   void _onItemTapped(int index) {
     perClassMode = false;
@@ -27,9 +29,15 @@ class _BottomBarState extends State<BottomBar> {
     });
   }
 
-  void goToTeaccherSchedulPerClassPage(String className) {
+  void goToTeaccherSchedulPerClassPage(
+    int classId,
+    String className,
+    int classColor,
+  ) {
     perClassMode = true;
+    this.classId = classId;
     this.className = className;
+    this.classColor = classColor;
     setState(() {
       _selectedIndex = 0;
     });
@@ -41,6 +49,8 @@ class _BottomBarState extends State<BottomBar> {
       if (perClassMode)
         TeacherSchedulePerClassPage(
           className: className,
+          classId: classId,
+          classColor: classColor,
         )
       else
         const TeacherSchedulePage(),

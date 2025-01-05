@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../util/get_color_by_index.dart';
+
 class Background extends StatelessWidget {
   const Background({
     super.key,
-    required this.iconActionButtons,
+    required this.iconActionButtons, 
+    this.colorIndex,
   });
 
+  final int? colorIndex;
   final List<IconButton> iconActionButtons;
 
   @override
@@ -13,7 +17,7 @@ class Background extends StatelessWidget {
     return Container(
       height: 250, // 배경 높이
       decoration: BoxDecoration(
-        color: Colors.yellow[200],
+        color: colorIndex == null ? Colors.yellow[200] : getColorByIndex(colorIndex!,),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(30.0),
           bottomRight: Radius.circular(30.0),

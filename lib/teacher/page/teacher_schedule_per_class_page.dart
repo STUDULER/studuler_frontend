@@ -14,10 +14,13 @@ class TeacherSchedulePerClassPage extends StatefulWidget {
   const TeacherSchedulePerClassPage({
     super.key,
     required this.className,
+    required this.classId, 
+    required this.classColor,
   });
 
   final String className;
-  // final int classId;
+  final int classId;
+  final int classColor;
 
   @override
   State<TeacherSchedulePerClassPage> createState() =>
@@ -56,8 +59,8 @@ class _TeacherSchedulePerClassPageState
 
   List<ClassDay> classDays = [];
   void fetchClassDays(Jiffy date) async {
-    final fetchedClassDays = await httpService.fetchClassScheduleOFMonth(
-      classId: 0,
+    final fetchedClassDays = await httpService.fetchClassSchedulePerPageOFMonth(
+      classId: widget.classId,
       date: date,
     );
     if (mounted) {
@@ -79,6 +82,7 @@ class _TeacherSchedulePerClassPageState
       body: Stack(
         children: [
           Background(
+            colorIndex: widget.classColor,
             iconActionButtons: [
               IconButton(
                 icon: const Icon(Icons.menu, color: Colors.black),
