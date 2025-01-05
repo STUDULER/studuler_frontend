@@ -47,8 +47,7 @@ class _BottomBarState extends State<BottomBar> {
       TeacherHomePage(
         goToPerClassPage: goToTeaccherSchedulPerClassPage,
       ),
-      // const TeacherSettlementPage(),
-      const TeacherSchedulePerClassPage(className: "dummy",)
+      const TeacherSettlementPage(),
     ];
 
     bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom != 0.0;
