@@ -499,7 +499,7 @@ class HttpService {
         final classDay = ClassDay(
           classId: classId,
           day: Jiffy.parse(data['date']),
-          isPayDay: false,
+          isPayDay: data['date'] == data['dateofpayment'],
           colorIdx: data['themecolor'],
         );
         rst.add(classDay);

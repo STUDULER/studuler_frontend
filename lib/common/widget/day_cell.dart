@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:studuler/common/http/http_service.dart';
 
+import '../http/http_service.dart';
 import '../model/class_day.dart';
+import '../util/get_color_by_index.dart';
 
 class DayCell extends StatelessWidget {
   const DayCell({
@@ -208,11 +209,15 @@ class DayCell extends StatelessWidget {
                   const Gap(2),
                   if (classDay != null)
                     Container(
-                      width: dotSize,
-                      height: dotSize,
-                      decoration: const BoxDecoration(
+                      width: classDay!.isPayDay ? dotSize+4 : dotSize,
+                      height: classDay!.isPayDay ? dotSize+4 : dotSize,
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.red,
+                        border: Border.all(
+                          color: Colors.yellow,
+                          width: classDay!.isPayDay ? 2 : 0,
+                        ),
+                        color: getColorByIndex(classDay!.colorIdx),
                       ),
                     ),
                 ],
