@@ -45,7 +45,7 @@ class TeacherSettlementClassSection extends StatelessWidget {
           ),
         ),
         NextSettlementDateTile(
-          date: classSettlement.nextSettlment.date,
+          nextSettlment: classSettlement.nextSettlment,
         ),
         const Gap(32),
       ],
