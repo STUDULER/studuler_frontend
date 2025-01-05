@@ -204,7 +204,7 @@ class HttpService {
               ClassInfoItem(
                 icon: Icons.person,
                 title: '학생 이름',
-                value: classInfo['name'] ?? '정보 없음',
+                value: classInfo['studentname'] ?? '정보 없음',
               ),
               ClassInfoItem(
                 icon: Icons.access_time,
