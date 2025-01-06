@@ -77,7 +77,7 @@ class _BottomBarState extends State<BottomBar> {
         if (perClassMode)
           StudentSchedulePerClassPage()
         else
-          StudentSchedulePage(),
+          StudentSchedulePage(goToPerClassPage: goToSchedulPerClassPage,),
         StudentHomePage(
           goToPerClassPage: goToSchedulPerClassPage,
         ),

@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:studuler/common/auth/oauth_user_dto.dart';
 
+import '../auth/auth_service.dart';
 import '../model/class_settlement.dart';
 import '../model/last_settlement.dart';
 import '../model/next_settlment.dart';
@@ -374,11 +375,15 @@ class HttpService {
   }
 
   Future<List<Map<String, dynamic>>> fetchClassesByDate(String date) async {
-    final response = await call.get(
-      '/total/classByDateT',
-      queryParameters: {'date': date},
-    );
-
+    final response = await _isTeacher()
+        ? await call.get(
+            '/total/classByDateT',
+            queryParameters: {'date': date},
+          )
+        : await call.get(
+            '/total/classByDateS',
+            queryParameters: {'date': date},
+          );
     if (response.statusCode == 200) {
       return List<Map<String, dynamic>>.from(response.data);
     } else {
@@ -473,10 +478,15 @@ class HttpService {
       };
 
       // GET 요청
-      final response = await call.get(
-        "/total/calendarT",
-        queryParameters: queryParameters,
-      );
+      final response = await _isTeacher()
+          ? await call.get(
+              "/total/calendarT",
+              queryParameters: queryParameters,
+            )
+          : await call.get(
+              "/total/calendarS",
+              queryParameters: queryParameters,
+            );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
@@ -654,6 +664,10 @@ class HttpService {
     }
 
     return classSettlement;
+  }
+
+  Future<bool> _isTeacher() async {
+    return await AuthService().isTeacher();
   }
 
   String _jiffyToFormat(Jiffy date) {
