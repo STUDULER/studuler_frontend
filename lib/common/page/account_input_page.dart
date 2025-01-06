@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../main.dart';
 import '../auth/oauth_user_dto.dart';
 import '../http/http_service.dart';
 import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
 import '../widget/app_title.dart';
 import '../widget/auth_text_field.dart';
+import '../widget/bottom_bar.dart';
 import 'bank_selection_page.dart';
 
 class AccountInputPage extends StatefulWidget {
@@ -136,8 +136,9 @@ class _AccountInputPageState extends State<AccountInputPage> {
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const MyHomePage(title: "선생님"),
+                                  builder: (context) => BottomBar(
+                                    isTeacher: true,
+                                  ),
                                 ),
                                 (route) => false,
                               );

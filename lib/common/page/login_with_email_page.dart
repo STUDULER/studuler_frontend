@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:studuler/main.dart';
 
 import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
 import '../widget/app_title.dart';
 import '../widget/auth_text_field.dart';
+import '../widget/bottom_bar.dart';
 
 class LoginWithEmailPage extends StatefulWidget {
   const LoginWithEmailPage({super.key});
@@ -77,8 +77,10 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const MyHomePage(title: "로그인"),
+                                  builder: (context) {
+                                    // TODO - 여기 임시로 한 거임
+                                    return BottomBar(isTeacher: true,);
+                                  },
                                 ),
                               );
                             },

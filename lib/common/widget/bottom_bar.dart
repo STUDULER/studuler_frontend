@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../main.dart';
+import '../../student/page/student_home_page.dart';
+import '../../student/page/student_schedule_page.dart';
+import '../../student/page/student_schedule_per_class_page.dart';
+import '../../student/page/student_settlement_page.dart';
 import '../../teacher/page/teacher_schedule_per_class_page.dart';
 import '../../teacher/page/teacher_settlement_page.dart';
 import '../page/drawer_page.dart';
@@ -8,7 +12,12 @@ import '../page/teacher_home_page.dart';
 import '../page/teacher_schedule_page.dart';
 
 class BottomBar extends StatefulWidget {
-  const BottomBar({super.key});
+  const BottomBar({
+    super.key,
+    required this.isTeacher,
+  });
+
+  final bool isTeacher;
 
   @override
   State<BottomBar> createState() => _BottomBarState();
@@ -29,7 +38,7 @@ class _BottomBarState extends State<BottomBar> {
     });
   }
 
-  void goToTeaccherSchedulPerClassPage(
+  void goToSchedulPerClassPage(
     int classId,
     String className,
     int classColor,
@@ -45,20 +54,36 @@ class _BottomBarState extends State<BottomBar> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> widgetOptions = <Widget>[
-      if (perClassMode)
-        TeacherSchedulePerClassPage(
-          className: className,
-          classId: classId,
-          classColor: classColor,
-        )
-      else
-        TeacherSchedulePage(goToPerClassPage: goToTeaccherSchedulPerClassPage,),
-      TeacherHomePage(
-        goToPerClassPage: goToTeaccherSchedulPerClassPage,
-      ),
-      const TeacherSettlementPage(),
-    ];
+    List<Widget> widgetOptions;
+    if (widget.isTeacher) {
+      widgetOptions = <Widget>[
+        if (perClassMode)
+          TeacherSchedulePerClassPage(
+            className: className,
+            classId: classId,
+            classColor: classColor,
+          )
+        else
+          TeacherSchedulePage(
+            goToPerClassPage: goToSchedulPerClassPage,
+          ),
+        TeacherHomePage(
+          goToPerClassPage: goToSchedulPerClassPage,
+        ),
+        const TeacherSettlementPage(),
+      ];
+    } else {
+      widgetOptions = <Widget>[
+        if (perClassMode)
+          StudentSchedulePerClassPage()
+        else
+          StudentSchedulePage(),
+        StudentHomePage(
+          goToPerClassPage: goToSchedulPerClassPage,
+        ),
+        StudentSettlementPage(),
+      ];
+    }
 
     bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom != 0.0;
 

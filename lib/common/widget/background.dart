@@ -5,10 +5,12 @@ import '../util/get_color_by_index.dart';
 class Background extends StatelessWidget {
   const Background({
     super.key,
-    required this.iconActionButtons, 
+    required this.iconActionButtons,
     this.colorIndex,
+    this.isTeacher = true,
   });
 
+  final bool isTeacher;
   final int? colorIndex;
   final List<IconButton> iconActionButtons;
 
@@ -17,7 +19,13 @@ class Background extends StatelessWidget {
     return Container(
       height: 250, // 배경 높이
       decoration: BoxDecoration(
-        color: colorIndex == null ? Colors.yellow[200] : getColorByIndex(colorIndex!,),
+        color: colorIndex == null
+            ? isTeacher
+                ? Colors.yellow[200]
+                : const Color(0xffB7CADB)
+            : getColorByIndex(
+                colorIndex!,
+              ),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(30.0),
           bottomRight: Radius.circular(30.0),

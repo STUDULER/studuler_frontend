@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-import '../../main.dart';
 import '../auth/auth_service.dart';
 import '../auth/auth_service_type.dart';
 import '../auth/oauth_user_dto.dart';
@@ -9,6 +8,7 @@ import '../http/http_service.dart';
 import '../section/login_with_email_or_sign_up_with_email_section.dart';
 import '../section/yellow_background.dart';
 import '../widget/app_title.dart';
+import '../widget/bottom_bar.dart';
 import 'account_input_page.dart';
 
 class LoginPage extends StatelessWidget {
@@ -44,7 +44,7 @@ class LoginPage extends StatelessWidget {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => const MyHomePage(title: "학부모"),
+          builder: (context) => BottomBar(isTeacher: isTeacher),
         ),
         (route) => false,
       );

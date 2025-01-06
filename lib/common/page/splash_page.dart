@@ -96,7 +96,21 @@ class _SplashPageState extends State<SplashPage> {
                     return const Center(child: CircularProgressIndicator());
                   } else {
                     return snapshot.data == true
-                        ? const BottomBar()
+                        ? FutureBuilder(
+                            future: _authService.isTeacher(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              }
+                              if (snapshot.data == true) {
+                                return BottomBar(isTeacher: true);
+                              } else {
+                                return BottomBar(isTeacher: false);
+                              }
+                            },
+                          )
                         : const RoleSelectionPage();
                   }
                 },
