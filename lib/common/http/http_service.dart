@@ -257,44 +257,133 @@ class HttpService {
     }
   }
 
-  Future<bool> updateClass({
-    required String classCode,
+  Future<bool> updateStudentName({
+    required int classId,
     required String studentName,
-    required String className,
-    required String day,
-    required int time,
-    required int period,
-    required String dateOfPayment,
-    required int hourlyRate,
-    required int prepay,
-    required int themeColor,
   }) async {
     try {
+      print("학생 이름 업데이트 요청 시작: classId=$classId, studentName=$studentName");
+
+      // PUT 요청 보내기
       final response = await call.put(
-        "/home/updateClassT",
+        "/home/updateStudentNameT", // 엔드포인트
         data: {
-          "classcode": classCode,
+          "classid": classId, // 서버가 요구하는 키와 값
           "studentname": studentName,
-          "classname": className,
-          "day": day,
-          "time": time,
-          "period": period,
-          "dateofpayment": dateOfPayment,
-          "hourlyrate": hourlyRate,
-          "prepay": prepay,
-          "themecolor": themeColor,
-        },
+        }, // 요청 데이터
       );
 
-      if (response.statusCode == 200 &&
-          response.data['message'] ==
-              'Class information updated successfully.') {
-        return true;
+      // 응답 처리
+      if (response.statusCode == 200) {
+        print("응답 성공: ${response.data}");
+        if (response.data['message'] == 'Class information updated successfully.') {
+          print("학생 이름 업데이트 성공");
+          return true;
+        } else {
+          print("서버에서 실패 메시지 반환: ${response.data['message']}");
+          return false;
+        }
       } else {
+        print("응답 실패: 상태 코드=${response.statusCode}, 응답 데이터=${response.data}");
         return false;
       }
     } catch (e) {
-      print("Error in updateClass: $e");
+      print("학생 이름 업데이트 중 오류 발생: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updateClassName({
+    required int classId,
+    required String className,
+  }) async {
+    return _putRequest(
+      endpoint: "/home/updateClassNameT",
+      data: {"classid": classId, "classname": className},
+    );
+  }
+
+  Future<bool> updateDay({
+    required int classId,
+    required String day,
+  }) async {
+    return _putRequest(
+      endpoint: "/home/updateDayT",
+      data: {"classid": classId, "day": day},
+    );
+  }
+
+  Future<bool> updateTime({
+    required int classId,
+    required int time,
+  }) async {
+    return _putRequest(
+      endpoint: "/home/updateTimeT",
+      data: {"classid": classId, "time": time},
+    );
+  }
+
+  Future<bool> updatePeriod({
+    required int classId,
+    required int period,
+  }) async {
+    return _putRequest(
+      endpoint: "/home/updatePeriodT",
+      data: {"classid": classId, "period": period},
+    );
+  }
+
+  Future<bool> updateHourlyRate({
+    required int classId,
+    required int hourlyRate,
+  }) async {
+    return _putRequest(
+      endpoint: "/home/updateHourlyRateT",
+      data: {"classid": classId, "hourlyrate": hourlyRate},
+    );
+  }
+
+  Future<bool> updatePrepay({
+    required int classId,
+    required int prepay,
+  }) async {
+    return _putRequest(
+      endpoint: "/home/updatePrepayT",
+      data: {"classid": classId, "prepay": prepay},
+    );
+  }
+
+  Future<bool> updateThemeColor({
+    required int classId,
+    required int themeColor,
+  }) async {
+    return _putRequest(
+      endpoint: "/home/updateThemeColorT",
+      data: {"classid": classId, "themecolor": themeColor},
+    );
+  }
+
+  Future<bool> _putRequest({
+    required String endpoint,
+    required Map<String, dynamic> data,
+  }) async {
+    print("API 호출 시작: $endpoint");
+    print("요청 데이터: $data");
+
+    try {
+      final response = await call.put(endpoint, data: data);
+
+      print("응답 데이터: ${response.data}");
+      if (response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.') {
+        print("API 호출 성공: $endpoint");
+        return true;
+      } else {
+        print("API 호출 실패: 응답 메시지 = ${response.data['message']}");
+        return false;
+      }
+    } catch (e) {
+      print("API 호출 중 오류 발생: $e");
       return false;
     }
   }

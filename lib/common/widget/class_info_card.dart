@@ -102,8 +102,8 @@ class _ClassInfoCardState extends State<ClassInfoCard>
 
   void _editClassInfo() {
     final Map<String, dynamic> classData = {
-      'name': '링가링',
-      'classid': widget.classId,
+      'name': widget.infoItems[0].value, // 학생 이름
+      'classId': widget.classId,
       'classcode': widget.code,
       'classname': widget.title,
       'day': widget.infoItems[2].value,
@@ -111,9 +111,9 @@ class _ClassInfoCardState extends State<ClassInfoCard>
       'period': widget.infoItems[5].value,
       'dateofpayment': nextPaymentDate,
       'hourlyrate': widget.infoItems[4].value,
-      'prepay': '1',
+      'prepay': widget.infoItems[3].value,
       'themecolor': widget.themeColor.value,
-      'finished_lessons': '0',
+      'finished_lessons': widget.finishedLessons,
     };
 
     EditItemDialog.showSelectItemDialog(
@@ -128,6 +128,12 @@ class _ClassInfoCardState extends State<ClassInfoCard>
               studentNameController.text = newValue;
             });
           },
+          'apiCall': (int classId, String newValue) async {
+            return await HttpService().updateStudentName(
+              classId: classId,
+              studentName: newValue,
+            );
+          },
         },
         {
           'title': '회당 시간',
@@ -136,6 +142,12 @@ class _ClassInfoCardState extends State<ClassInfoCard>
             setState(() {
               sessionDurationController.text = newValue;
             });
+          },
+          'apiCall': (int classId, String newValue) async {
+            return await HttpService().updateTime(
+              classId: classId,
+              time: int.parse(newValue.replaceAll(RegExp(r'[^0-9]'), '')),
+            );
           },
         },
         {
@@ -146,6 +158,12 @@ class _ClassInfoCardState extends State<ClassInfoCard>
               daysController.text = newValue;
             });
           },
+          'apiCall': (int classId, String newValue) async {
+            return await HttpService().updateDay(
+              classId: classId,
+              day: newValue,
+            );
+          },
         },
         {
           'title': '정산 방법',
@@ -154,6 +172,12 @@ class _ClassInfoCardState extends State<ClassInfoCard>
             setState(() {
               paymentMethodController.text = newValue;
             });
+          },
+          'apiCall': (int classId, String newValue) async {
+            return await HttpService().updatePrepay(
+              classId: classId,
+              prepay: newValue == '선불' ? 1 : 0,
+            );
           },
         },
         {
@@ -164,6 +188,12 @@ class _ClassInfoCardState extends State<ClassInfoCard>
               hourlyRateController.text = newValue;
             });
           },
+          'apiCall': (int classId, String newValue) async {
+            return await HttpService().updateHourlyRate(
+              classId: classId,
+              hourlyRate: int.parse(newValue.replaceAll(RegExp(r'[^0-9]'), '')),
+            );
+          },
         },
         {
           'title': '수업 횟수',
@@ -172,6 +202,12 @@ class _ClassInfoCardState extends State<ClassInfoCard>
             setState(() {
               sessionCountController.text = newValue;
             });
+          },
+          'apiCall': (int classId, String newValue) async {
+            return await HttpService().updatePeriod(
+              classId: classId,
+              period: int.parse(newValue.replaceAll(RegExp(r'[^0-9]'), '')),
+            );
           },
         },
       ],
