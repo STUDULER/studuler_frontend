@@ -12,6 +12,7 @@ import '../../common/widget/auth_text_field.dart';
 class FeedbackScrollableSheetSection extends StatefulWidget {
   const FeedbackScrollableSheetSection({
     super.key,
+    required this.isTeacher,
     required this.classId,
     required this.bottomSheetController,
     required this.maxBottomSheetFractionalValue,
@@ -20,6 +21,7 @@ class FeedbackScrollableSheetSection extends StatefulWidget {
     required this.classDay,
   });
 
+  final bool isTeacher;
   final int classId;
   final ValueNotifier<Jiffy> selectedDate;
   final ValueNotifier<ClassFeedback?> classFeedback;
@@ -238,6 +240,33 @@ class _FeedbackScrollableSheetSectionState
                   ),
                 );
               }
+              if (widget.isTeacher == false && feedback == null) {
+                return Padding(
+                  padding: sidePadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Divider(),
+                      const Gap(8),
+                      Text(
+                        _dateToString(
+                          feedback?.date ?? widget.selectedDate.value.dateTime,
+                        ),
+                        style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey),
+                      ),
+                      const Gap(28),
+                      const Gap(150),
+                      const Center(child: Text("선생님이 아직 피드백을 적지 않았어요")),
+                      const Gap(200),
+                    ],
+                  ),
+                );
+              }
+              final readOnly = !widget.isTeacher;
+              final showCursor = !readOnly;
               return Container(
                 color: Colors.white,
                 child: Padding(
@@ -252,21 +281,26 @@ class _FeedbackScrollableSheetSectionState
                           feedback?.date ?? widget.selectedDate.value.dateTime,
                         ),
                         style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
                       ),
                       const Gap(28),
                       AuthTextField(
                         controller: welldoneController,
                         label: "오늘 한 일",
                         hintText: "오늘 한 일을 적어주세요.",
+                        readOnly: readOnly,
+                        showCursor: showCursor,
                       ),
                       const Gap(16),
                       AuthTextField(
                         controller: attitudeController,
                         label: "태도",
                         hintText: "태도를 적어주세요.",
+                        readOnly: readOnly,
+                        showCursor: showCursor,
                       ),
                       const Gap(16),
                       Text(
@@ -278,6 +312,7 @@ class _FeedbackScrollableSheetSectionState
                         children: [
                           TextButton.icon(
                             onPressed: () {
+                              if (readOnly) return;
                               setState(() {
                                 homework = "완료";
                               });
@@ -308,6 +343,7 @@ class _FeedbackScrollableSheetSectionState
                           ),
                           TextButton.icon(
                             onPressed: () {
+                              if (readOnly) return;
                               setState(() {
                                 homework = "부분완료";
                               });
@@ -338,6 +374,7 @@ class _FeedbackScrollableSheetSectionState
                           ),
                           TextButton.icon(
                             onPressed: () {
+                              if (readOnly) return;
                               setState(() {
                                 homework = "미완료";
                               });
@@ -373,6 +410,8 @@ class _FeedbackScrollableSheetSectionState
                         controller: memoController,
                         label: "메모",
                         hintText: "메모를 적어주세요.",
+                        readOnly: readOnly,
+                        showCursor: showCursor,
                       ),
                       const Gap(16),
                       Text(
@@ -380,6 +419,7 @@ class _FeedbackScrollableSheetSectionState
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       RatingBar.builder(
+                        ignoreGestures: readOnly,
                         initialRating: rating.toDouble(),
                         minRating: 0,
                         direction: Axis.horizontal,
@@ -391,24 +431,26 @@ class _FeedbackScrollableSheetSectionState
                           color: Colors.amber,
                         ),
                         onRatingUpdate: (newRating) {
+                          if (readOnly) return;
                           rating = newRating.toInt();
                         },
                       ),
                       const Gap(16),
-                      Row(
-                        children: [
-                          const Spacer(),
-                          cancelButton(),
-                          const SizedBox(
-                            width: 16,
-                          ),
-                          completeButton(context),
-                          const SizedBox(
-                            width: 16,
-                          ),
-                        ],
-                      ),
-                      const Gap(16),
+                      if (widget.isTeacher)
+                        Row(
+                          children: [
+                            const Spacer(),
+                            cancelButton(),
+                            const SizedBox(
+                              width: 16,
+                            ),
+                            completeButton(context),
+                            const SizedBox(
+                              width: 16,
+                            ),
+                          ],
+                        ),
+                      if (widget.isTeacher) const Gap(16),
                     ],
                   ),
                 ),

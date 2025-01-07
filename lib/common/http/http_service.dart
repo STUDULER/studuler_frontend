@@ -649,7 +649,6 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
-    await Future.delayed(Durations.long1); // 달력 바뀌는 거 기다리는 시간
     String path = '/each/feedbackByDate';
     if (await _isTeacher()) {
       path = '${path}T';
