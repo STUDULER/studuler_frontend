@@ -101,24 +101,9 @@ class _ClassInfoCardState extends State<ClassInfoCard>
   }
 
   void _editClassInfo() {
-    final Map<String, dynamic> classData = {
-      'name': '링가링',
-      'classid': widget.classId,
-      'classcode': widget.code,
-      'classname': widget.title,
-      'day': widget.infoItems[2].value,
-      'time': widget.infoItems[1].value,
-      'period': widget.infoItems[5].value,
-      'dateofpayment': nextPaymentDate,
-      'hourlyrate': widget.infoItems[4].value,
-      'prepay': '1',
-      'themecolor': widget.themeColor.value,
-      'finished_lessons': '0',
-    };
-
     EditItemDialog.showSelectItemDialog(
       context: context,
-      classData: classData,
+      classData: {'classid': widget.classId},
       items: [
         {
           'title': '학생 이름',
@@ -130,11 +115,11 @@ class _ClassInfoCardState extends State<ClassInfoCard>
           },
         },
         {
-          'title': '회당 시간',
-          'controller': sessionDurationController,
+          'title': '수업 이름',
+          'controller': titleController,
           'onUpdate': (String newValue) {
             setState(() {
-              sessionDurationController.text = newValue;
+              titleController.text = newValue;
             });
           },
         },
@@ -148,11 +133,20 @@ class _ClassInfoCardState extends State<ClassInfoCard>
           },
         },
         {
-          'title': '정산 방법',
-          'controller': paymentMethodController,
+          'title': '회당 시간',
+          'controller': sessionDurationController,
           'onUpdate': (String newValue) {
             setState(() {
-              paymentMethodController.text = newValue;
+              sessionDurationController.text = newValue;
+            });
+          },
+        },
+        {
+          'title': '수업 횟수',
+          'controller': sessionCountController,
+          'onUpdate': (String newValue) {
+            setState(() {
+              sessionCountController.text = newValue;
             });
           },
         },
@@ -166,11 +160,11 @@ class _ClassInfoCardState extends State<ClassInfoCard>
           },
         },
         {
-          'title': '수업 횟수',
-          'controller': sessionCountController,
+          'title': '정산 방법',
+          'controller': paymentMethodController,
           'onUpdate': (String newValue) {
             setState(() {
-              sessionCountController.text = newValue;
+              paymentMethodController.text = newValue;
             });
           },
         },
@@ -191,41 +185,41 @@ class _ClassInfoCardState extends State<ClassInfoCard>
         context: context,
         builder: (context) => Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12), // 모서리를 덜 둥글게
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12), // 모서리를 덜 둥글게
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Stack(
               children: [
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const SizedBox(height: 22), // 텍스트 위쪽 여백 추가
+                    const SizedBox(height: 22),
                     const Text(
                       "수업을 삭제하시겠습니까?",
                       style: TextStyle(
-                        fontSize: 24, // 텍스트 크기 더 키움
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 48), // 텍스트와 버튼 사이의 간격 추가
+                    const SizedBox(height: 48),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end, // 버튼을 오른쪽 정렬
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         SizedBox(
-                          width: 60, // 버튼 가로 길이
+                          width: 60,
                           child: TextButton(
                             style: TextButton.styleFrom(
                               backgroundColor:
-                              const Color(0xFFC7B7A3).withOpacity(0.34), // 취소 버튼 배경
-                              foregroundColor: const Color(0xFFC7B7A3), // 텍스트 색상
+                              const Color(0xFFC7B7A3).withOpacity(0.34),
+                              foregroundColor: const Color(0xFFC7B7A3),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6), // 덜 둥근 모서리
+                                borderRadius: BorderRadius.circular(6),
                               ),
                             ),
                             onPressed: () => Navigator.pop(context, false),
@@ -234,13 +228,13 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                         ),
                         const SizedBox(width: 10),
                         SizedBox(
-                          width: 60, // 버튼 가로 길이
+                          width: 60,
                           child: TextButton(
                             style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFFC7B7A3), // 확인 버튼 배경
-                              foregroundColor: Colors.white, // 텍스트 색상
+                              backgroundColor: const Color(0xFFC7B7A3),
+                              foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6), // 덜 둥근 모서리
+                                borderRadius: BorderRadius.circular(6),
                               ),
                             ),
                             onPressed: () => Navigator.pop(context, true),
@@ -249,14 +243,14 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16), // 버튼 하단 여백 추가
+                    const SizedBox(height: 16),
                   ],
                 ),
                 Positioned(
                   right: 8,
                   top: 8,
                   child: GestureDetector(
-                    onTap: () => Navigator.pop(context, false), // X 아이콘 눌렀을 때 팝업 닫기
+                    onTap: () => Navigator.pop(context, false),
                     child: const Icon(
                       Icons.close,
                       size: 20,

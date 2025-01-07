@@ -357,44 +357,145 @@ class HttpService {
     }
   }
 
-  Future<bool> updateClass({
-    required String classCode,
+  Future<bool> updateStudentName({
+    required int classId,
     required String studentName,
+  }) async {
+    try {
+      print("Preparing request...");
+      print("classId type: ${classId.runtimeType}, value: $classId");
+      print("studentName type: ${studentName.runtimeType}, value: $studentName");
+      final response = await call.put(
+        "/home/updateStudentNameT",
+        data: { // body로 데이터 전송
+          "classId": classId,
+          "studentname": studentName,
+        },
+      );
+      print("Response Data: ${response.data}");
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updateStudentName: $e");
+      rethrow; // 예외를 다시 던져 디버깅에 활용
+    }
+  }
+
+  Future<bool> updateClassName({
+    required int classId,
     required String className,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updateClassNameT",
+        data: {"classId": classId, "classname": className},
+      );
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updateClassName: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updateDay({
+    required int classId,
     required String day,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updateDayT",
+        data: {"classId": classId, "day": day},
+      );
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updateDay: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updateTime({
+    required int classId,
     required int time,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updateTimeT",
+        data: {"classId": classId, "time": time},
+      );
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updateTime: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updatePeriod({
+    required int classId,
     required int period,
-    required String dateOfPayment,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updatePeriodT",
+        data: {"classId": classId, "period": period},
+      );
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updatePeriod: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updateHourlyRate({
+    required int classId,
     required int hourlyRate,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updateHourlyRateT",
+        data: {"classId": classId, "hourlyrate": hourlyRate},
+      );
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updateHourlyRate: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updatePrepay({
+    required int classId,
     required int prepay,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updatePrepayT",
+        data: {"classId": classId, "prepay": prepay},
+      );
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updatePrepay: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updateThemeColor({
+    required int classId,
     required int themeColor,
   }) async {
     try {
       final response = await call.put(
-        "/home/updateClassT",
-        data: {
-          "classcode": classCode,
-          "studentname": studentName,
-          "classname": className,
-          "day": day,
-          "time": time,
-          "period": period,
-          "dateofpayment": dateOfPayment,
-          "hourlyrate": hourlyRate,
-          "prepay": prepay,
-          "themecolor": themeColor,
-        },
+        "/home/updateThemeColorT",
+        data: {"classId": classId, "themecolor": themeColor},
       );
-
-      if (response.statusCode == 200 &&
-          response.data['message'] ==
-              'Class information updated successfully.') {
-        return true;
-      } else {
-        return false;
-      }
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
     } catch (e) {
-      print("Error in updateClass: $e");
+      print("Error in updateThemeColor: $e");
       return false;
     }
   }
