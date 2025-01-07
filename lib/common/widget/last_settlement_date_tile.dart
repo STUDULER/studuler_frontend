@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
+import '../../student/page/transfer_method_selecting_page.dart';
 import '../http/http_service.dart';
 import '../util/format_money.dart';
 import '../model/last_settlement.dart';
@@ -138,8 +139,12 @@ class LastSettlementDateTile extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () async {
-              // TODO - 송금하는 페이지로 이동
-              print("송금하는 페이지");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TransferMethodSelectingPage(),
+                ),
+              );
             },
             child: Container(
               width: 102,
