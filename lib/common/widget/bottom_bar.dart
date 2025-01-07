@@ -107,6 +107,7 @@ class _BottomBarState extends State<BottomBar> {
         key: mainScaffoldKey,
         body: widgetOptions.elementAt(_selectedIndex),
         bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.white,
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           selectedItemColor: const Color(0xFFC7B7A3), // 선택된 아이템 색상
