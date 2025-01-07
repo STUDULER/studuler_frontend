@@ -687,6 +687,40 @@ class HttpService {
     }
 
     return classSettlement;
+    // return [
+    //   ClassSettlement(
+    //     classId: 12,
+    //     className: "이름",
+    //     classColor: 1,
+    //     lastSettlements: [],
+    //     nextSettlment: NextSettlment(date: Jiffy.now(), isUnpaid: false),
+    //   ),
+    //   ClassSettlement(
+    //     classId: 12,
+    //     className: "이름",
+    //     classColor: 1,
+    //     lastSettlements: [
+    //       LastSettlement(date: Jiffy.now(), price: 11000, isPaid: true),
+    //       LastSettlement(date: Jiffy.now(), price: 11000, isPaid: false),
+    //     ],
+    //     nextSettlment: NextSettlment(date: Jiffy.now(), isUnpaid: true),
+    //   ),
+    // ];
+  }
+
+  Future<bool> updateClassAsPaid({
+    required int classId,
+    required Jiffy paidDate,
+  }) async {
+    final response = await call.put(
+      '/payment/updateAsPaid',
+      data: {
+        'classId': classId,
+        'paidDate': _jiffyToFormat(paidDate),
+      },
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) return true;
+    return false;
   }
 
   Future<bool> _isTeacher() async {

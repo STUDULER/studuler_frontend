@@ -33,6 +33,7 @@ final HttpService httpService = HttpService();
       settlementClassSections.add(
         StudentSettlementClassSection(
           classSettlement: classSettlemnt,
+          rebuild: _initSettlementClassSections,
         ),
       );
     }

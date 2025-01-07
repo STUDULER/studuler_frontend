@@ -9,12 +9,14 @@ import '../../common/widget/next_settlement_date_tile.dart';
 class StudentSettlementClassSection extends StatelessWidget {
   const StudentSettlementClassSection({
     super.key,
-    required this.classSettlement,
+    required this.classSettlement, 
+    required this.rebuild,
   });
 
   final ClassSettlement classSettlement;
+  final Function rebuild;
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -39,10 +41,12 @@ class StudentSettlementClassSection extends StatelessWidget {
         ...List<Widget>.generate(
           classSettlement.lastSettlements.length,
           (index) => LastSettlementDateTile(
+            classId: classSettlement.classId,
             isTeacher: false,
             lastSettlement: classSettlement.lastSettlements.elementAt(
               index,
             ),
+            rebuild: rebuild,
           ),
         ),
         NextSettlementDateTile(
