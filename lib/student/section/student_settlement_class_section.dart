@@ -42,6 +42,7 @@ class StudentSettlementClassSection extends StatelessWidget {
           classSettlement.lastSettlements.length,
           (index) => LastSettlementDateTile(
             classId: classSettlement.classId,
+            className: classSettlement.className,
             isTeacher: false,
             lastSettlement: classSettlement.lastSettlements.elementAt(
               index,
@@ -51,6 +52,7 @@ class StudentSettlementClassSection extends StatelessWidget {
         ),
         NextSettlementDateTile(
           classId: classSettlement.classId,
+          className: classSettlement.className,
           isTeacher: false,
           nextSettlment: classSettlement.nextSettlment,
           rebuild: rebuild,

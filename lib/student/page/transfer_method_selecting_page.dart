@@ -1,8 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:jiffy/jiffy.dart';
+
+import 'bank_transfer_page.dart';
 
 class TransferMethodSelectingPage extends StatelessWidget {
-  const TransferMethodSelectingPage({super.key});
+  const TransferMethodSelectingPage({
+    super.key,
+    required this.classId,
+    required this.className,
+    required this.date,
+    required this.price,
+  });
+
+  final int classId;
+  final String className;
+  final Jiffy date;
+  final int price;
 
   @override
   Widget build(BuildContext context) {
@@ -74,8 +88,17 @@ class TransferMethodSelectingPage extends StatelessWidget {
                 alignment: Alignment.center,
                 child: GestureDetector(
                   onTap: () {
-                    // TODO - 무통장입금하기로 이동
-                    print("무통장 입금");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BankTransferPage(
+                          classId: classId,
+                          className: className,
+                          date: date,
+                          price: price,
+                        ),
+                      ),
+                    );
                   },
                   child: Container(
                     width: 232,

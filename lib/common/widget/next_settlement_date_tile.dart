@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
+import '../../student/page/transfer_method_selecting_page.dart';
 import '../http/http_service.dart';
 import '../model/next_settlment.dart';
 import '../util/format_money.dart';
@@ -10,12 +11,14 @@ class NextSettlementDateTile extends StatelessWidget {
   const NextSettlementDateTile({
     super.key,
     required this.classId,
+    required this.className,
     required this.nextSettlment,
     required this.isTeacher,
     required this.rebuild,
   });
 
   final int classId;
+  final String className;
   final NextSettlment nextSettlment;
   final bool isTeacher;
   final Function rebuild;
@@ -88,15 +91,24 @@ class NextSettlementDateTile extends StatelessWidget {
     return SizedBox.shrink();
   }
 
-  Widget studentButton() {
+  Widget studentButton(BuildContext context) {
     if (nextSettlment.isUnpaid) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GestureDetector(
             onTap: () async {
-              // TODO - 송금하는 페이지로 이동
-              print("송금하는 페이지");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TransferMethodSelectingPage(
+                    classId: classId,
+                    className: className,
+                    date: nextSettlment.date,
+                    price: nextSettlment.price,
+                  ),
+                ),
+              );
             },
             child: Container(
               width: 102,
@@ -151,7 +163,7 @@ class NextSettlementDateTile extends StatelessWidget {
             ],
           ),
           Spacer(),
-          isTeacher ? teacherButton(context) : studentButton(),
+          isTeacher ? teacherButton(context) : studentButton(context),
         ],
       ),
     );

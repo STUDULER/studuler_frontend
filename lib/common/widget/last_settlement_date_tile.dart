@@ -11,12 +11,14 @@ class LastSettlementDateTile extends StatelessWidget {
   const LastSettlementDateTile({
     super.key,
     required this.classId,
+    required this.className,
     required this.lastSettlement,
     required this.isTeacher,
     required this.rebuild,
   });
 
   final int classId;
+  final String className;
   final LastSettlement lastSettlement;
   final Function rebuild;
   final bool isTeacher;
@@ -142,7 +144,12 @@ class LastSettlementDateTile extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TransferMethodSelectingPage(),
+                  builder: (context) => TransferMethodSelectingPage(
+                    classId: classId,
+                    className: className,
+                    date: lastSettlement.date,
+                    price: lastSettlement.price,
+                  ),
                 ),
               );
             },
@@ -210,28 +217,6 @@ class LastSettlementDateTile extends StatelessWidget {
             ),
             const Spacer(),
             if (isTeacher) teacherButton(context) else studentButton(context),
-            // if (!lastSettlement.isPaid)
-            //   Column(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            //     children: [
-            //       Container(
-            //         width: 102,
-            //         height: 28,
-            //         decoration: BoxDecoration(
-            //           borderRadius: BorderRadius.circular(10),
-            //           color: const Color(0xFFC7B7A3),
-            //         ),
-            //         child: const Center(
-            //           child: Text(
-            //             "알림 보내기",
-            //             style: TextStyle(
-            //               color: Colors.white,
-            //             ),
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
           ],
         ),
       ),
