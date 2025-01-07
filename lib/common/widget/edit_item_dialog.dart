@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../http/http_service.dart';
+
 class EditItemDialog {
   static void showEditDialog({
     required BuildContext context,
     required String title,
     required String initialValue,
     required Function(String) onUpdate,
-    bool isNumeric = false, // 숫자 입력 전용 여부 추가
+    required int classId, // classId를 부모에서 전달받음
+    bool isNumeric = false,
   }) {
     TextEditingController controller = TextEditingController(text: initialValue);
 
@@ -16,10 +19,10 @@ class EditItemDialog {
       builder: (context) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0), // 살짝 둥근 모서리
+            borderRadius: BorderRadius.circular(5.0),
           ),
           child: Container(
-            color: Colors.white, // 배경색 흰색
+            color: Colors.white,
             child: Stack(
               children: [
                 Padding(
@@ -38,10 +41,12 @@ class EditItemDialog {
                       const SizedBox(height: 16),
                       TextField(
                         controller: controller,
-                        keyboardType: isNumeric ? TextInputType.number : TextInputType.text, // 숫자 입력 전용 설정
+                        keyboardType: isNumeric
+                            ? TextInputType.number
+                            : TextInputType.text,
                         inputFormatters: isNumeric
                             ? [FilteringTextInputFormatter.digitsOnly]
-                            : null, // 숫자만 입력 가능하도록 필터 추가
+                            : null,
                         decoration: const InputDecoration(
                           hintText: '새로운 값을 입력하세요',
                         ),
@@ -55,8 +60,74 @@ class EditItemDialog {
                             child: const Text('취소'),
                           ),
                           TextButton(
-                            onPressed: () {
-                              onUpdate(controller.text); // 새로운 값 업데이트
+                            onPressed: () async {
+                              String newValue = controller.text;
+                              bool success = false;
+
+                              // 엔드포인트 호출
+                              switch (title) {
+                                case '학생 이름':
+                                  success = await HttpService().updateStudentName(
+                                    classId: classId,
+                                    studentName: newValue,
+                                  );
+                                  break;
+                                case '수업 이름':
+                                  success = await HttpService().updateClassName(
+                                    classId: classId,
+                                    className: newValue,
+                                  );
+                                  break;
+                                case '요일':
+                                  success = await HttpService().updateDay(
+                                    classId: classId,
+                                    day: newValue,
+                                  );
+                                  break;
+                                case '회당 시간':
+                                  success = await HttpService().updateTime(
+                                    classId: classId,
+                                    time: int.parse(newValue),
+                                  );
+                                  break;
+                                case '수업 횟수':
+                                  success = await HttpService().updatePeriod(
+                                    classId: classId,
+                                    period: int.parse(newValue),
+                                  );
+                                  break;
+                                case '시급':
+                                  success = await HttpService().updateHourlyRate(
+                                    classId: classId,
+                                    hourlyRate: int.parse(newValue),
+                                  );
+                                  break;
+                                case '선불/후불':
+                                  success = await HttpService().updatePrepay(
+                                    classId: classId,
+                                    prepay: int.parse(newValue),
+                                  );
+                                  break;
+                                case '테마 색상':
+                                  success = await HttpService().updateThemeColor(
+                                    classId: classId,
+                                    themeColor: int.parse(newValue),
+                                  );
+                                  break;
+                              }
+
+                              if (success) {
+                                onUpdate(newValue);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("수정이 완료되었습니다.")),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("수정에 실패했습니다."),
+                                  ),
+                                );
+                              }
                               Navigator.pop(context);
                             },
                             child: const Text('저장'),
@@ -130,7 +201,8 @@ class EditItemDialog {
                                 title: item['title'],
                                 initialValue: initialValue,
                                 onUpdate: item['onUpdate'],
-                                isNumeric: item['title'] == '회당 시간', // 숫자 입력 전용
+                                isNumeric: item['title'] == '회당 시간',
+                                classId: classData['classid'],
                               );
                             },
                           );
