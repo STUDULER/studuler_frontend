@@ -32,9 +32,10 @@ class _BankTransferPageState extends State<BankTransferPage> {
   @override
   void initState() {
     super.initState();
+    _initForm();
   }
 
-  Future<void> initForm() async {
+  Future<void> _initForm() async {
     final responseMap = await HttpService().fetchPaymentInfo(
       classId: widget.classId,
     );

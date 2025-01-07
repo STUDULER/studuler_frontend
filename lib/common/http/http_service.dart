@@ -724,6 +724,22 @@ class HttpService {
     return false;
   }
 
+  Future<Map<String, String>> fetchPaymentInfo({
+    required int classId,
+  }) async {
+    final response = await call.get(
+      "/payment/paymentInfo",
+      data: {
+        "classId": classId,
+      },
+    );
+    final Map<String, String> resultMap = {};
+    resultMap['name'] = response.data['name'] ?? "";
+    resultMap['account'] = response.data['account'] ?? "";
+    resultMap['bank'] = response.data['bank'] ?? "";
+    return resultMap;
+  }
+
   Future<bool> _isTeacher() async {
     return await AuthService().isTeacher();
   }
