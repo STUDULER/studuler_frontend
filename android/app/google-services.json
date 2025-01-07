@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "859051913082",
+    "project_id": "studuler",
+    "storage_bucket": "studuler.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:859051913082:android:2171e4b2dc9bb24dc630c3",
+        "android_client_info": {
+          "package_name": "com.example.studuler"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "859051913082-akkva74r2j42cc8d2inhl0dj76vcrpvf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYZCR_MjCW_gLLM7aieK7T4NTgX9XLHNo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "859051913082-akkva74r2j42cc8d2inhl0dj76vcrpvf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "859051913082-24nkdjnbhjohaa76obvmrp0i0a1v2o2i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.studuler"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

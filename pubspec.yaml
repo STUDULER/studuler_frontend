@@ -46,6 +46,8 @@ dependencies:
   gap: ^3.0.1
   jiffy: ^6.3.1
   animate_gradient: ^0.0.3
+  firebase_core: ^3.9.0
+  firebase_messaging: ^15.1.6
 
 dev_dependencies:
   flutter_test:
