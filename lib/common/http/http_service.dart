@@ -691,20 +691,22 @@ class HttpService {
     // return [
     //   ClassSettlement(
     //     classId: 12,
-    //     className: "이름",
+    //     className: "대치동 수학과외",
     //     classColor: 1,
     //     lastSettlements: [],
-    //     nextSettlment: NextSettlment(date: Jiffy.now(), price: 100, isUnpaid: false),
+    //     nextSettlment:
+    //         NextSettlment(date: Jiffy.now(), price: 100, isUnpaid: false),
     //   ),
     //   ClassSettlement(
     //     classId: 12,
-    //     className: "이름",
+    //     className: "대애애애",
     //     classColor: 1,
     //     lastSettlements: [
     //       LastSettlement(date: Jiffy.now(), price: 11000, isPaid: true),
     //       LastSettlement(date: Jiffy.now(), price: 11000, isPaid: false),
     //     ],
-    //     nextSettlment: NextSettlment(date: Jiffy.now(), price: 1223, isUnpaid: true),
+    //     nextSettlment:
+    //         NextSettlment(date: Jiffy.now(), price: 1223, isUnpaid: true),
     //   ),
     // ];
   }
