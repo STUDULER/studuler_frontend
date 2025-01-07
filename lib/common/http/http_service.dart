@@ -257,6 +257,105 @@ class HttpService {
     }
   }
 
+  Future<List<Map<String, dynamic>>> fetchClassesStudent() async {
+    // 색상 팔레트 정의
+    const List<Color> colorPalette = [
+      Color(0xFFC96868), // Red shade
+      Color(0xFFFFBB70), // Peach shade
+      Color(0xFFB5C18E), // Green shade
+      Color(0xFFCFEFFC), // Light Blue shade
+      Color(0xFF5A72A0), // Blue shade
+      Color(0xFFDDBCFF), // Lavender shade
+      Color(0xFFFCCFCF), // Pink shade
+      Color(0xFFD9D9D9), // Light Gray shade
+      Color(0xFF545454), // Dark Gray shade
+      Color(0xFFB28F65), // Brown shade
+    ];
+
+    try {
+      final response = await call.get('/home/eachClassS');
+
+      if (response.statusCode == 200) {
+        final data = List<Map<String, dynamic>>.from(response.data);
+        if (data.isEmpty) {
+          throw Exception("No classes available for the student.");
+        }
+        return data.map((classInfo) {
+          // 색상 매핑
+          int colorIndex = classInfo['themecolor'] ?? -1;
+          Color mappedColor =
+          (colorIndex >= 0 && colorIndex < colorPalette.length)
+              ? colorPalette[colorIndex]
+              : const Color(0xFFFFFFFF); // 기본 색상 (화이트)
+
+          return {
+            'classId': classInfo['classid'] ?? 0, // classId 추가
+            'title': classInfo['classname'] ?? '제목 없음',
+            'code': classInfo['classcode'] ?? '코드 없음',
+            'completionRate': classInfo['finished_lessons'] != null &&
+                classInfo['period'] != null
+                ? classInfo['finished_lessons'] / classInfo['period']
+                : 0.0,
+            'finishedLessons': classInfo['finished_lessons'],
+            'period': classInfo['period'],
+            'themeColor': mappedColor, // 매핑된 색상
+            'infoItems': [
+              ClassInfoItem(
+                icon: Icons.person,
+                title: '선생님 이름',
+                value: classInfo['teachername'] ?? '정보 없음',
+              ),
+              ClassInfoItem(
+                icon: Icons.access_time,
+                title: '회당 시간',
+                value: '${classInfo['time'] ?? 0}시간',
+              ),
+              ClassInfoItem(
+                icon: Icons.calendar_today,
+                title: '요일',
+                value: classInfo['day'] ?? '요일 없음',
+              ),
+              ClassInfoItem(
+                icon: Icons.payment,
+                title: '정산 방법',
+                value: classInfo['prepay'] == true ? '선불' : '후불',
+              ),
+              ClassInfoItem(
+                icon: Icons.attach_money,
+                title: '시급',
+                value: '${classInfo['hourlyrate'] ?? 0}원',
+              ),
+              ClassInfoItem(
+                icon: Icons.repeat,
+                title: '수업 횟수',
+                value: '${classInfo['period'] ?? 0}회',
+              ),
+              ClassInfoItem(
+                icon: Icons.calendar_today,
+                title: '다음 정산일',
+                value: classInfo['dateofpayment'] != null
+                    ? DateTime.parse(classInfo['dateofpayment'])
+                    .toLocal()
+                    .toString()
+                    .split(' ')[
+                0] // '2025-01-13T00:00:00.000Z' -> '2025-01-13'
+                    : '정보 없음',
+              ),
+            ],
+          };
+        }).toList();
+      } else if (response.statusCode == 404) {
+        throw Exception("API endpoint not found.");
+      } else {
+        throw Exception(
+            "Failed to fetch classes. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Error in fetchClassesStudent: $e');
+      rethrow;
+    }
+  }
+
   Future<bool> updateClass({
     required String classCode,
     required String studentName,
@@ -660,5 +759,29 @@ class HttpService {
     return date.format(
       pattern: 'yyyy-M-dd',
     );
+  }
+
+  Future<String?> joinClass({required String classCode}) async {
+    try {
+      // PUT 요청 보내기
+      final response = await call.put(
+        '/home/joinClass',
+        data: {
+          "classcode": classCode, // 요청에 classcode 포함
+        },
+      );
+
+      // 응답 성공 시 메시지 반환
+      if (response.statusCode == 200) {
+        return response.data['message'] ?? "Successfully joined the class.";
+      } else {
+        // 상태 코드가 200이 아닐 경우 에러 메시지 반환
+        return "Failed to join the class. Status code: ${response.statusCode}";
+      }
+    } catch (e) {
+      // 요청 중 오류가 발생한 경우
+      print("Error in joinClass: $e");
+      return "An error occurred while joining the class.";
+    }
   }
 }

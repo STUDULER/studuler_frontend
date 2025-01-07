@@ -6,6 +6,7 @@ import '../../common/widget/background.dart';
 import '../../common/widget/class_info_card.dart';
 import '../../main.dart';
 import '../../teacher/page/add_class_page.dart';
+import 'add_class_page_student.dart';
 
 class StudentHomePage extends StatefulWidget {
   const StudentHomePage({
@@ -32,7 +33,7 @@ Future<List<Map<String, dynamic>>>? futureClassData;
 
   void _refreshClassData() {
     setState(() {
-      futureClassData = HttpService().fetchClasses().then((data) {
+      futureClassData = HttpService().fetchClassesStudent().then((data) {
         setState(() {
           classData = data; // 로컬에 데이터 저장
         });
@@ -73,7 +74,7 @@ Future<List<Map<String, dynamic>>>? futureClassData;
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AddClassPage(),
+                      builder: (context) => const AddClassPageStudent(),
                     ),
                   );
                   if (result != null && result == true) {
