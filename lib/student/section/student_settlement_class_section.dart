@@ -50,8 +50,10 @@ class StudentSettlementClassSection extends StatelessWidget {
           ),
         ),
         NextSettlementDateTile(
+          classId: classSettlement.classId,
           isTeacher: false,
           nextSettlment: classSettlement.nextSettlment,
+          rebuild: rebuild,
         ),
         const Gap(32),
       ],

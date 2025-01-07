@@ -673,6 +673,7 @@ class HttpService {
       }
       final nextSettlment = NextSettlment(
         date: Jiffy.parse(nextPaymentResponse.data['nextPayment']['date']),
+        price: paymentData['cost'],
         isUnpaid: isUnpaid,
       );
       classSettlement.add(
@@ -693,7 +694,7 @@ class HttpService {
     //     className: "이름",
     //     classColor: 1,
     //     lastSettlements: [],
-    //     nextSettlment: NextSettlment(date: Jiffy.now(), isUnpaid: false),
+    //     nextSettlment: NextSettlment(date: Jiffy.now(), price: 100, isUnpaid: false),
     //   ),
     //   ClassSettlement(
     //     classId: 12,
@@ -703,7 +704,7 @@ class HttpService {
     //       LastSettlement(date: Jiffy.now(), price: 11000, isPaid: true),
     //       LastSettlement(date: Jiffy.now(), price: 11000, isPaid: false),
     //     ],
-    //     nextSettlment: NextSettlment(date: Jiffy.now(), isUnpaid: true),
+    //     nextSettlment: NextSettlment(date: Jiffy.now(), price: 1223, isUnpaid: true),
     //   ),
     // ];
   }

@@ -9,7 +9,7 @@ import '../../common/widget/next_settlement_date_tile.dart';
 class TeacherSettlementClassSection extends StatelessWidget {
   const TeacherSettlementClassSection({
     super.key,
-    required this.classSettlement, 
+    required this.classSettlement,
     required this.rebuild,
   });
 
@@ -50,8 +50,10 @@ class TeacherSettlementClassSection extends StatelessWidget {
           ),
         ),
         NextSettlementDateTile(
+          classId: classSettlement.classId,
           isTeacher: true,
           nextSettlment: classSettlement.nextSettlment,
+          rebuild: rebuild,
         ),
         const Gap(32),
       ],
