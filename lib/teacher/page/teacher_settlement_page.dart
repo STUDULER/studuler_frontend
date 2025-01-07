@@ -28,11 +28,13 @@ class _TeacherSettlementPageState extends State<TeacherSettlementPage> {
     setState(() {
       isLoading = true;
     });
+    settlementClassSections.clear();
     final classSettlements = await httpService.fetchClassSettlements();
     for (var classSettlemnt in classSettlements) {
       settlementClassSections.add(
         TeacherSettlementClassSection(
           classSettlement: classSettlemnt,
+          rebuild: _initSettlementClassSections,
         ),
       );
     }
@@ -59,8 +61,6 @@ class _TeacherSettlementPageState extends State<TeacherSettlementPage> {
           ),
           Padding(
             padding: const EdgeInsets.only(
-              left: 16.0,
-              right: 16.0,
               top: 100,
             ),
             child: Container(

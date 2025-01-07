@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:studuler/common/auth/oauth_user_dto.dart';
 
+import '../auth/auth_service.dart';
 import '../model/class_settlement.dart';
 import '../model/last_settlement.dart';
 import '../model/next_settlment.dart';
@@ -473,11 +474,15 @@ class HttpService {
   }
 
   Future<List<Map<String, dynamic>>> fetchClassesByDate(String date) async {
-    final response = await call.get(
-      '/total/classByDateT',
-      queryParameters: {'date': date},
-    );
-
+    final response = await _isTeacher()
+        ? await call.get(
+            '/total/classByDateT',
+            queryParameters: {'date': date},
+          )
+        : await call.get(
+            '/total/classByDateS',
+            queryParameters: {'date': date},
+          );
     if (response.statusCode == 200) {
       return List<Map<String, dynamic>>.from(response.data);
     } else {
@@ -572,10 +577,15 @@ class HttpService {
       };
 
       // GET 요청
-      final response = await call.get(
-        "/total/calendarT",
-        queryParameters: queryParameters,
-      );
+      final response = await _isTeacher()
+          ? await call.get(
+              "/total/calendarT",
+              queryParameters: queryParameters,
+            )
+          : await call.get(
+              "/total/calendarS",
+              queryParameters: queryParameters,
+            );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
@@ -601,11 +611,17 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
-    await Future.delayed(Durations.long1);
+    await Future.delayed(Durations.long1); // 달력 바뀌는 거 기다리는 시간
     List<ClassDay> rst = [];
+    String path = '/each/calendar';
+    if (await _isTeacher()) {
+      path = "${path}T";
+    } else {
+      path = "${path}S";
+    }
     try {
       final response = await call.get(
-        "/each/calendarT",
+        path,
         data: {
           "classId": classId,
           "year": date.year,
@@ -631,8 +647,15 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
+    await Future.delayed(Durations.long1); // 달력 바뀌는 거 기다리는 시간
+    String path = '/each/feedbackByDate';
+    if (await _isTeacher()) {
+      path = '${path}T';
+    } else {
+      path = '${path}S';
+    }
     final response = await call.get(
-      '/each/feedbackByDateT',
+      path,
       data: {
         'classId': classId,
         'date': _jiffyToFormat(date),
@@ -698,8 +721,18 @@ class HttpService {
   }
 
   Future<List<ClassSettlement>> fetchClassSettlements() async {
-    final response = await call.get('/home/classIdT');
-    final paymentResponse = await call.get('/payment/unpaid');
+    String classIdPath = '/home/classId';
+    String unpaidClassPath = '/payment/unpaid';
+    if (await _isTeacher()) {
+      classIdPath = "${classIdPath}T";
+      unpaidClassPath = "${unpaidClassPath}T";
+    } else {
+      classIdPath = "${classIdPath}S";
+      unpaidClassPath = "${unpaidClassPath}S";
+    }
+
+    final response = await call.get(classIdPath);
+    final paymentResponse = await call.get(unpaidClassPath);
 
     final List<ClassSettlement> classSettlement = [];
     for (var classData in response.data) {
@@ -739,6 +772,7 @@ class HttpService {
       }
       final nextSettlment = NextSettlment(
         date: Jiffy.parse(nextPaymentResponse.data['nextPayment']['date']),
+        price: paymentData['cost'],
         isUnpaid: isUnpaid,
       );
       classSettlement.add(
@@ -753,6 +787,62 @@ class HttpService {
     }
 
     return classSettlement;
+    // return [
+    //   ClassSettlement(
+    //     classId: 12,
+    //     className: "대치동 수학과외",
+    //     classColor: 1,
+    //     lastSettlements: [],
+    //     nextSettlment:
+    //         NextSettlment(date: Jiffy.now(), price: 100, isUnpaid: false),
+    //   ),
+    //   ClassSettlement(
+    //     classId: 12,
+    //     className: "대애애애",
+    //     classColor: 1,
+    //     lastSettlements: [
+    //       LastSettlement(date: Jiffy.now(), price: 11000, isPaid: true),
+    //       LastSettlement(date: Jiffy.now(), price: 11000, isPaid: false),
+    //     ],
+    //     nextSettlment:
+    //         NextSettlment(date: Jiffy.now(), price: 1223, isUnpaid: true),
+    //   ),
+    // ];
+  }
+
+  Future<bool> updateClassAsPaid({
+    required int classId,
+    required Jiffy paidDate,
+  }) async {
+    final response = await call.put(
+      '/payment/updateAsPaid',
+      data: {
+        'classId': classId,
+        'paidDate': _jiffyToFormat(paidDate),
+      },
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) return true;
+    return false;
+  }
+
+  Future<Map<String, String>> fetchPaymentInfo({
+    required int classId,
+  }) async {
+    final response = await call.get(
+      "/payment/paymentInfo",
+      data: {
+        "classId": classId,
+      },
+    );
+    final Map<String, String> resultMap = {};
+    resultMap['name'] = response.data['name'] ?? "";
+    resultMap['account'] = response.data['account'] ?? "";
+    resultMap['bank'] = response.data['bank'] ?? "";
+    return resultMap;
+  }
+
+  Future<bool> _isTeacher() async {
+    return await AuthService().isTeacher();
   }
 
   String _jiffyToFormat(Jiffy date) {

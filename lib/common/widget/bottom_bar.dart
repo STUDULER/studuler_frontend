@@ -75,9 +75,15 @@ class _BottomBarState extends State<BottomBar> {
     } else {
       widgetOptions = <Widget>[
         if (perClassMode)
-          StudentSchedulePerClassPage()
+          StudentSchedulePerClassPage(
+            classId: classId,
+            className: className,
+            classColor: classColor,
+          )
         else
-          StudentSchedulePage(),
+          StudentSchedulePage(
+            goToPerClassPage: goToSchedulPerClassPage,
+          ),
         StudentHomePage(
           goToPerClassPage: goToSchedulPerClassPage,
         ),

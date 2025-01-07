@@ -8,9 +8,11 @@ class Background extends StatelessWidget {
     required this.iconActionButtons,
     this.colorIndex,
     this.isTeacher = true,
+    this.hasBackButton = false,
   });
 
   final bool isTeacher;
+  final bool hasBackButton;
   final int? colorIndex;
   final List<IconButton> iconActionButtons;
 
@@ -40,12 +42,21 @@ class Background extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'STUDULER',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    if (hasBackButton)
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Icon(Icons.arrow_back_ios_new_rounded),
+                      ),
+                    const Text(
+                      'STUDULER',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
                 Row(
                   children: iconActionButtons,

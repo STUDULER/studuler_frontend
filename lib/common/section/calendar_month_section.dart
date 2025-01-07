@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 
 import '../../teacher/section/feedback_scrollable_sheet_section.dart';
-import '../http/http_service.dart';
 import '../model/class_day.dart';
 import '../model/class_feedback.dart';
 import '../util/weeks_of_month_calendar.dart';
@@ -35,8 +34,6 @@ class CalendarMonthSection extends StatefulWidget {
 }
 
 class _CalendarMonthSectionState extends State<CalendarMonthSection> {
-  final httpService = HttpService();
-
   final sidePadding = const EdgeInsets.symmetric(horizontal: 12);
 
   int? selectedIndex;
