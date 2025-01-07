@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-import '../../common/util/format_money.dart';
-import '../../common/model/last_settlement.dart';
+import '../util/format_money.dart';
+import '../model/last_settlement.dart';
 
 class LastSettlementDateTile extends StatelessWidget {
   const LastSettlementDateTile({
-    super.key, 
-    required this.lastSettlement,
+    super.key,
+    required this.lastSettlement, 
+    required this.isTeacher,
   });
 
   final LastSettlement lastSettlement;
+  final bool isTeacher;
 
   @override
   Widget build(BuildContext context) {

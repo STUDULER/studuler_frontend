@@ -622,8 +622,18 @@ class HttpService {
   }
 
   Future<List<ClassSettlement>> fetchClassSettlements() async {
-    final response = await call.get('/home/classIdT');
-    final paymentResponse = await call.get('/payment/unpaid');
+    String classIdPath = '/home/classId';
+    String unpaidClassPath = '/payment/unpaid';
+    if (await _isTeacher()) {
+      classIdPath = "${classIdPath}T";
+      unpaidClassPath = "${unpaidClassPath}T";
+    } else {
+      classIdPath = "${classIdPath}S";
+      unpaidClassPath = "${unpaidClassPath}S";
+    }
+
+    final response = await call.get(classIdPath);
+    final paymentResponse = await call.get(unpaidClassPath);
 
     final List<ClassSettlement> classSettlement = [];
     for (var classData in response.data) {

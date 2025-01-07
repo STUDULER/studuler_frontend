@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-import '../../common/model/next_settlment.dart';
+import '../model/next_settlment.dart';
 
 class NextSettlementDateTile extends StatelessWidget {
   const NextSettlementDateTile({
     super.key,
-    required this.nextSettlment,
+    required this.nextSettlment, 
+    required this.isTeacher,
   });
 
   final NextSettlment nextSettlment;
+  final bool isTeacher;
 
   @override
   Widget build(BuildContext context) {

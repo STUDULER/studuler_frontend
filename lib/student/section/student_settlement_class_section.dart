@@ -6,15 +6,15 @@ import '../../common/util/get_color_by_index.dart';
 import '../../common/widget/last_settlement_date_tile.dart';
 import '../../common/widget/next_settlement_date_tile.dart';
 
-class TeacherSettlementClassSection extends StatelessWidget {
-  const TeacherSettlementClassSection({
+class StudentSettlementClassSection extends StatelessWidget {
+  const StudentSettlementClassSection({
     super.key,
     required this.classSettlement,
   });
 
   final ClassSettlement classSettlement;
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -39,14 +39,14 @@ class TeacherSettlementClassSection extends StatelessWidget {
         ...List<Widget>.generate(
           classSettlement.lastSettlements.length,
           (index) => LastSettlementDateTile(
-            isTeacher: true,
+            isTeacher: false,
             lastSettlement: classSettlement.lastSettlements.elementAt(
               index,
             ),
           ),
         ),
         NextSettlementDateTile(
-          isTeacher: true,
+          isTeacher: false,
           nextSettlment: classSettlement.nextSettlment,
         ),
         const Gap(32),
