@@ -85,8 +85,7 @@ class HttpService {
     required String account,
     required String name,
     required int loginMethod,
-  }
-  ) async {
+  }) async {
     final response = await call.post(
       "/teachers/signup",
       data: {
@@ -735,6 +734,7 @@ class HttpService {
     }
 
     final response = await call.get(classIdPath);
+    if ((response.data as List).isEmpty) return [];
     final paymentResponse = await call.get(unpaidClassPath);
 
     final List<ClassSettlement> classSettlement = [];

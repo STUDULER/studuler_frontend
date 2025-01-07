@@ -14,9 +14,9 @@ class StudentSettlementPage extends StatefulWidget {
 }
 
 class _StudentSettlementPageState extends State<StudentSettlementPage> {
-final HttpService httpService = HttpService();
+  final HttpService httpService = HttpService();
   final List<StudentSettlementClassSection> settlementClassSections = [];
-  bool isLoading = false;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -98,17 +98,26 @@ final HttpService httpService = HttpService();
                               ],
                             ),
                           )
-                        : Expanded(
-                            child: SingleChildScrollView(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Column(
-                                  children: settlementClassSections,
+                        : settlementClassSections.isNotEmpty
+                            ? Expanded(
+                                child: SingleChildScrollView(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
+                                    child: Column(
+                                      children: settlementClassSections,
+                                    ),
+                                  ),
                                 ),
+                              )
+                            : Column(
+                                children: [
+                                  Gap(200),
+                                  Center(
+                                    child: Text("아직 수업이 없어요"),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
                   ],
                 ),
               ),
