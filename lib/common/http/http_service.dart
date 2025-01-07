@@ -512,11 +512,17 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
-    await Future.delayed(Durations.long1);
+    await Future.delayed(Durations.long1); // 달력 바뀌는 거 기다리는 시간
     List<ClassDay> rst = [];
+    String path = '/each/calendar';
+    if (await _isTeacher()) {
+      path = "${path}T";
+    } else {
+      path = "${path}S";
+    }
     try {
       final response = await call.get(
-        "/each/calendarT",
+        path,
         data: {
           "classId": classId,
           "year": date.year,
@@ -542,8 +548,15 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
+    await Future.delayed(Durations.long1); // 달력 바뀌는 거 기다리는 시간
+    String path = '/each/feedbackByDate';
+    if (await _isTeacher()) {
+      path = '${path}T';
+    } else {
+      path = '${path}S';
+    }
     final response = await call.get(
-      '/each/feedbackByDateT',
+      path,
       data: {
         'classId': classId,
         'date': _jiffyToFormat(date),
