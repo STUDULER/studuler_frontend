@@ -774,7 +774,7 @@ class HttpService {
       }
       final nextSettlment = NextSettlment(
         date: Jiffy.parse(nextPaymentResponse.data['nextPayment']['date']),
-        price: paymentData['cost'],
+        price: nextPaymentResponse.data['nextPayment']['cost'],
         isUnpaid: isUnpaid,
       );
       classSettlement.add(
