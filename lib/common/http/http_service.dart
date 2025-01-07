@@ -79,11 +79,13 @@ class HttpService {
     );
   }
 
-  Future<bool> createTeacher(
-    OAuthUserDto dto,
-    String bank,
-    String account,
-    int loginMethod,
+  Future<bool> createTeacher({
+    required OAuthUserDto dto,
+    required String bank,
+    required String account,
+    required String name,
+    required int loginMethod,
+  }
   ) async {
     final response = await call.post(
       "/teachers/signup",
@@ -92,6 +94,7 @@ class HttpService {
         "password": dto.password,
         "account": int.parse(account),
         "bank": bank,
+        "name": name,
         "mail": dto.mail,
         "loginMethod": loginMethod,
         "image": dto.image,
@@ -285,16 +288,16 @@ class HttpService {
           // 색상 매핑
           int colorIndex = classInfo['themecolor'] ?? -1;
           Color mappedColor =
-          (colorIndex >= 0 && colorIndex < colorPalette.length)
-              ? colorPalette[colorIndex]
-              : const Color(0xFFFFFFFF); // 기본 색상 (화이트)
+              (colorIndex >= 0 && colorIndex < colorPalette.length)
+                  ? colorPalette[colorIndex]
+                  : const Color(0xFFFFFFFF); // 기본 색상 (화이트)
 
           return {
             'classId': classInfo['classid'] ?? 0, // classId 추가
             'title': classInfo['classname'] ?? '제목 없음',
             'code': classInfo['classcode'] ?? '코드 없음',
             'completionRate': classInfo['finished_lessons'] != null &&
-                classInfo['period'] != null
+                    classInfo['period'] != null
                 ? classInfo['finished_lessons'] / classInfo['period']
                 : 0.0,
             'finishedLessons': classInfo['finished_lessons'],
@@ -336,10 +339,10 @@ class HttpService {
                 title: '다음 정산일',
                 value: classInfo['dateofpayment'] != null
                     ? DateTime.parse(classInfo['dateofpayment'])
-                    .toLocal()
-                    .toString()
-                    .split(' ')[
-                0] // '2025-01-13T00:00:00.000Z' -> '2025-01-13'
+                            .toLocal()
+                            .toString()
+                            .split(' ')[
+                        0] // '2025-01-13T00:00:00.000Z' -> '2025-01-13'
                     : '정보 없음',
               ),
             ],
