@@ -193,6 +193,7 @@ class _StudentSchedulePerClassPageState
                                   controller: pageController,
                                   itemBuilder: (context, index) {
                                     return CalendarMonthSection(
+                                      isTeacher: false,
                                       classId: widget.classId,
                                       date: date.add(months: index - 2400),
                                       someWeeksOfNextMonth: true,
