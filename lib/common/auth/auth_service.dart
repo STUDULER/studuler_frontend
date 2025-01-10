@@ -55,36 +55,73 @@ class AuthService {
 
       case AuthServiceType.kakao:
         try {
+          // 1. 카카오톡 앱 설치 여부 확인 및 로그인 시도
           bool isKakaoInstalled = await isKakaoTalkInstalled();
           OAuthToken token = isKakaoInstalled
               ? await UserApi.instance.loginWithKakaoTalk()
               : await UserApi.instance.loginWithKakaoAccount();
 
-          await _secureStorage.write(key: 'isLoggedIn', value: 'true');
-          await _secureStorage.write(
-            key: "authServiceType",
-            value: "kakao",
-          );
+          // AccessToken 출력
+          print('Kakao AccessToken: ${token.accessToken}');
 
-          final url = Uri.https('kapi.kakao.com', '/v2/user/me');
-          final response = await http.get(
-            url,
-            headers: {
-              HttpHeaders.authorizationHeader: 'Bearer ${token.accessToken}'
-            },
-          );
-          final profileInfo = json.decode(response.body);
-          print(profileInfo.toString());
-        } catch (error) {
-          print('Kakao sign in failed: $error');
+          // 2. 토큰 저장
+          await _secureStorage.write(key: 'isLoggedIn', value: 'true');
+          await _secureStorage.write(key: "authServiceType", value: "kakao");
+
+          try {
+            // 3. 서버에 로그인 요청
+            final loginResponse = await http.post(
+              Uri.parse('https://yourapi.com/loginWithKakao'),
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode({'kakaoAccessToken': token.accessToken}),
+            );
+
+            // 4. 서버 응답 처리
+            if (loginResponse.statusCode == 200) {
+              final loginData = jsonDecode(loginResponse.body);
+
+              if (loginData['isExist'] == true) {
+                // 이미 회원가입된 유저
+                print('Kakao login success: ${loginData.toString()}');
+                return OAuthUserDto(
+                  username: loginData['username'] ?? "",
+                  password: "",
+                  mail: loginData['mail'] ?? "",
+                  image: 1,
+                );
+              } else {
+                // 회원가입이 필요한 유저
+                print('Kakao user not registered: ${loginData.toString()}');
+                return OAuthUserDto(
+                  username: loginData['username'] ?? "",
+                  password: "",
+                  mail: loginData['mail'] ?? "",
+                  image: 1,
+                );
+              }
+            } else {
+              // 서버 응답 실패
+              print('Kakao login API failed. Status: ${loginResponse.statusCode}');
+              print('Response body: ${loginResponse.body}');
+              return null;
+            }
+          } catch (httpError) {
+            // HTTP 요청 관련 오류 처리
+            print('Failed to send Kakao login API request: $httpError');
+            return null;
+          }
+        } catch (authError) {
+          // 카카오 로그인 관련 오류 처리
+          if (authError is KakaoAuthException) {
+            print('KakaoAuthException: ${authError.message}');
+          } else if (authError is KakaoClientException) {
+            print('KakaoClientException: ${authError.message}');
+          } else {
+            print('Unexpected error during Kakao login: $authError');
+          }
           return null;
         }
-        // TODO 이 부분을 IOAuthUserDto 로 바꾸어야 함.
-        return null;
-
-      default:
     }
-    return null;
   }
 
   Future<void> signOut() async {
