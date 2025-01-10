@@ -436,7 +436,7 @@ class HttpService {
               ),
               ClassInfoItem(
                 icon: Icons.calendar_today,
-                title: '다음 정산일',
+                title: '이번 회차 정산일',
                 value: classInfo['dateofpayment'] != null
                     ? DateTime.parse(classInfo['dateofpayment'])
                             .toLocal()
@@ -535,7 +535,7 @@ class HttpService {
               ),
               ClassInfoItem(
                 icon: Icons.calendar_today,
-                title: '다음 정산일',
+                title: '이번 회차 정산일',
                 value: classInfo['dateofpayment'] != null
                     ? DateTime.parse(classInfo['dateofpayment'])
                             .toLocal()
@@ -1267,4 +1267,5 @@ class HttpService {
       print("Error in sendNotification: $e");
       return false;
     }
+  }
 }

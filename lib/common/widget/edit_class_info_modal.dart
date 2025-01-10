@@ -339,7 +339,7 @@ class _EditClassInfoModalState extends State<EditClassInfoModal> {
                         ClassInfoItem(icon: Icons.payment, title: '정산 방법', value: widget.paymentMethodController.text),
                         ClassInfoItem(icon: Icons.attach_money, title: '시급', value: _hourlyRateController.text),
                         ClassInfoItem(icon: Icons.repeat, title: '수업 횟수', value: widget.sessionCountController.text),
-                        ClassInfoItem(icon: Icons.calendar_today, title: '다음 정산일', value: widget.nextPaymentDate),
+                        ClassInfoItem(icon: Icons.calendar_today, title: '이번 회차 정산일', value: widget.nextPaymentDate),
                       ],
                       selectedColor,
                     );
