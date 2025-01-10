@@ -52,11 +52,44 @@ class HttpService {
           // }
           final refreshToken = await _secureStorage.read(key: "refreshToken");
           final jwt = await _secureStorage.read(key: "jwt");
-          print("asdff");
           print(refreshToken);
           print(jwt);
-          print("asdff");
-          // if (error.response)
+          if (error.response?.statusCode == 403) {
+            print("403");
+            // access token expiration error
+            try {
+              final response = await call.post('/refreshAccessToken');
+              final Map<String, String> cookieMap = {};
+              response.headers.forEach(
+                (name, values) {
+                  if (name == HttpHeaders.setCookieHeader) {
+                    for (var c in values) {
+                      var key = '';
+                      var value = '';
+
+                      key = c.substring(0, c.indexOf('='));
+                      value = c.substring(key.length + 1, c.indexOf(';'));
+
+                      cookieMap[key] = value;
+                    }
+
+                    var cookiesFormatted = '';
+
+                    cookieMap.forEach(
+                        (key, value) => cookiesFormatted += '$key=$value; ');
+                    return;
+                  }
+                },
+              );
+              print("123");
+              print(response.headers);
+              print(response.data);
+              print("123");
+            } catch (e) {
+              // If token refresh fails, redirect to login or handle accordingly
+              return handler.reject(error);
+            }
+          }
 
           if (error.response?.statusCode == 405) {
             print("405");
