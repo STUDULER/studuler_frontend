@@ -165,14 +165,7 @@ class HttpService {
         isJwtInBody: true,
         withUserId: true,
       );
-      await _secureStorage.write(
-        key: "jwt",
-        value: tokenMap['jwt'],
-      );
-      await _secureStorage.write(
-        key: "refreshToken",
-        value: tokenMap['refreshToken'],
-      );
+      _saveLoginData(tokenMap);
     } catch (e) {
       return false;
     }
@@ -1194,6 +1187,7 @@ class HttpService {
   }
 
   Future<void> _saveLoginData(Map<String, String> map) async {
+    await _secureStorage.write(key: 'userId', value: map['userId']);
     await _secureStorage.write(key: 'jwt', value: map['jwt']);
     await _secureStorage.write(key: 'refreshToken', value: map['refreshToken']);
     await _secureStorage.write(key: 'cookie', value: map['cookie']);

@@ -91,7 +91,7 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
                                     MaterialPageRoute(
                                       builder: (context) {
                                         return BottomBar(
-                                          isTeacher: true,
+                                          isTeacher: widget.isTeacher,
                                         );
                                       },
                                     ),
