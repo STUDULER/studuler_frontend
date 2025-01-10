@@ -118,7 +118,7 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                                   if (!isSamePassword()) {
                                     return;
                                   }
-                                  const emailLoginMethod = 3;
+                                  const emailLoginMethod = 0;
                                   final dto = OAuthUserDto(
                                     username: _nameController.text,
                                     password: _passwordController.text,
