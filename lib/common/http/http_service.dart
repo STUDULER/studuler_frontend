@@ -123,6 +123,33 @@ class HttpService {
     );
   }
 
+  Future<bool> signInStudentKakao(String kakaoAccessToken) async {
+    try {
+      final response = await call.post(
+        '/students/loginWithKakao',
+        data: {'kakaoAccessToken': kakaoAccessToken},
+      );
+
+      if (response.statusCode == 200) {
+        final accessToken = response.data['accessToken'];
+        if (accessToken != null) {
+          await _secureStorage.write(key: "jwt", value: accessToken);
+          print("Student Kakao login success. JWT saved.");
+          return true;
+        } else {
+          print("No accessToken found in the response.");
+          return false;
+        }
+      } else {
+        print("Failed to login student with Kakao. Status: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print("Error in signInStudentKakao: $e");
+      return false;
+    }
+  }
+
   Future<bool> isAlreadyOAuthUser({
     required String id,
     required bool isTeacher,

@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:studuler/common/auth/oauth_user_dto.dart';
 
+import '../http/http_service.dart';
 import 'auth_service_type.dart';
 
 class AuthService {
@@ -27,13 +28,15 @@ class AuthService {
     required AuthServiceType authServiceType,
     required bool role,
   }) async {
-    if (role == true) {
-      // 선생
+    if (role) {
+      // 선생님
       await _secureStorage.write(key: "role", value: "teacher");
     } else {
       // 학생
       await _secureStorage.write(key: "role", value: "student");
+      return await signInStudent(authServiceType: authServiceType);
     }
+
     switch (authServiceType) {
       case AuthServiceType.google:
         try {
@@ -124,6 +127,49 @@ class AuthService {
           }
           return null;
         }
+    }
+  }
+
+  Future<OAuthUserDto?> signInStudent({
+    required AuthServiceType authServiceType,
+  }) async {
+    switch (authServiceType) {
+      case AuthServiceType.kakao:
+        return await signInStudentKakao();
+      default:
+        print('Unsupported authServiceType for student login.');
+        return null;
+    }
+  }
+
+  Future<OAuthUserDto?> signInStudentKakao() async {
+    try {
+      // 1. 카카오톡 앱 설치 여부 확인 및 로그인 시도
+      bool isKakaoInstalled = await isKakaoTalkInstalled();
+      OAuthToken token = isKakaoInstalled
+          ? await UserApi.instance.loginWithKakaoTalk()
+          : await UserApi.instance.loginWithKakaoAccount();
+
+      print('Kakao AccessToken (Student): ${token.accessToken}');
+
+      // 2. HttpService의 signInStudentKakao 호출
+      bool isSuccess = await HttpService().signInStudentKakao(token.accessToken);
+
+      if (isSuccess) {
+        print("Student Kakao login completed successfully.");
+        return OAuthUserDto(
+          username: "Student User", // 필요한 경우 서버에서 정보를 가져와 설정
+          password: "",
+          mail: "", // 필요한 경우 서버에서 정보를 가져와 설정
+          image: 1,
+        );
+      } else {
+        print("Student Kakao login failed.");
+        return null;
+      }
+    } catch (authError) {
+      print('Error during student Kakao login: $authError');
+      return null;
     }
   }
 
