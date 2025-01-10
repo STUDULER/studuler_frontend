@@ -250,14 +250,15 @@ class HttpService {
         }
       },
     );
-
-    final jwt = response.data['accessToken'];
-    final refreshToken = cookieMap['refreshToken'];
-    // int userId = response.data['userId'];
-    // await _secureStorage.write(key: "userId", value: "$userId");
-    await _secureStorage.write(key: "jwt", value: jwt);
-    await _secureStorage.write(key: "refreshToken", value: refreshToken);
-    await _secureStorage.write(key: "cookie", value: cookiesFormatted);
+    final tokenMap = _parseJwtAndRefreshToken(
+      response: response,
+      isJwtInBody: true,
+      withUserId: true,
+    );
+    await _saveLoginData(
+      map: tokenMap,
+      isTeacher: isTeacher,
+    );
     return true;
   }
 
