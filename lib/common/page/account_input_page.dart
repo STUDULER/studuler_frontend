@@ -140,6 +140,7 @@ class _AccountInputPageState extends State<AccountInputPage> {
                                 name: _nameController.text,
                                 bank: _bankController.text,
                                 account: _accountNumberController.text,
+                                kakaoId: "",
                               );
                               if (result == false) return;
                               if (!context.mounted) return;

@@ -10,14 +10,13 @@ import 'package:studuler/common/auth/oauth_user_dto.dart';
 import 'auth_service_type.dart';
 
 class AuthService {
-
   AuthService._privateConstructor();
   static final AuthService _instance = AuthService._privateConstructor();
 
   factory AuthService() {
     return _instance;
   }
-  
+
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
     aOptions: AndroidOptions(
       encryptedSharedPreferences: true,
@@ -37,21 +36,25 @@ class AuthService {
     }
     switch (authServiceType) {
       case AuthServiceType.google:
-        final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-        if (googleUser == null) return null;
-        await _secureStorage.write(key: 'isLoggedIn', value: 'true');
-        await _secureStorage.write(
-          key: "authServiceType",
-          value: "google",
-        );
-        print(googleUser);
-        print("sign in");
-        return OAuthUserDto(
-          username: googleUser.displayName ?? "",
-          password: "",
-          mail: googleUser.email,
-          image: 1,
-        );
+        try {
+          final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+          if (googleUser == null) return null;
+          await _secureStorage.write(key: 'isLoggedIn', value: 'true');
+          await _secureStorage.write(
+            key: "authServiceType",
+            value: "google",
+          );
+          print(googleUser);
+          print("sign in");
+          return OAuthUserDto(
+            username: googleUser.displayName ?? "",
+            password: "",
+            mail: googleUser.email,
+            image: 1,
+          );
+        } catch (e) {
+          return null;
+        }
 
       case AuthServiceType.kakao:
         try {

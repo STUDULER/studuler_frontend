@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -47,32 +49,33 @@ class HttpService {
           //   // 302 Redirection
           //   debugPrint("302 Response");
           // }
-          // if (error.response?.statusCode == 401) {
-          //   // Handle 401 Unauthorized error
-          //   try {
-          //     // Attempt to refresh the token
-          //     final newToken = await authRepository.refreshToken();
+          if (error.response?.statusCode == 405) {
+            // Handle 401 Unauthorized error
+            try {
+              // Attempt to refresh the token
+              final refreshToken =
+                  await _secureStorage.read(key: "refreshToken");
 
-          //     // Update the authorization header with the new token
-          //     error.requestOptions.headers['Authorization'] =
-          //         'Bearer $newToken';
+              // Update the authorization header with the new token
+              error.requestOptions.headers['Authorization'] =
+                  'Bearer $refreshToken';
 
-          //     // Retry the request with the new token
-          //     final clonedRequest = await dio.request(
-          //       error.requestOptions.path,
-          //       options: Options(
-          //         method: error.requestOptions.method,
-          //         headers: error.requestOptions.headers,
-          //       ),
-          //       data: error.requestOptions.data,
-          //       queryParameters: error.requestOptions.queryParameters,
-          //     );
-          //     return handler.resolve(clonedRequest);
-          //   } catch (e) {
-          //     // If token refresh fails, redirect to login or handle accordingly
-          //     return handler.reject(error);
-          //   }
-          // }
+              // Retry the request with the new token
+              final clonedRequest = await call.request(
+                error.requestOptions.path,
+                options: Options(
+                  method: error.requestOptions.method,
+                  headers: error.requestOptions.headers,
+                ),
+                data: error.requestOptions.data,
+                queryParameters: error.requestOptions.queryParameters,
+              );
+              return handler.resolve(clonedRequest);
+            } catch (e) {
+              // If token refresh fails, redirect to login or handle accordingly
+              return handler.reject(error);
+            }
+          }
           return handler.next(error);
         },
       ),
@@ -85,27 +88,84 @@ class HttpService {
     required String account,
     required String name,
     required int loginMethod,
+    required String? kakaoId,
   }) async {
-    final response = await call.post(
-      "/teachers/signup",
-      data: {
-        "username": dto.username,
-        "password": dto.password,
-        "account": int.parse(account),
-        "bank": bank,
-        "name": name,
-        "mail": dto.mail,
-        "loginMethod": loginMethod,
-        "image": dto.image,
-      },
-    );
+    final Response response;
+    if (loginMethod == 1) {
+      response = await call.post(
+        "/teachers/signup",
+        data: {
+          "username": dto.username,
+          "password": dto.password,
+          "account": int.parse(account),
+          "bank": bank,
+          "name": name,
+          "mail": dto.mail,
+          "loginMethod": loginMethod,
+          "image": dto.image,
+          "kakaoId": kakaoId,
+        },
+      );
+    } else if (loginMethod == 2) {
+      response = await call.post(
+        "/teachers/signup",
+        data: {
+          "username": dto.username,
+          "password": dto.password,
+          "account": int.parse(account),
+          "bank": bank,
+          "name": name,
+          "mail": dto.mail,
+          "loginMethod": loginMethod,
+          "image": dto.image,
+        },
+      );
+    } else {
+      response = await call.post(
+        "/teachers/signup",
+        data: {
+          "username": dto.username,
+          "password": dto.password,
+          "account": int.parse(account),
+          "bank": bank,
+          "name": name,
+          "mail": dto.mail,
+          "loginMethod": loginMethod,
+          "image": dto.image,
+        },
+      );
+    }
     if (response.statusCode != 201) {
       return false;
     }
-    String jwt = response.data['token'];
+    final Map<String, String> cookieMap = {};
+    response.headers.forEach(
+      (name, values) {
+        if (name == HttpHeaders.setCookieHeader) {
+          for (var c in values) {
+            var key = '';
+            var value = '';
+
+            key = c.substring(0, c.indexOf('='));
+            value = c.substring(key.length + 1, c.indexOf(';'));
+
+            cookieMap[key] = value;
+          }
+
+          var cookiesFormatted = '';
+
+          cookieMap
+              .forEach((key, value) => cookiesFormatted += '$key=$value; ');
+          return;
+        }
+      },
+    );
+    String jwt = response.data['accessToken'];
+    String refreshToken = cookieMap['refreshToken']!;
     int userId = response.data['userId'];
     await _secureStorage.write(key: "userId", value: "$userId");
     await _secureStorage.write(key: "jwt", value: jwt);
+    await _secureStorage.write(key: "refreshToken", value: refreshToken);
     return true;
   }
 
@@ -366,10 +426,12 @@ class HttpService {
     try {
       print("Preparing request...");
       print("classId type: ${classId.runtimeType}, value: $classId");
-      print("studentName type: ${studentName.runtimeType}, value: $studentName");
+      print(
+          "studentName type: ${studentName.runtimeType}, value: $studentName");
       final response = await call.put(
         "/home/updateStudentNameT",
-        data: { // body로 데이터 전송
+        data: {
+          // body로 데이터 전송
           "classId": classId,
           "studentname": studentName,
         },
@@ -706,7 +768,8 @@ class HttpService {
         throw Exception("Failed to fetch class schedule.");
       }
     } catch (e) {
-      rethrow;
+      return [];
+      // rethrow;
     }
   }
 
