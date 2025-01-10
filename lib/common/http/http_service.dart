@@ -70,6 +70,7 @@ class HttpService {
                 final tokenMap = _parseJwtAndRefreshToken(
                   response: response,
                   isJwtInBody: false,
+                  withUserId: false,
                 );
                 await _saveLoginData(tokenMap);
 
@@ -162,6 +163,7 @@ class HttpService {
       Map<String, String> tokenMap = _parseJwtAndRefreshToken(
         response: response,
         isJwtInBody: true,
+        withUserId: true,
       );
       await _secureStorage.write(
         key: "jwt",
@@ -290,34 +292,18 @@ class HttpService {
     if (response.statusCode != 201) {
       return false;
     }
-    final Map<String, String> cookieMap = {};
-    var cookiesFormatted = '';
-    response.headers.forEach(
-      (name, values) {
-        if (name == HttpHeaders.setCookieHeader) {
-          for (var c in values) {
-            var key = '';
-            var value = '';
-
-            key = c.substring(0, c.indexOf('='));
-            value = c.substring(key.length + 1, c.indexOf(';'));
-
-            cookieMap[key] = value;
-          }
-
-          cookieMap
-              .forEach((key, value) => cookiesFormatted += '$key=$value; ');
-          return;
-        }
-      },
+    final tokenMap = _parseJwtAndRefreshToken(
+      response: response,
+      isJwtInBody: true,
+      withUserId: true,
     );
-    String jwt = response.data['accessToken'];
-    String refreshToken = cookieMap['refreshToken']!;
-    int userId = response.data['userId'];
-    await _secureStorage.write(key: "userId", value: "$userId");
-    await _secureStorage.write(key: "jwt", value: jwt);
-    await _secureStorage.write(key: "refreshToken", value: refreshToken);
-    await _secureStorage.write(key: "cookie", value: cookiesFormatted);
+    await _secureStorage.write(key: "userId", value: tokenMap['userId']);
+    await _secureStorage.write(key: "jwt", value: tokenMap['jwt']);
+    await _secureStorage.write(
+      key: "refreshToken",
+      value: tokenMap['refreshToken'],
+    );
+    await _secureStorage.write(key: "cookie", value: tokenMap['cookie']);
     return true;
   }
 
@@ -1172,6 +1158,7 @@ class HttpService {
   Map<String, String> _parseJwtAndRefreshToken({
     required Response response,
     required bool isJwtInBody,
+    required bool withUserId,
   }) {
     final Map<String, String> resultMap = {};
     final Map<String, String> cookieMap = {};
@@ -1195,6 +1182,7 @@ class HttpService {
         }
       },
     );
+    if (withUserId) resultMap['userId'] = "${response.data['userId']}";
     resultMap['jwt'] = isJwtInBody
         ? response.data['accessToken']
         : (response.headers['authorization'] as List<String>)
