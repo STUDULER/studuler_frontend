@@ -43,18 +43,26 @@ class HttpService {
           return handler.next(options);
         },
         onError: (DioException error, handler) async {
-          print("${error.message}");
+          print("ddddddffasd");
+          // print("${error.message}");
           // debugPrint(error.message);
           // if (error.response?.statusCode == 302) {
           //   // 302 Redirection
           //   debugPrint("302 Response");
           // }
+          final refreshToken = await _secureStorage.read(key: "refreshToken");
+          final jwt = await _secureStorage.read(key: "jwt");
+          print("asdff");
+          print(refreshToken);
+          print(jwt);
+          print("asdff");
+          // if (error.response)
+
           if (error.response?.statusCode == 405) {
+            print("405");
             // Handle 401 Unauthorized error
             try {
               // Attempt to refresh the token
-              final refreshToken =
-                  await _secureStorage.read(key: "refreshToken");
 
               // Update the authorization header with the new token
               error.requestOptions.headers['Authorization'] =
@@ -87,12 +95,11 @@ class HttpService {
     required bool isTeacher,
     required int loginMethod,
   }) async {
+    Response? response;
     try {
       String path = isTeacher ? "/teachers" : "/students";
-      final Response response;
       if (loginMethod == 1) {
         // TODO - KAKAO
-        return true;
       } else if (loginMethod == 2) {
         response = await call.post(
           "$path/loginWithGoogle",
@@ -100,17 +107,41 @@ class HttpService {
             'mail': id,
           },
         );
-        print(response.data);
-        final jwt = response.data['accessToken'];
-        await _secureStorage.write(key: "jwt", value: jwt);
-        return true;
       } else {
         // TODO - EMAIL
-        return true;
       }
     } catch (e) {
+      print(e);
       return false;
     }
+    if (response == null) return false;
+    final Map<String, String> cookieMap = {};
+    response.headers.forEach(
+      (name, values) {
+        if (name == HttpHeaders.setCookieHeader) {
+          for (var c in values) {
+            var key = '';
+            var value = '';
+
+            key = c.substring(0, c.indexOf('='));
+            value = c.substring(key.length + 1, c.indexOf(';'));
+
+            cookieMap[key] = value;
+          }
+
+          var cookiesFormatted = '';
+
+          cookieMap
+              .forEach((key, value) => cookiesFormatted += '$key=$value; ');
+          return;
+        }
+      },
+    );
+    final jwt = response.data['accessToken'];
+    final refreshToken = cookieMap['refreshToken'];
+    await _secureStorage.write(key: "jwt", value: jwt);
+    await _secureStorage.write(key: "refreshToken", value: refreshToken);
+    return true;
   }
 
   Future<bool> createTeacher({
