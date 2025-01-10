@@ -23,7 +23,6 @@ class MainActivity : FlutterActivity() {
 
             // FCM 토큰 로그 출력
             val token = task.result
-            Log.d("MainActivity", "FCM Token: $token")
         }
     }
 }

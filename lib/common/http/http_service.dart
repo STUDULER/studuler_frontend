@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -160,6 +161,10 @@ class HttpService {
   }) async {
     Response? response;
     try {
+      // FCM 토큰 가져오기
+      final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+      final fcmToken = await firebaseMessaging.getToken();
+
       String path = isTeacher ? "/teachers" : "/students";
       if (loginMethod == 1) {
         // TODO - KAKAO
@@ -168,6 +173,7 @@ class HttpService {
           "$path/loginWithGoogle",
           data: {
             'mail': id,
+            'teacherFCM' : fcmToken,
           },
         );
       } else {
@@ -330,6 +336,10 @@ class HttpService {
     required String classStartDate,
   }) async {
     final userId = await _secureStorage.read(key: "userId");
+
+    final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+    final fcmToken = await firebaseMessaging.getToken();
+
     final response = await call.post(
       "/home/createClass",
       data: {
@@ -343,6 +353,7 @@ class HttpService {
         "prepay": howToPay, // 결제 방법
         "themecolor": themeColor, // 테마 색상
         "teacherid": userId, // 유저 아이디
+        "teacherFCM" : fcmToken, // FCM 토큰
       },
     );
     if (response.statusCode != 201) return null;
@@ -1188,12 +1199,16 @@ class HttpService {
   }
 
   Future<String?> joinClass({required String classCode}) async {
+    final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+    final fcmToken = await firebaseMessaging.getToken();
+
     try {
       // PUT 요청 보내기
       final response = await call.put(
         '/home/joinClass',
         data: {
           "classcode": classCode, // 요청에 classcode 포함
+          "studentFCM": fcmToken,
         },
       );
 
