@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:studuler/common/auth/oauth_user_dto.dart';
+import 'package:studuler/common/http/http_service.dart';
 
 import 'auth_service_type.dart';
 
@@ -77,17 +78,17 @@ class AuthService {
             },
           );
           final profileInfo = json.decode(response.body);
-          print(profileInfo.toString());
+          print(profileInfo);
+          return OAuthUserDto(
+            username: profileInfo['properties']['nickname'],
+            password: "",
+            mail: profileInfo['id'].toString(),
+            image: 1,
+          );
         } catch (error) {
-          print('Kakao sign in failed: $error');
           return null;
         }
-        // TODO 이 부분을 IOAuthUserDto 로 바꾸어야 함.
-        return null;
-
-      default:
     }
-    return null;
   }
 
   Future<void> signOut() async {
@@ -107,38 +108,12 @@ class AuthService {
   }
 
   Future<bool> autoLogin() async {
-    String? isLoggedIn = await _secureStorage.read(key: 'isLoggedIn');
-
-    if (isLoggedIn == 'true') {
-      String? authServiceTypeString = await _secureStorage.read(
-        key: "authServiceType",
-      );
-      if (authServiceTypeString == null) return false;
-
-      switch (AuthServiceType.values.byName(authServiceTypeString)) {
-        case AuthServiceType.google:
-          final GoogleSignInAccount? googleUser =
-              await GoogleSignIn().signInSilently();
-          if (googleUser != null) {
-            // User is auto logged in
-            print('Auto logged in: ${googleUser.email}');
-            return true;
-          } else {
-            // Silent sign-in failed, clear the login state
-            await _secureStorage.deleteAll();
-            print('Auto login failed');
-            return false;
-          }
-        case AuthServiceType.kakao:
-          return true;
-        default:
-          return false;
-      }
-    } else {
-      print('User is not logged in');
+    String? userId = await _secureStorage.read(key: 'userId');
+    if (userId == null) {
       await _secureStorage.deleteAll();
       return false;
     }
+    return await HttpService().autoLogin();
   }
 
   Future<bool> isTeacher() async {

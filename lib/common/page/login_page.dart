@@ -38,7 +38,10 @@ class LoginPage extends StatelessWidget {
         (route) => false,
       );
     } else {
-      final httpResult = await _httpService.createParent(dto, loginMethod);
+      final httpResult = await _httpService.createParent(
+        dto: dto,
+        loginMethod: loginMethod,
+      );
       if (httpResult == false) return;
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
@@ -68,13 +71,36 @@ class LoginPage extends StatelessWidget {
               const Spacer(),
               GestureDetector(
                 onTap: () async {
+                  const int kakaoLoginMethodIndex = 1;
                   final result = await _authService.signIn(
                     authServiceType: AuthServiceType.kakao,
                     role: isTeacher,
                   );
                   if (result == null) return;
                   if (!context.mounted) return;
-                  await handleSuccessAuthService(context, result, 1);
+                  final isAreadyUser = await HttpService().isAlreadyOAuthUser(
+                    id: result.mail,
+                    username: result.username,
+                    isTeacher: isTeacher,
+                    loginMethod: kakaoLoginMethodIndex,
+                  );
+                  if (context.mounted) {
+                    if (isAreadyUser) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BottomBar(isTeacher: isTeacher),
+                        ),
+                        (route) => false,
+                      );
+                    } else {
+                      await handleSuccessAuthService(
+                        context,
+                        result,
+                        kakaoLoginMethodIndex,
+                      );
+                    }
+                  }
                 },
                 child: Container(
                   decoration: BoxDecoration(

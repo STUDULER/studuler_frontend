@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:studuler/common/auth/oauth_user_dto.dart';
+import 'package:studuler/main.dart';
 
 import '../auth/auth_service.dart';
 import '../model/class_settlement.dart';
@@ -15,6 +16,7 @@ import '../model/last_settlement.dart';
 import '../model/next_settlment.dart';
 import '../model/class_day.dart';
 import '../model/class_feedback.dart';
+import '../page/role_selection_page.dart';
 import '../section/class_info_item.dart';
 
 class HttpService {
@@ -70,8 +72,12 @@ class HttpService {
                 final tokenMap = _parseJwtAndRefreshToken(
                   response: response,
                   isJwtInBody: false,
+                  withUserId: false,
                 );
-                await _saveLoginData(tokenMap);
+                await _saveLoginData(
+                  map: tokenMap,
+                  isTeacher: null,
+                );
 
                 final clonedRequest = await call.request(
                   error.requestOptions.path,
@@ -84,8 +90,18 @@ class HttpService {
                 );
                 return handler.resolve(clonedRequest);
               } catch (e) {
-                print(e);
-                // TODO - If token refresh fails, redirect to login or handle accordingly
+                AuthService().signOut();
+                final context = navigatorKey.currentContext;
+                if (context != null) {
+                  if (context.mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RoleSelectionPage(),
+                      ),
+                    );
+                  }
+                }
                 return handler.reject(error);
               }
             }
@@ -113,14 +129,52 @@ class HttpService {
               );
               return handler.resolve(clonedRequest);
             } catch (e) {
-              // If token refresh fails, redirect to login or handle accordingly
+              AuthService().signOut();
+              final context = navigatorKey.currentContext;
+              if (context != null) {
+                if (context.mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RoleSelectionPage(),
+                    ),
+                  );
+                }
+              }
               return handler.reject(error);
             }
           }
+
           return handler.next(error);
         },
       ),
     );
+  }
+
+  Future<bool> autoLogin() async {
+    try {
+      final prevCookie = await _secureStorage.read(key: "cookie");
+      final response = await call.post(
+        '/refreshAccessToken',
+        options: Options(
+          headers: {
+            'cookie': prevCookie,
+          },
+        ),
+      );
+      final tokenMap = _parseJwtAndRefreshToken(
+        response: response,
+        isJwtInBody: false,
+        withUserId: false,
+      );
+      await _saveLoginData(
+        map: tokenMap,
+        isTeacher: null,
+      );
+    } catch (e) {
+      return false;
+    }
+    return true;
   }
 
   Future<bool> loginWithMail({
@@ -140,14 +194,11 @@ class HttpService {
       Map<String, String> tokenMap = _parseJwtAndRefreshToken(
         response: response,
         isJwtInBody: true,
+        withUserId: true,
       );
-      await _secureStorage.write(
-        key: "jwt",
-        value: tokenMap['jwt'],
-      );
-      await _secureStorage.write(
-        key: "refreshToken",
-        value: tokenMap['refreshToken'],
+      _saveLoginData(
+        map: tokenMap,
+        isTeacher: isTeacher,
       );
     } catch (e) {
       return false;
@@ -159,6 +210,7 @@ class HttpService {
     required String id,
     required bool isTeacher,
     required int loginMethod,
+    String username = '',
   }) async {
     Response? response;
     try {
@@ -168,7 +220,13 @@ class HttpService {
 
       String path = isTeacher ? "/teachers" : "/students";
       if (loginMethod == 1) {
-        // TODO - KAKAO
+        response = await call.post(
+          "$path/loginWithKaKao",
+          data: {
+            'kakaoId': id,
+            'username': username,
+          },
+        );
       } else if (loginMethod == 2) {
         response = await call.post(
           "$path/loginWithGoogle",
@@ -181,39 +239,18 @@ class HttpService {
         // TODO - EMAIL
       }
     } catch (e) {
-      print(e);
       return false;
     }
     if (response == null) return false;
-    final Map<String, String> cookieMap = {};
-    var cookiesFormatted = '';
-    response.headers.forEach(
-      (name, values) {
-        if (name == HttpHeaders.setCookieHeader) {
-          for (var c in values) {
-            var key = '';
-            var value = '';
-
-            key = c.substring(0, c.indexOf('='));
-            value = c.substring(key.length + 1, c.indexOf(';'));
-
-            cookieMap[key] = value;
-          }
-
-          cookieMap
-              .forEach((key, value) => cookiesFormatted += '$key=$value; ');
-          return;
-        }
-      },
+    final tokenMap = _parseJwtAndRefreshToken(
+      response: response,
+      isJwtInBody: true,
+      withUserId: true,
     );
-
-    final jwt = response.data['accessToken'];
-    final refreshToken = cookieMap['refreshToken'];
-    // int userId = response.data['userId'];
-    // await _secureStorage.write(key: "userId", value: "$userId");
-    await _secureStorage.write(key: "jwt", value: jwt);
-    await _secureStorage.write(key: "refreshToken", value: refreshToken);
-    await _secureStorage.write(key: "cookie", value: cookiesFormatted);
+    await _saveLoginData(
+      map: tokenMap,
+      isTeacher: isTeacher,
+    );
     return true;
   }
 
@@ -235,10 +272,10 @@ class HttpService {
           "account": int.parse(account),
           "bank": bank,
           "name": name,
-          "mail": dto.mail,
+          "mail": "",
           "loginMethod": loginMethod,
           "image": dto.image,
-          "kakaoId": kakaoId,
+          "kakaoId": dto.mail,
         },
       );
     } else if (loginMethod == 2) {
@@ -273,55 +310,60 @@ class HttpService {
     if (response.statusCode != 201) {
       return false;
     }
-    final Map<String, String> cookieMap = {};
-    var cookiesFormatted = '';
-    response.headers.forEach(
-      (name, values) {
-        if (name == HttpHeaders.setCookieHeader) {
-          for (var c in values) {
-            var key = '';
-            var value = '';
-
-            key = c.substring(0, c.indexOf('='));
-            value = c.substring(key.length + 1, c.indexOf(';'));
-
-            cookieMap[key] = value;
-          }
-
-          cookieMap
-              .forEach((key, value) => cookiesFormatted += '$key=$value; ');
-          return;
-        }
-      },
+    final tokenMap = _parseJwtAndRefreshToken(
+      response: response,
+      isJwtInBody: true,
+      withUserId: true,
     );
-    String jwt = response.data['accessToken'];
-    String refreshToken = cookieMap['refreshToken']!;
-    int userId = response.data['userId'];
-    await _secureStorage.write(key: "userId", value: "$userId");
-    await _secureStorage.write(key: "jwt", value: jwt);
-    await _secureStorage.write(key: "refreshToken", value: refreshToken);
-    await _secureStorage.write(key: "cookie", value: cookiesFormatted);
+
+    await _saveLoginData(map: tokenMap, isTeacher: true);
     return true;
   }
 
-  Future<bool> createParent(OAuthUserDto dto, int loginMethod) async {
-    final response = await call.post(
-      "/students/signup",
-      data: {
-        "username": dto.username,
-        "password": dto.password,
-        "mail": dto.mail,
-        "loginMethod": loginMethod,
-        "image": dto.image,
-      },
-    );
-    if (response.statusCode != 201) {
+  Future<bool> createParent({
+    required OAuthUserDto dto,
+    required int loginMethod,
+  }) async {
+    try {
+      final Response response;
+      if (loginMethod == 1) {
+        response = await call.post(
+          "/students/loginWithKakao",
+          data: {
+            'username': dto.username,
+            'kakaoId': dto.mail,
+          },
+        );
+      } else if (loginMethod == 2) {
+        response = await call.post(
+          "/students/loginWithGoogle",
+          data: {
+            "username": dto.username,
+            "mail": dto.mail,
+          },
+        );
+      } else {
+        response = await call.post(
+          "/students/signup",
+          data: {
+            "username": dto.username,
+            "password": dto.password,
+            "mail": dto.mail,
+            "loginMethod": loginMethod,
+            "image": dto.image,
+          },
+        );
+      }
+      final tokenMap = _parseJwtAndRefreshToken(
+        response: response,
+        isJwtInBody: true,
+        withUserId: true,
+      );
+      await _saveLoginData(map: tokenMap, isTeacher: false);
+    } catch (e) {
       return false;
     }
-    String jwt = response.data['token'];
-    int userId = response.data['userId'];
-    await _secureStorage.write(key: "userId", value: "$userId");
-    await _secureStorage.write(key: "jwt", value: jwt);
+
     return true;
   }
 
@@ -1160,6 +1202,7 @@ class HttpService {
   Map<String, String> _parseJwtAndRefreshToken({
     required Response response,
     required bool isJwtInBody,
+    required bool withUserId,
   }) {
     final Map<String, String> resultMap = {};
     final Map<String, String> cookieMap = {};
@@ -1183,6 +1226,7 @@ class HttpService {
         }
       },
     );
+    if (withUserId) resultMap['userId'] = "${response.data['userId']}";
     resultMap['jwt'] = isJwtInBody
         ? response.data['accessToken']
         : (response.headers['authorization'] as List<String>)
@@ -1193,7 +1237,17 @@ class HttpService {
     return resultMap;
   }
 
-  Future<void> _saveLoginData(Map<String, String> map) async {
+  Future<void> _saveLoginData({
+    required Map<String, String> map,
+    required bool? isTeacher,
+  }) async {
+    await _secureStorage.write(key: 'userId', value: map['userId']);
+    if (isTeacher != null) {
+      await _secureStorage.write(
+        key: 'role',
+        value: isTeacher ? "teacher" : "student",
+      );
+    }
     await _secureStorage.write(key: 'jwt', value: map['jwt']);
     await _secureStorage.write(key: 'refreshToken', value: map['refreshToken']);
     await _secureStorage.write(key: 'cookie', value: map['cookie']);

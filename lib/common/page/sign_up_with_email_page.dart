@@ -118,7 +118,7 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                                   if (!isSamePassword()) {
                                     return;
                                   }
-                                  const emailLoginMethod = 3;
+                                  const emailLoginMethod = 0;
                                   final dto = OAuthUserDto(
                                     username: _nameController.text,
                                     password: _passwordController.text,
@@ -136,8 +136,11 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                                       ),
                                     );
                                   } else {
-                                    final result = await httpService
-                                        .createParent(dto, emailLoginMethod);
+                                    final result =
+                                        await httpService.createParent(
+                                      dto: dto,
+                                      loginMethod: emailLoginMethod,
+                                    );
                                     if (result == false) return;
                                     if (!context.mounted) return;
                                     Navigator.pushReplacement(
