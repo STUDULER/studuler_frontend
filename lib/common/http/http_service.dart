@@ -208,12 +208,19 @@ class HttpService {
     required String id,
     required bool isTeacher,
     required int loginMethod,
+    String username = '',
   }) async {
     Response? response;
     try {
       String path = isTeacher ? "/teachers" : "/students";
       if (loginMethod == 1) {
-        // TODO - KAKAO
+        response = await call.post(
+          "$path/loginWithKaKao",
+          data: {
+            'kakaoId': id,
+            'username': username,
+          },
+        );
       } else if (loginMethod == 2) {
         response = await call.post(
           "$path/loginWithGoogle",
@@ -225,31 +232,9 @@ class HttpService {
         // TODO - EMAIL
       }
     } catch (e) {
-      print(e);
       return false;
     }
     if (response == null) return false;
-    final Map<String, String> cookieMap = {};
-    var cookiesFormatted = '';
-    response.headers.forEach(
-      (name, values) {
-        if (name == HttpHeaders.setCookieHeader) {
-          for (var c in values) {
-            var key = '';
-            var value = '';
-
-            key = c.substring(0, c.indexOf('='));
-            value = c.substring(key.length + 1, c.indexOf(';'));
-
-            cookieMap[key] = value;
-          }
-
-          cookieMap
-              .forEach((key, value) => cookiesFormatted += '$key=$value; ');
-          return;
-        }
-      },
-    );
     final tokenMap = _parseJwtAndRefreshToken(
       response: response,
       isJwtInBody: true,
@@ -280,10 +265,10 @@ class HttpService {
           "account": int.parse(account),
           "bank": bank,
           "name": name,
-          "mail": dto.mail,
+          "mail": "",
           "loginMethod": loginMethod,
           "image": dto.image,
-          "kakaoId": kakaoId,
+          "kakaoId": dto.mail,
         },
       );
     } else if (loginMethod == 2) {
