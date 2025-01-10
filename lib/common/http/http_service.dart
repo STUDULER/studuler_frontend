@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -41,69 +43,224 @@ class HttpService {
           return handler.next(options);
         },
         onError: (DioException error, handler) async {
-          print("${error.message}");
+          print("ddddddffasd");
+          // print("${error.message}");
           // debugPrint(error.message);
           // if (error.response?.statusCode == 302) {
           //   // 302 Redirection
           //   debugPrint("302 Response");
           // }
-          // if (error.response?.statusCode == 401) {
-          //   // Handle 401 Unauthorized error
-          //   try {
-          //     // Attempt to refresh the token
-          //     final newToken = await authRepository.refreshToken();
+          final refreshToken = await _secureStorage.read(key: "refreshToken");
+          final jwt = await _secureStorage.read(key: "jwt");
+          print(refreshToken);
+          print(jwt);
+          if (error.response?.statusCode == 403) {
+            print("403");
+            // access token expiration error
+            try {
+              final response = await call.post('/refreshAccessToken');
+              final Map<String, String> cookieMap = {};
+              response.headers.forEach(
+                (name, values) {
+                  if (name == HttpHeaders.setCookieHeader) {
+                    for (var c in values) {
+                      var key = '';
+                      var value = '';
 
-          //     // Update the authorization header with the new token
-          //     error.requestOptions.headers['Authorization'] =
-          //         'Bearer $newToken';
+                      key = c.substring(0, c.indexOf('='));
+                      value = c.substring(key.length + 1, c.indexOf(';'));
 
-          //     // Retry the request with the new token
-          //     final clonedRequest = await dio.request(
-          //       error.requestOptions.path,
-          //       options: Options(
-          //         method: error.requestOptions.method,
-          //         headers: error.requestOptions.headers,
-          //       ),
-          //       data: error.requestOptions.data,
-          //       queryParameters: error.requestOptions.queryParameters,
-          //     );
-          //     return handler.resolve(clonedRequest);
-          //   } catch (e) {
-          //     // If token refresh fails, redirect to login or handle accordingly
-          //     return handler.reject(error);
-          //   }
-          // }
+                      cookieMap[key] = value;
+                    }
+
+                    var cookiesFormatted = '';
+
+                    cookieMap.forEach(
+                        (key, value) => cookiesFormatted += '$key=$value; ');
+                    return;
+                  }
+                },
+              );
+              print("123");
+              print(response.headers);
+              print(response.data);
+              print("123");
+            } catch (e) {
+              // If token refresh fails, redirect to login or handle accordingly
+              return handler.reject(error);
+            }
+          }
+
+          if (error.response?.statusCode == 405) {
+            print("405");
+            // Handle 401 Unauthorized error
+            try {
+              // Attempt to refresh the token
+
+              // Update the authorization header with the new token
+              error.requestOptions.headers['Authorization'] =
+                  'Bearer $refreshToken';
+
+              // Retry the request with the new token
+              final clonedRequest = await call.request(
+                error.requestOptions.path,
+                options: Options(
+                  method: error.requestOptions.method,
+                  headers: error.requestOptions.headers,
+                ),
+                data: error.requestOptions.data,
+                queryParameters: error.requestOptions.queryParameters,
+              );
+              return handler.resolve(clonedRequest);
+            } catch (e) {
+              // If token refresh fails, redirect to login or handle accordingly
+              return handler.reject(error);
+            }
+          }
           return handler.next(error);
         },
       ),
     );
   }
 
-  Future<bool> createTeacher(
-    OAuthUserDto dto,
-    String bank,
-    String account,
-    int loginMethod,
-  ) async {
-    final response = await call.post(
-      "/teachers/signup",
-      data: {
-        "username": dto.username,
-        "password": dto.password,
-        "account": int.parse(account),
-        "bank": bank,
-        "mail": dto.mail,
-        "loginMethod": loginMethod,
-        "image": dto.image,
+  Future<bool> isAlreadyOAuthUser({
+    required String id,
+    required bool isTeacher,
+    required int loginMethod,
+  }) async {
+    Response? response;
+    try {
+      String path = isTeacher ? "/teachers" : "/students";
+      if (loginMethod == 1) {
+        // TODO - KAKAO
+      } else if (loginMethod == 2) {
+        response = await call.post(
+          "$path/loginWithGoogle",
+          data: {
+            'mail': id,
+          },
+        );
+      } else {
+        // TODO - EMAIL
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+    if (response == null) return false;
+    final Map<String, String> cookieMap = {};
+    response.headers.forEach(
+      (name, values) {
+        if (name == HttpHeaders.setCookieHeader) {
+          for (var c in values) {
+            var key = '';
+            var value = '';
+
+            key = c.substring(0, c.indexOf('='));
+            value = c.substring(key.length + 1, c.indexOf(';'));
+
+            cookieMap[key] = value;
+          }
+
+          var cookiesFormatted = '';
+
+          cookieMap
+              .forEach((key, value) => cookiesFormatted += '$key=$value; ');
+          return;
+        }
       },
     );
+    final jwt = response.data['accessToken'];
+    final refreshToken = cookieMap['refreshToken'];
+    await _secureStorage.write(key: "jwt", value: jwt);
+    await _secureStorage.write(key: "refreshToken", value: refreshToken);
+    return true;
+  }
+
+  Future<bool> createTeacher({
+    required OAuthUserDto dto,
+    required String bank,
+    required String account,
+    required String name,
+    required int loginMethod,
+    required String? kakaoId,
+  }) async {
+    final Response response;
+    if (loginMethod == 1) {
+      response = await call.post(
+        "/teachers/signup",
+        data: {
+          "username": dto.username,
+          "password": dto.password,
+          "account": int.parse(account),
+          "bank": bank,
+          "name": name,
+          "mail": dto.mail,
+          "loginMethod": loginMethod,
+          "image": dto.image,
+          "kakaoId": kakaoId,
+        },
+      );
+    } else if (loginMethod == 2) {
+      response = await call.post(
+        "/teachers/signup",
+        data: {
+          "username": dto.username,
+          "password": dto.password,
+          "account": int.parse(account),
+          "bank": bank,
+          "name": name,
+          "mail": dto.mail,
+          "loginMethod": loginMethod,
+          "image": dto.image,
+        },
+      );
+    } else {
+      response = await call.post(
+        "/teachers/signup",
+        data: {
+          "username": dto.username,
+          "password": dto.password,
+          "account": int.parse(account),
+          "bank": bank,
+          "name": name,
+          "mail": dto.mail,
+          "loginMethod": loginMethod,
+          "image": dto.image,
+        },
+      );
+    }
     if (response.statusCode != 201) {
       return false;
     }
-    String jwt = response.data['token'];
+    final Map<String, String> cookieMap = {};
+    response.headers.forEach(
+      (name, values) {
+        if (name == HttpHeaders.setCookieHeader) {
+          for (var c in values) {
+            var key = '';
+            var value = '';
+
+            key = c.substring(0, c.indexOf('='));
+            value = c.substring(key.length + 1, c.indexOf(';'));
+
+            cookieMap[key] = value;
+          }
+
+          var cookiesFormatted = '';
+
+          cookieMap
+              .forEach((key, value) => cookiesFormatted += '$key=$value; ');
+          return;
+        }
+      },
+    );
+    String jwt = response.data['accessToken'];
+    String refreshToken = cookieMap['refreshToken']!;
     int userId = response.data['userId'];
     await _secureStorage.write(key: "userId", value: "$userId");
     await _secureStorage.write(key: "jwt", value: jwt);
+    await _secureStorage.write(key: "refreshToken", value: refreshToken);
     return true;
   }
 
@@ -285,16 +442,16 @@ class HttpService {
           // 색상 매핑
           int colorIndex = classInfo['themecolor'] ?? -1;
           Color mappedColor =
-          (colorIndex >= 0 && colorIndex < colorPalette.length)
-              ? colorPalette[colorIndex]
-              : const Color(0xFFFFFFFF); // 기본 색상 (화이트)
+              (colorIndex >= 0 && colorIndex < colorPalette.length)
+                  ? colorPalette[colorIndex]
+                  : const Color(0xFFFFFFFF); // 기본 색상 (화이트)
 
           return {
             'classId': classInfo['classid'] ?? 0, // classId 추가
             'title': classInfo['classname'] ?? '제목 없음',
             'code': classInfo['classcode'] ?? '코드 없음',
             'completionRate': classInfo['finished_lessons'] != null &&
-                classInfo['period'] != null
+                    classInfo['period'] != null
                 ? classInfo['finished_lessons'] / classInfo['period']
                 : 0.0,
             'finishedLessons': classInfo['finished_lessons'],
@@ -336,10 +493,10 @@ class HttpService {
                 title: '다음 정산일',
                 value: classInfo['dateofpayment'] != null
                     ? DateTime.parse(classInfo['dateofpayment'])
-                    .toLocal()
-                    .toString()
-                    .split(' ')[
-                0] // '2025-01-13T00:00:00.000Z' -> '2025-01-13'
+                            .toLocal()
+                            .toString()
+                            .split(' ')[
+                        0] // '2025-01-13T00:00:00.000Z' -> '2025-01-13'
                     : '정보 없음',
               ),
             ],
@@ -357,44 +514,147 @@ class HttpService {
     }
   }
 
-  Future<bool> updateClass({
-    required String classCode,
+  Future<bool> updateStudentName({
+    required int classId,
     required String studentName,
+  }) async {
+    try {
+      print("Preparing request...");
+      print("classId type: ${classId.runtimeType}, value: $classId");
+      print(
+          "studentName type: ${studentName.runtimeType}, value: $studentName");
+      final response = await call.put(
+        "/home/updateStudentNameT",
+        data: {
+          // body로 데이터 전송
+          "classId": classId,
+          "studentname": studentName,
+        },
+      );
+      print("Response Data: ${response.data}");
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updateStudentName: $e");
+      rethrow; // 예외를 다시 던져 디버깅에 활용
+    }
+  }
+
+  Future<bool> updateClassName({
+    required int classId,
     required String className,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updateClassNameT",
+        data: {"classId": classId, "classname": className},
+      );
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updateClassName: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updateDay({
+    required int classId,
     required String day,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updateDayT",
+        data: {"classId": classId, "day": day},
+      );
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updateDay: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updateTime({
+    required int classId,
     required int time,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updateTimeT",
+        data: {"classId": classId, "time": time},
+      );
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updateTime: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updatePeriod({
+    required int classId,
     required int period,
-    required String dateOfPayment,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updatePeriodT",
+        data: {"classId": classId, "period": period},
+      );
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updatePeriod: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updateHourlyRate({
+    required int classId,
     required int hourlyRate,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updateHourlyRateT",
+        data: {"classId": classId, "hourlyrate": hourlyRate},
+      );
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updateHourlyRate: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updatePrepay({
+    required int classId,
     required int prepay,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updatePrepayT",
+        data: {"classId": classId, "prepay": prepay},
+      );
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
+    } catch (e) {
+      print("Error in updatePrepay: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updateThemeColor({
+    required int classId,
     required int themeColor,
   }) async {
     try {
       final response = await call.put(
-        "/home/updateClassT",
-        data: {
-          "classcode": classCode,
-          "studentname": studentName,
-          "classname": className,
-          "day": day,
-          "time": time,
-          "period": period,
-          "dateofpayment": dateOfPayment,
-          "hourlyrate": hourlyRate,
-          "prepay": prepay,
-          "themecolor": themeColor,
-        },
+        "/home/updateThemeColorT",
+        data: {"classId": classId, "themecolor": themeColor},
       );
-
-      if (response.statusCode == 200 &&
-          response.data['message'] ==
-              'Class information updated successfully.') {
-        return true;
-      } else {
-        return false;
-      }
+      return response.statusCode == 200 &&
+          response.data['message'] == 'Class information updated successfully.';
     } catch (e) {
-      print("Error in updateClass: $e");
+      print("Error in updateThemeColor: $e");
       return false;
     }
   }
@@ -603,7 +863,8 @@ class HttpService {
         throw Exception("Failed to fetch class schedule.");
       }
     } catch (e) {
-      rethrow;
+      return [];
+      // rethrow;
     }
   }
 
@@ -647,7 +908,6 @@ class HttpService {
     required int classId,
     required Jiffy date,
   }) async {
-    await Future.delayed(Durations.long1); // 달력 바뀌는 거 기다리는 시간
     String path = '/each/feedbackByDate';
     if (await _isTeacher()) {
       path = '${path}T';
@@ -732,6 +992,7 @@ class HttpService {
     }
 
     final response = await call.get(classIdPath);
+    if ((response.data as List).isEmpty) return [];
     final paymentResponse = await call.get(unpaidClassPath);
 
     final List<ClassSettlement> classSettlement = [];
@@ -772,7 +1033,7 @@ class HttpService {
       }
       final nextSettlment = NextSettlment(
         date: Jiffy.parse(nextPaymentResponse.data['nextPayment']['date']),
-        price: paymentData['cost'],
+        price: nextPaymentResponse.data['nextPayment']['cost'],
         isUnpaid: isUnpaid,
       );
       classSettlement.add(

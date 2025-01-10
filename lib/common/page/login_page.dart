@@ -86,12 +86,12 @@ class LoginPage extends StatelessWidget {
                   height: bannerSize,
                   child: Row(
                     children: [
-                      const Gap(bannerSize-iconSize),
+                      const Gap(bannerSize - iconSize),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child: SizedBox(
-                          width: iconSize,
-                          child: Image.asset('assets/kakaotalk.png')),
+                            width: iconSize,
+                            child: Image.asset('assets/kakaotalk.png')),
                       ),
                       const Spacer(),
                       const Text(
@@ -114,13 +114,35 @@ class LoginPage extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () async {
+                  const int googleLoginMethodIndex = 2;
                   final result = await _authService.signIn(
                     authServiceType: AuthServiceType.google,
                     role: isTeacher,
                   );
                   if (result == null) return;
                   if (!context.mounted) return;
-                  await handleSuccessAuthService(context, result, 2);
+                  final isAreadyUser = await HttpService().isAlreadyOAuthUser(
+                    id: result.mail,
+                    isTeacher: isTeacher,
+                    loginMethod: googleLoginMethodIndex,
+                  );
+                  if (context.mounted) {
+                    if (isAreadyUser) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BottomBar(isTeacher: isTeacher),
+                        ),
+                        (route) => false,
+                      );
+                    } else {
+                      await handleSuccessAuthService(
+                        context,
+                        result,
+                        googleLoginMethodIndex,
+                      );
+                    }
+                  }
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -132,12 +154,13 @@ class LoginPage extends StatelessWidget {
                   height: bannerSize,
                   child: Row(
                     children: [
-                      const Gap(bannerSize-iconSize),
+                      const Gap(bannerSize - iconSize),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child: SizedBox(
                           width: iconSize,
-                          child: Image.asset('assets/google_square_icon.png')),
+                          child: Image.asset('assets/google_square_icon.png'),
+                        ),
                       ),
                       const Spacer(),
                       const Text(

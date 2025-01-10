@@ -16,7 +16,7 @@ class TeacherSettlementPage extends StatefulWidget {
 class _TeacherSettlementPageState extends State<TeacherSettlementPage> {
   final HttpService httpService = HttpService();
   final List<TeacherSettlementClassSection> settlementClassSections = [];
-  bool isLoading = false;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -98,17 +98,26 @@ class _TeacherSettlementPageState extends State<TeacherSettlementPage> {
                               ],
                             ),
                           )
-                        : Expanded(
-                            child: SingleChildScrollView(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Column(
-                                  children: settlementClassSections,
+                        : settlementClassSections.isNotEmpty
+                            ? Expanded(
+                                child: SingleChildScrollView(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
+                                    child: Column(
+                                      children: settlementClassSections,
+                                    ),
+                                  ),
                                 ),
+                              )
+                            : Column(
+                                children: [
+                                  Gap(200),
+                                  Center(
+                                    child: Text("아직 수업이 없어요"),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
                   ],
                 ),
               ),

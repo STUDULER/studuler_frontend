@@ -10,6 +10,7 @@ import 'calendar_week_section.dart';
 class CalendarMonthSection extends StatefulWidget {
   const CalendarMonthSection({
     super.key,
+    required this.isTeacher,
     required this.classId,
     required this.date,
     this.someWeeksOfNextMonth = false,
@@ -17,9 +18,10 @@ class CalendarMonthSection extends StatefulWidget {
     required this.selectedDate,
     required this.classFeedback, 
     required this.classDays, 
-    required this.fetchClassDaysFunction,
+    required this.fetchClassDaysFunction, 
   });
 
+  final bool isTeacher;
   final int classId;
   final Jiffy date;
   final bool? someWeeksOfNextMonth;
@@ -180,6 +182,7 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
               }).toList() +
               [
                 FeedbackScrollableSheetSection(
+                  isTeacher: widget.isTeacher,
                   classId: widget.classId,
                   bottomSheetController: bottomSheetController,
                   maxBottomSheetFractionalValue: maxBottomSheetFractionalValue,

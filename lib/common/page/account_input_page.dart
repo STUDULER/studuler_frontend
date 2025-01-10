@@ -26,6 +26,7 @@ class AccountInputPage extends StatefulWidget {
 class _AccountInputPageState extends State<AccountInputPage> {
   final httpservice = HttpService();
 
+  final _nameController = TextEditingController();
   final _bankController = TextEditingController();
   final _accountNumberController = TextEditingController();
   final _textfieldController = TextEditingController();
@@ -52,6 +53,7 @@ class _AccountInputPageState extends State<AccountInputPage> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _bankController.dispose();
     _textfieldController.dispose();
     _accountNumberController.dispose();
@@ -77,7 +79,7 @@ class _AccountInputPageState extends State<AccountInputPage> {
                   const Spacer(),
                   Container(
                     width: MediaQuery.sizeOf(context).width,
-                    height: MediaQuery.sizeOf(context).height / 3,
+                    height: MediaQuery.sizeOf(context).height / 2,
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(
                         Radius.circular(10),
@@ -89,6 +91,12 @@ class _AccountInputPageState extends State<AccountInputPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          AuthTextField(
+                            controller: _nameController,
+                            label: "예금주 성명",
+                            hintText: "이름을 입력해주세요",
+                          ),
+                          const Spacer(),
                           AuthTextField(
                             controller: _bankController,
                             label: "은행",
@@ -121,15 +129,18 @@ class _AccountInputPageState extends State<AccountInputPage> {
                           const Spacer(),
                           GestureDectectorHidingKeyboard(
                             onTap: () async {
-                              if (_bankController.text.isEmpty ||
+                              if (_nameController.text.isEmpty ||
+                                  _bankController.text.isEmpty ||
                                   _accountNumberController.text.isEmpty) {
                                 return;
                               }
                               final result = await httpservice.createTeacher(
-                                widget.dto,
-                                _bankController.text,
-                                _accountNumberController.text,
-                                widget.loginMethod,
+                                dto: widget.dto,
+                                loginMethod: widget.loginMethod,
+                                name: _nameController.text,
+                                bank: _bankController.text,
+                                account: _accountNumberController.text,
+                                kakaoId: "",
                               );
                               if (result == false) return;
                               if (!context.mounted) return;
