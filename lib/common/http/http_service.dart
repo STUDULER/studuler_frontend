@@ -322,34 +322,57 @@ class HttpService {
       isJwtInBody: true,
       withUserId: true,
     );
-    await _secureStorage.write(key: "userId", value: tokenMap['userId']);
-    await _secureStorage.write(key: "jwt", value: tokenMap['jwt']);
-    await _secureStorage.write(
-      key: "refreshToken",
-      value: tokenMap['refreshToken'],
-    );
-    await _secureStorage.write(key: "cookie", value: tokenMap['cookie']);
+
+    await _saveLoginData(map: tokenMap, isTeacher: true);
     return true;
   }
 
-  Future<bool> createParent(OAuthUserDto dto, int loginMethod) async {
-    final response = await call.post(
-      "/students/signup",
-      data: {
-        "username": dto.username,
-        "password": dto.password,
-        "mail": dto.mail,
-        "loginMethod": loginMethod,
-        "image": dto.image,
-      },
-    );
-    if (response.statusCode != 201) {
+  Future<bool> createParent({
+    required OAuthUserDto dto,
+    required int loginMethod,
+    String? kakaoId,
+  }) async {
+    try {
+      final Response response;
+      if (loginMethod == 1) {
+        assert(kakaoId != null);
+        response = await call.post(
+          "/students/loginWithKakao",
+          data: {
+            'kakaoAccessToken': kakaoId,
+          },
+        );
+      } else if (loginMethod == 2) {
+        response = await call.post(
+          "/students/loginWithGoogle",
+          data: {
+            "username": dto.username,
+            "mail": dto.mail,
+          },
+        );
+      } else {
+        response = await call.post(
+          "/students/signup",
+          data: {
+            "username": dto.username,
+            "password": dto.password,
+            "mail": dto.mail,
+            "loginMethod": loginMethod,
+            "image": dto.image,
+          },
+        );
+      }
+      final tokenMap = _parseJwtAndRefreshToken(
+        response: response,
+        isJwtInBody: true,
+        withUserId: true,
+      );
+      await _saveLoginData(map: tokenMap, isTeacher: false);
+    } catch (e) {
+      print(e);
       return false;
     }
-    String jwt = response.data['token'];
-    int userId = response.data['userId'];
-    await _secureStorage.write(key: "userId", value: "$userId");
-    await _secureStorage.write(key: "jwt", value: jwt);
+
     return true;
   }
 

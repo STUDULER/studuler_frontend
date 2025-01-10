@@ -38,7 +38,10 @@ class LoginPage extends StatelessWidget {
         (route) => false,
       );
     } else {
-      final httpResult = await _httpService.createParent(dto, loginMethod);
+      final httpResult = await _httpService.createParent(
+        dto: dto,
+        loginMethod: loginMethod,
+      );
       if (httpResult == false) return;
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(

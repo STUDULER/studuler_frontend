@@ -136,8 +136,11 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                                       ),
                                     );
                                   } else {
-                                    final result = await httpService
-                                        .createParent(dto, emailLoginMethod);
+                                    final result =
+                                        await httpService.createParent(
+                                      dto: dto,
+                                      loginMethod: emailLoginMethod,
+                                    );
                                     if (result == false) return;
                                     if (!context.mounted) return;
                                     Navigator.pushReplacement(
