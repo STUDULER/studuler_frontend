@@ -72,7 +72,10 @@ class HttpService {
                   isJwtInBody: false,
                   withUserId: false,
                 );
-                await _saveLoginData(tokenMap);
+                await _saveLoginData(
+                  map: tokenMap,
+                  isTeacher: null,
+                );
 
                 final clonedRequest = await call.request(
                   error.requestOptions.path,
@@ -146,6 +149,32 @@ class HttpService {
     );
   }
 
+  Future<bool> autoLogin() async {
+    try {
+      final prevCookie = await _secureStorage.read(key: "cookie");
+      final response = await call.post(
+        '/refreshAccessToken',
+        options: Options(
+          headers: {
+            'cookie': prevCookie,
+          },
+        ),
+      );
+      final tokenMap = _parseJwtAndRefreshToken(
+        response: response,
+        isJwtInBody: false,
+        withUserId: false,
+      );
+      await _saveLoginData(
+        map: tokenMap,
+        isTeacher: null,
+      );
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
   Future<bool> loginWithMail({
     required bool isTeacher,
     required String mail,
@@ -165,7 +194,10 @@ class HttpService {
         isJwtInBody: true,
         withUserId: true,
       );
-      _saveLoginData(tokenMap);
+      _saveLoginData(
+        map: tokenMap,
+        isTeacher: isTeacher,
+      );
     } catch (e) {
       return false;
     }
@@ -1186,8 +1218,17 @@ class HttpService {
     return resultMap;
   }
 
-  Future<void> _saveLoginData(Map<String, String> map) async {
+  Future<void> _saveLoginData({
+    required Map<String, String> map,
+    required bool? isTeacher,
+  }) async {
     await _secureStorage.write(key: 'userId', value: map['userId']);
+    if (isTeacher != null) {
+      await _secureStorage.write(
+        key: 'role',
+        value: isTeacher ? "teacher" : "student",
+      );
+    }
     await _secureStorage.write(key: 'jwt', value: map['jwt']);
     await _secureStorage.write(key: 'refreshToken', value: map['refreshToken']);
     await _secureStorage.write(key: 'cookie', value: map['cookie']);
