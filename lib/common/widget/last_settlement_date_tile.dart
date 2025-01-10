@@ -47,9 +47,23 @@ class LastSettlementDateTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                () {
-                  // TODO - 정산 알림 보내기
-                  print('정산 알림 보내기');
+                () async {
+                  print('정산 알림 보내기 테스트 시작');
+                  final fcmToken = await HttpService().fetchStudentFCMByClassId(classId);
+                  if (fcmToken != null) {
+                    final isSuccess = await HttpService().sendNotification(
+                      fcmToken,
+                      "정산 알림",
+                      "${lastSettlement.date.format(pattern: 'yyyy/M/dd')} 정산이 필요합니다. 금액: ${formatMoney(lastSettlement.price)}원",
+                    );
+                    if (isSuccess) {
+                      print("알림 성공적으로 전송됨");
+                    } else {
+                      print("알림 전송 실패");
+                    }
+                  } else {
+                    print("학생 FCM 토큰을 가져올 수 없습니다.");
+                  }
                 },
               );
             },

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -1225,4 +1226,45 @@ class HttpService {
       return "An error occurred while joining the class.";
     }
   }
+
+  Future<String?> fetchStudentFCMByClassId(int classId) async {
+    try {
+      final response = await call.get(
+        "/payment/studentFCMByTeacher",
+        queryParameters: {"classId": classId},
+      );
+
+      if (response.statusCode == 200) {
+        return response.data['studentFCM']; // 서버에서 반환된 FCM 토큰
+      } else {
+        throw Exception("Failed to fetch FCM token. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error in fetchStudentFCMByClassId: $e");
+      return null;
+    }
+  }
+
+  Future<bool> sendNotification(String fcmToken, String title, String body) async {
+    try {
+      final response = await call.post(
+        "https://fcm.googleapis.com/fcm/send",
+        data: jsonEncode({
+          "to": fcmToken,
+          "notification": {
+            "title": title,
+            "body": body,
+          },
+        }),
+        options: Options(headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+          HttpHeaders.authorizationHeader: "key=<YOUR_SERVER_KEY>", // FCM 서버 키
+        }),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      print("Error in sendNotification: $e");
+      return false;
+    }
 }
