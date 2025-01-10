@@ -41,6 +41,9 @@ Future<void> requestNotificationPermission() async {
   }
 }
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<ScaffoldState> mainScaffoldKey = GlobalKey<ScaffoldState>();
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -49,6 +52,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -59,5 +63,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-final GlobalKey<ScaffoldState> mainScaffoldKey = GlobalKey<ScaffoldState>();

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:studuler/common/auth/oauth_user_dto.dart';
+import 'package:studuler/main.dart';
 
 import '../auth/auth_service.dart';
 import '../model/class_settlement.dart';
@@ -13,6 +14,7 @@ import '../model/last_settlement.dart';
 import '../model/next_settlment.dart';
 import '../model/class_day.dart';
 import '../model/class_feedback.dart';
+import '../page/role_selection_page.dart';
 import '../section/class_info_item.dart';
 
 class HttpService {
@@ -82,8 +84,18 @@ class HttpService {
                 );
                 return handler.resolve(clonedRequest);
               } catch (e) {
-                print(e);
-                // TODO - If token refresh fails, redirect to login or handle accordingly
+                AuthService().signOut();
+                final context = navigatorKey.currentContext;
+                if (context != null) {
+                  if (context.mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RoleSelectionPage(),
+                      ),
+                    );
+                  }
+                }
                 return handler.reject(error);
               }
             }
@@ -111,10 +123,22 @@ class HttpService {
               );
               return handler.resolve(clonedRequest);
             } catch (e) {
-              // If token refresh fails, redirect to login or handle accordingly
+              AuthService().signOut();
+              final context = navigatorKey.currentContext;
+              if (context != null) {
+                if (context.mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RoleSelectionPage(),
+                    ),
+                  );
+                }
+              }
               return handler.reject(error);
             }
           }
+
           return handler.next(error);
         },
       ),
