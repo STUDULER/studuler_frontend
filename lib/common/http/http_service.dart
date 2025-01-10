@@ -330,16 +330,15 @@ class HttpService {
   Future<bool> createParent({
     required OAuthUserDto dto,
     required int loginMethod,
-    String? kakaoId,
   }) async {
     try {
       final Response response;
       if (loginMethod == 1) {
-        assert(kakaoId != null);
         response = await call.post(
           "/students/loginWithKakao",
           data: {
-            'kakaoAccessToken': kakaoId,
+            'username': dto.username,
+            'kakaoId': dto.mail,
           },
         );
       } else if (loginMethod == 2) {
@@ -369,7 +368,6 @@ class HttpService {
       );
       await _saveLoginData(map: tokenMap, isTeacher: false);
     } catch (e) {
-      print(e);
       return false;
     }
 

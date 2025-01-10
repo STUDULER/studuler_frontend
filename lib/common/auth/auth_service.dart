@@ -78,17 +78,17 @@ class AuthService {
             },
           );
           final profileInfo = json.decode(response.body);
-          print(profileInfo.toString());
+          print(profileInfo);
+          return OAuthUserDto(
+            username: profileInfo['properties']['nickname'],
+            password: "",
+            mail: profileInfo['id'].toString(),
+            image: 1,
+          );
         } catch (error) {
-          print('Kakao sign in failed: $error');
           return null;
         }
-        // TODO 이 부분을 IOAuthUserDto 로 바꾸어야 함.
-        return null;
-
-      default:
     }
-    return null;
   }
 
   Future<void> signOut() async {
