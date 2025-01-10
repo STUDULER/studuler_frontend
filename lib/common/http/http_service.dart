@@ -43,63 +43,61 @@ class HttpService {
           return handler.next(options);
         },
         onError: (DioException error, handler) async {
-          print("ddddddffasd");
           // print("${error.message}");
           // debugPrint(error.message);
           // if (error.response?.statusCode == 302) {
           //   // 302 Redirection
           //   debugPrint("302 Response");
           // }
-          final refreshToken = await _secureStorage.read(key: "refreshToken");
-          final jwt = await _secureStorage.read(key: "jwt");
-          print(refreshToken);
-          print(jwt);
+          // final prevJwt = await _secureStorage.read(key: "jwt");
+          final prevRefreshToken =
+              await _secureStorage.read(key: "refreshToken");
+          final prevCookie = await _secureStorage.read(key: "cookie");
           if (error.response?.statusCode == 403) {
-            print("403");
-            // access token expiration error
-            try {
-              final response = await call.post('/refreshAccessToken');
-              final Map<String, String> cookieMap = {};
-              response.headers.forEach(
-                (name, values) {
-                  if (name == HttpHeaders.setCookieHeader) {
-                    for (var c in values) {
-                      var key = '';
-                      var value = '';
+            if (error.response?.data == "Need refresh token") {
+              // access token expiration error
+              try {
+                final response = await call.post(
+                  '/refreshAccessToken',
+                  options: Options(
+                    headers: {
+                      'cookie': prevCookie,
+                    },
+                  ),
+                );
+                final tokenMap = _parseJwtAndRefreshToken(
+                  response: response,
+                  isJwtInBody: false,
+                );
+                await _saveLoginData(tokenMap);
 
-                      key = c.substring(0, c.indexOf('='));
-                      value = c.substring(key.length + 1, c.indexOf(';'));
-
-                      cookieMap[key] = value;
-                    }
-
-                    var cookiesFormatted = '';
-
-                    cookieMap.forEach(
-                        (key, value) => cookiesFormatted += '$key=$value; ');
-                    return;
-                  }
-                },
-              );
-              print("123");
-              print(response.headers);
-              print(response.data);
-              print("123");
-            } catch (e) {
-              // If token refresh fails, redirect to login or handle accordingly
-              return handler.reject(error);
+                final clonedRequest = await call.request(
+                  error.requestOptions.path,
+                  options: Options(
+                    method: error.requestOptions.method,
+                    headers: error.requestOptions.headers,
+                  ),
+                  data: error.requestOptions.data,
+                  queryParameters: error.requestOptions.queryParameters,
+                );
+                return handler.resolve(clonedRequest);
+              } catch (e) {
+                print(e);
+                // TODO - If token refresh fails, redirect to login or handle accordingly
+                return handler.reject(error);
+              }
             }
           }
 
           if (error.response?.statusCode == 405) {
             print("405");
-            // Handle 401 Unauthorized error
+            // Handle 405 Unauthorized error
             try {
               // Attempt to refresh the token
 
               // Update the authorization header with the new token
               error.requestOptions.headers['Authorization'] =
-                  'Bearer $refreshToken';
+                  'Bearer $prevRefreshToken';
 
               // Retry the request with the new token
               final clonedRequest = await call.request(
@@ -137,7 +135,10 @@ class HttpService {
           "password": password,
         },
       );
-      Map<String, String> tokenMap = _parseJwtAndRefreshToken(response);
+      Map<String, String> tokenMap = _parseJwtAndRefreshToken(
+        response: response,
+        isJwtInBody: true,
+      );
       await _secureStorage.write(
         key: "jwt",
         value: tokenMap['jwt'],
@@ -178,6 +179,7 @@ class HttpService {
     }
     if (response == null) return false;
     final Map<String, String> cookieMap = {};
+    var cookiesFormatted = '';
     response.headers.forEach(
       (name, values) {
         if (name == HttpHeaders.setCookieHeader) {
@@ -191,18 +193,20 @@ class HttpService {
             cookieMap[key] = value;
           }
 
-          var cookiesFormatted = '';
-
           cookieMap
               .forEach((key, value) => cookiesFormatted += '$key=$value; ');
           return;
         }
       },
     );
+
     final jwt = response.data['accessToken'];
     final refreshToken = cookieMap['refreshToken'];
+    // int userId = response.data['userId'];
+    // await _secureStorage.write(key: "userId", value: "$userId");
     await _secureStorage.write(key: "jwt", value: jwt);
     await _secureStorage.write(key: "refreshToken", value: refreshToken);
+    await _secureStorage.write(key: "cookie", value: cookiesFormatted);
     return true;
   }
 
@@ -263,6 +267,7 @@ class HttpService {
       return false;
     }
     final Map<String, String> cookieMap = {};
+    var cookiesFormatted = '';
     response.headers.forEach(
       (name, values) {
         if (name == HttpHeaders.setCookieHeader) {
@@ -276,8 +281,6 @@ class HttpService {
             cookieMap[key] = value;
           }
 
-          var cookiesFormatted = '';
-
           cookieMap
               .forEach((key, value) => cookiesFormatted += '$key=$value; ');
           return;
@@ -290,6 +293,7 @@ class HttpService {
     await _secureStorage.write(key: "userId", value: "$userId");
     await _secureStorage.write(key: "jwt", value: jwt);
     await _secureStorage.write(key: "refreshToken", value: refreshToken);
+    await _secureStorage.write(key: "cookie", value: cookiesFormatted);
     return true;
   }
 
@@ -1141,9 +1145,13 @@ class HttpService {
     );
   }
 
-  Map<String, String> _parseJwtAndRefreshToken(Response response) {
+  Map<String, String> _parseJwtAndRefreshToken({
+    required Response response,
+    required bool isJwtInBody,
+  }) {
     final Map<String, String> resultMap = {};
     final Map<String, String> cookieMap = {};
+    var cookiesFormatted = '';
     response.headers.forEach(
       (name, values) {
         if (name == HttpHeaders.setCookieHeader) {
@@ -1157,17 +1165,26 @@ class HttpService {
             cookieMap[key] = value;
           }
 
-          var cookiesFormatted = '';
-
           cookieMap
               .forEach((key, value) => cookiesFormatted += '$key=$value; ');
           return;
         }
       },
     );
-    resultMap['jwt'] = response.data['accessToken'];
+    resultMap['jwt'] = isJwtInBody
+        ? response.data['accessToken']
+        : (response.headers['authorization'] as List<String>)
+            .first
+            .split(" ")[1];
     resultMap['refreshToken'] = cookieMap['refreshToken'] ?? "";
+    resultMap['cookie'] = cookiesFormatted;
     return resultMap;
+  }
+
+  Future<void> _saveLoginData(Map<String, String> map) async {
+    await _secureStorage.write(key: 'jwt', value: map['jwt']);
+    await _secureStorage.write(key: 'refreshToken', value: map['refreshToken']);
+    await _secureStorage.write(key: 'cookie', value: map['cookie']);
   }
 
   Future<String?> joinClass({required String classCode}) async {
