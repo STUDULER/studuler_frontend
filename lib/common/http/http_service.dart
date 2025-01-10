@@ -82,6 +82,37 @@ class HttpService {
     );
   }
 
+  Future<bool> isAlreadyOAuthUser({
+    required String id,
+    required bool isTeacher,
+    required int loginMethod,
+  }) async {
+    try {
+      String path = isTeacher ? "/teachers" : "/students";
+      final Response response;
+      if (loginMethod == 1) {
+        // TODO - KAKAO
+        return true;
+      } else if (loginMethod == 2) {
+        response = await call.post(
+          "$path/loginWithGoogle",
+          data: {
+            'mail': id,
+          },
+        );
+        print(response.data);
+        final jwt = response.data['accessToken'];
+        await _secureStorage.write(key: "jwt", value: jwt);
+        return true;
+      } else {
+        // TODO - EMAIL
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<bool> createTeacher({
     required OAuthUserDto dto,
     required String bank,
