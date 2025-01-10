@@ -149,7 +149,7 @@ class NextSettlementDateTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                nextSettlment.isUnpaid ? "다음 정산일" : "미리 정산된 회차",
+                nextSettlment.isUnpaid ? "이번 회차 정산일" : "미리 정산된 회차",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,

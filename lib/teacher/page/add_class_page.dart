@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
 
 import '../../common/http/http_service.dart';
 import '../../common/util/gesture_dectector_hiding_keyboard.dart.dart';
@@ -47,6 +48,36 @@ class _AddClassPageState extends State<AddClassPage> {
     howToPayController.dispose();
     themeColorController.dispose();
     super.dispose();
+  }
+
+  bool canCreateClass(String startDate, String schedule, int numOfClasses) {
+    final start = Jiffy.parse(startDate, pattern: 'yyyy-MM-dd');
+    final today = Jiffy.now();
+
+    if (start.isBefore(today)) return false;
+
+    final daysOfWeek = {
+      "월": 1,
+      "화": 2,
+      "수": 3,
+      "목": 4,
+      "금": 5,
+      "토": 6,
+      "일": 7,
+    };
+
+    final scheduleDays = schedule.split("/").map((day) => daysOfWeek[day]!).toList();
+    int classCount = 0;
+    Jiffy currentDate = start.clone();
+
+    while (classCount < numOfClasses) {
+      if (scheduleDays.contains(currentDate.dateTime.weekday)) {
+        classCount++;
+      }
+      currentDate.add(days: 1);
+    }
+
+    return classCount >= numOfClasses;
   }
 
   @override
@@ -111,11 +142,105 @@ class _AddClassPageState extends State<AddClassPage> {
         if (howToPayController.text.isEmpty) return;
         if (themeColorController.text.isEmpty) return;
 
+        final int numOfClasses = int.parse(numOfClassesToPayController.text);
+        final bool isValid = canCreateClass(
+          classStartDateController.text,
+          classScheduleController.text,
+          numOfClasses,
+        );
+
+        if (!isValid) {
+          String message = howToPayController.text == "1"
+              ? "두 번째 정산이 완료된 수업은 추가할 수 없습니다."
+              : "첫 정산이 완료된 수업은 추가할 수 없습니다.";
+
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "수업 생성 불가",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close, color: Colors.grey),
+                  ),
+                ],
+              ),
+              content: Text(
+                message,
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              actionsPadding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        width: 48,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: const Color(0xFFC7B7A3).withOpacity(0.34),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "취소",
+                            style: TextStyle(
+                              color: Color(0xFFC7B7A3),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        width: 48,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: const Color(0xFFC7B7A3),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "확인",
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+          return;
+        }
+
         final String? classId = await httpService.createClass(
           className: classNameController.text,
           studentName: studentNameController.text,
           classStartDate: classStartDateController.text,
-          numOfClassesToPay: int.parse(numOfClassesToPayController.text),
+          numOfClassesToPay: numOfClasses,
           hoursPerClass: int.parse(hoursPerClassController.text),
           classSchedule: classScheduleController.text,
           classPrice: int.parse(classPriceController.text),
@@ -150,7 +275,6 @@ class _AddClassPageState extends State<AddClassPage> {
         ),
       ),
     );
-
 
     void howToPayControllerUpdate(String text) {
       setState(() {
