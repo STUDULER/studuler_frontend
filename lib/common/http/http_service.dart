@@ -123,6 +123,35 @@ class HttpService {
     );
   }
 
+  Future<bool> loginWithMail({
+    required bool isTeacher,
+    required String mail,
+    required String password,
+  }) async {
+    try {
+      String path = isTeacher ? "/teachers" : "/students";
+      final response = await call.post(
+        "$path/loginWithMail",
+        data: {
+          'mail': mail,
+          "password": password,
+        },
+      );
+      Map<String, String> tokenMap = _parseJwtAndRefreshToken(response);
+      await _secureStorage.write(
+        key: "jwt",
+        value: tokenMap['jwt'],
+      );
+      await _secureStorage.write(
+        key: "refreshToken",
+        value: tokenMap['refreshToken'],
+      );
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
   Future<bool> isAlreadyOAuthUser({
     required String id,
     required bool isTeacher,
@@ -1110,6 +1139,35 @@ class HttpService {
     return date.format(
       pattern: 'yyyy-M-dd',
     );
+  }
+
+  Map<String, String> _parseJwtAndRefreshToken(Response response) {
+    final Map<String, String> resultMap = {};
+    final Map<String, String> cookieMap = {};
+    response.headers.forEach(
+      (name, values) {
+        if (name == HttpHeaders.setCookieHeader) {
+          for (var c in values) {
+            var key = '';
+            var value = '';
+
+            key = c.substring(0, c.indexOf('='));
+            value = c.substring(key.length + 1, c.indexOf(';'));
+
+            cookieMap[key] = value;
+          }
+
+          var cookiesFormatted = '';
+
+          cookieMap
+              .forEach((key, value) => cookiesFormatted += '$key=$value; ');
+          return;
+        }
+      },
+    );
+    resultMap['jwt'] = response.data['accessToken'];
+    resultMap['refreshToken'] = cookieMap['refreshToken'] ?? "";
+    return resultMap;
   }
 
   Future<String?> joinClass({required String classCode}) async {

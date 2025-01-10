@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../http/http_service.dart';
 import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
 import '../widget/app_title.dart';
@@ -7,7 +8,12 @@ import '../widget/auth_text_field.dart';
 import '../widget/bottom_bar.dart';
 
 class LoginWithEmailPage extends StatefulWidget {
-  const LoginWithEmailPage({super.key});
+  const LoginWithEmailPage({
+    super.key,
+    required this.isTeacher,
+  });
+
+  final bool isTeacher;
 
   @override
   State<LoginWithEmailPage> createState() => _LoginWithEmailPageState();
@@ -69,20 +75,29 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
                           ),
                           const Spacer(),
                           GestureDectectorHidingKeyboard(
-                            onTap: () {
+                            onTap: () async {
                               if (_idController.text.isEmpty ||
                                   _passwordController.text.isEmpty) {
                                 return;
                               }
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    // TODO - 여기 임시로 한 거임
-                                    return BottomBar(isTeacher: true,);
-                                  },
-                                ),
-                              );
+                              if (await HttpService().loginWithMail(
+                                isTeacher: widget.isTeacher,
+                                mail: _idController.text,
+                                password: _passwordController.text,
+                              )) {
+                                if (context.mounted) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return BottomBar(
+                                          isTeacher: true,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                }
+                              }
                             },
                             child: Container(
                               width: MediaQuery.sizeOf(context).width,

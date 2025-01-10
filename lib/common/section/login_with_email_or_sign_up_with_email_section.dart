@@ -22,7 +22,9 @@ class LoginWithEmailOrSignUpWithEmailSection extends StatelessWidget {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const LoginWithEmailPage(),
+              builder: (context) => LoginWithEmailPage(
+                isTeacher: isTeacher,
+              ),
             ),
           ),
           child: const Text("이메일로 로그인"),

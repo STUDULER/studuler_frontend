@@ -144,7 +144,9 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            const LoginWithEmailPage(),
+                                            LoginWithEmailPage(
+                                          isTeacher: widget.isTeacher,
+                                        ),
                                       ),
                                     );
                                   }
