@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/services.dart';
+import 'package:googleapis_auth/auth.dart';
+import 'package:googleapis_auth/auth_io.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -183,12 +186,18 @@ class HttpService {
     required String password,
   }) async {
     try {
+      // FCM 토큰 가져오기
+      final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+      final fcmToken = await firebaseMessaging.getToken();
+
       String path = isTeacher ? "/teachers" : "/students";
+      String fcmKey = isTeacher ? 'teacherFCM' : 'studentFCM';
       final response = await call.post(
         "$path/loginWithMail",
         data: {
           'mail': mail,
           "password": password,
+          fcmKey: fcmToken,
         },
       );
       Map<String, String> tokenMap = _parseJwtAndRefreshToken(
@@ -219,12 +228,14 @@ class HttpService {
       final fcmToken = await firebaseMessaging.getToken();
 
       String path = isTeacher ? "/teachers" : "/students";
+      String fcmKey = isTeacher ? 'teacherFCM' : 'studentFCM';
       if (loginMethod == 1) {
         response = await call.post(
           "$path/loginWithKaKao",
           data: {
             'kakaoId': id,
             'username': username,
+            fcmKey : fcmToken,
           },
         );
       } else if (loginMethod == 2) {
@@ -232,7 +243,7 @@ class HttpService {
           "$path/loginWithGoogle",
           data: {
             'mail': id,
-            'teacherFCM' : fcmToken,
+            fcmKey : fcmToken,
           },
         );
       } else {
@@ -1070,6 +1081,7 @@ class HttpService {
   Future<List<ClassSettlement>> fetchClassSettlements() async {
     String classIdPath = '/home/classId';
     String unpaidClassPath = '/payment/unpaid';
+
     if (await _isTeacher()) {
       classIdPath = "${classIdPath}T";
       unpaidClassPath = "${unpaidClassPath}T";
@@ -1081,8 +1093,8 @@ class HttpService {
     final response = await call.get(classIdPath);
     if ((response.data as List).isEmpty) return [];
     final paymentResponse = await call.get(unpaidClassPath);
-
     final List<ClassSettlement> classSettlement = [];
+
     for (var classData in response.data) {
       var paymentData = paymentResponse.data["${classData['classid']}"];
       List<LastSettlement> lastSettlements = [];
@@ -1285,7 +1297,9 @@ class HttpService {
     try {
       final response = await call.get(
         "/payment/studentFCMByTeacher",
-        queryParameters: {"classId": classId},
+        data: {
+          "classId": classId,
+        },
       );
 
       if (response.statusCode == 200) {
@@ -1300,23 +1314,51 @@ class HttpService {
   }
 
   Future<bool> sendNotification(String fcmToken, String title, String body) async {
+    const String serviceAccountKeyPath = "lib/common/auth/studuler.json"; // 서비스 계정 키 경로
+
     try {
-      final response = await call.post(
-        "https://fcm.googleapis.com/fcm/send",
-        data: jsonEncode({
-          "to": fcmToken,
+      // 서비스 계정 키 로드
+      final String serviceAccount = await rootBundle.loadString(serviceAccountKeyPath);
+      final credentials = ServiceAccountCredentials.fromJson(serviceAccount);
+
+      // OAuth 2.0 인증 클라이언트 생성
+      final client = await clientViaServiceAccount(
+        credentials,
+        ['https://www.googleapis.com/auth/firebase.messaging'],
+      );
+
+      // HTTP v1 API URL
+      final url = Uri.parse(
+        'https://fcm.googleapis.com/v1/projects/studuler/messages:send',
+      );
+
+      // 메시지 페이로드
+      final payload = {
+        "message": {
+          "token": fcmToken,
           "notification": {
             "title": title,
             "body": body,
           },
-        }),
-        options: Options(headers: {
-          HttpHeaders.contentTypeHeader: "application/json",
-          HttpHeaders.authorizationHeader: "key=<YOUR_SERVER_KEY>", // FCM 서버 키
-        }),
+        },
+      };
+
+      // 요청 전송
+      final response = await client.post(
+        url,
+        headers: {
+      'Authorization': 'Bearer ${client.credentials.accessToken.data}',
+          'Content-Type': 'application/json'
+        },
+        body: jsonEncode(payload),
       );
 
-      return response.statusCode == 200;
+      // 응답 상태 확인
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
       print("Error in sendNotification: $e");
       return false;

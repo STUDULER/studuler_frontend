@@ -48,6 +48,10 @@ class LastSettlementDateTile extends StatelessWidget {
                   ],
                 ),
                 () async {
+                  // 팝업 닫기
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
                   print('정산 알림 보내기 테스트 시작');
                   final fcmToken = await HttpService().fetchStudentFCMByClassId(classId);
                   if (fcmToken != null) {
