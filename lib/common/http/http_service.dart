@@ -1313,6 +1313,26 @@ class HttpService {
     }
   }
 
+  Future<String?> fetchTeacherFCMByClassId(int classId) async {
+    try {
+      final response = await call.get(
+        "/payment/teacherFCMByStudent",
+        data: {
+          "classId": classId,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return response.data['teacherFCM']; // 서버에서 반환된 FCM 토큰
+      } else {
+        throw Exception("Failed to fetch Teacher FCM token. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error in fetchTeacherFCMByClassId: $e");
+      return null;
+    }
+  }
+
   Future<bool> sendNotification(String fcmToken, String title, String body) async {
     const String serviceAccountKeyPath = "lib/common/auth/studuler.json"; // 서비스 계정 키 경로
 

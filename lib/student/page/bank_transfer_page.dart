@@ -229,9 +229,47 @@ class _BankTransferPageState extends State<BankTransferPage> {
               ),
               Spacer(),
               GestureDetector(
-                onTap: () {
-                  // TODO - 송금완료 버튼
-                  print("송금완료 버튼");
+                onTap: () async {
+                  try {
+                    // 1. 선생님 FCM 토큰 가져오기
+                    final teacherFCM = await HttpService().fetchTeacherFCMByClassId(widget.classId);
+                    if (teacherFCM == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("선생님 알림을 보낼 수 없습니다. 잠시 후 다시 시도해주세요."),
+                        ),
+                      );
+                      return;
+                    }
+
+                    // 2. 클라우드 메시지 전송
+                    final success = await HttpService().sendNotification(
+                      teacherFCM,
+                      "송금 완료 알림",
+                      "${widget.className} 수업에 대한 송금이 완료되었습니다. 확인 부탁드립니다.",
+                    );
+
+                    if (success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("선생님께 송금 완료 알림을 보냈습니다."),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("알림 전송에 실패했습니다. 다시 시도해주세요."),
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    print("Error in sending notification: $e");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("오류가 발생했습니다. 다시 시도해주세요."),
+                      ),
+                    );
+                  }
                 },
                 child: Container(
                   width: MediaQuery.sizeOf(context).width,
