@@ -6,8 +6,8 @@ import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
 import '../widget/app_title.dart';
 import '../widget/auth_text_field.dart';
-import '../widget/bottom_bar.dart';
 import 'bank_selection_page.dart';
+import 'kakao_pay_qr_input_page.dart';
 
 class AccountInputPage extends StatefulWidget {
   const AccountInputPage({
@@ -134,25 +134,18 @@ class _AccountInputPageState extends State<AccountInputPage> {
                                   _accountNumberController.text.isEmpty) {
                                 return;
                               }
-                              final result = await httpservice.createTeacher(
-                                dto: widget.dto,
-                                loginMethod: widget.loginMethod,
-                                name: _nameController.text,
-                                bank: _bankController.text,
-                                account: _accountNumberController.text,
-                                kakaoId: "",
-                              );
-                              if (result == false) return;
-                              if (!context.mounted) return;
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => BottomBar(
-                                    isTeacher: true,
-                                  ),
-                                ),
-                                (route) => false,
-                              );
+                              Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => KakaoPayQrInputPage(
+                                        dto: widget.dto,
+                                        loginMethod: widget.loginMethod,
+                                        name: _nameController.text,
+                                        bank: _bankController.text,
+                                        account: _accountNumberController.text,
+                                      ),
+                                    ),
+                                  );
                             },
                             child: Container(
                               width: MediaQuery.sizeOf(context).width,
