@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:gap/gap.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../common/http/http_service.dart';
 import '../../common/util/format_money.dart';
@@ -155,6 +157,35 @@ class _KakaoPayTransferPageState extends State<KakaoPayTransferPage> {
                     ),
                   ),
                   Gap(12),
+                  Linkify(
+                    onOpen: (link) async {
+                      // print(link.url);
+                      // print(Uri.parse(link.url));
+                      if (await canLaunchUrl(Uri.parse(link.url))) {
+                        print("Yes");
+                      } else {
+                        print("no");
+                      }
+                      if (!await launchUrl(Uri.parse(link.url))) {
+                        print("Could not launch ${link.url}");
+                        // throw Exception('Could not launch ${link.url}');
+                      }
+                    },
+                    text: kakaoPayLink ?? "",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: "PretendardVariable",
+                      fontStyle: FontStyle.normal,
+                      fontSize: 14.0,
+                    ),
+                    linkStyle: TextStyle(
+                      color: Colors.black,
+                      fontFamily: "PretendardVariable",
+                      fontWeight: FontWeight.w800,
+                      decoration: TextDecoration.underline,
+                      fontSize: 14.0,
+                    ),
+                  ),
                   Padding(
                     padding: EdgeInsets.only(
                         left: MediaQuery.sizeOf(context).width / 12),
