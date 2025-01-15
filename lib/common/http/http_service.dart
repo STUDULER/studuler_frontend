@@ -1325,8 +1325,11 @@ class HttpService {
   }
 
   Future<String?> joinClass({required String classCode}) async {
-    final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-    final fcmToken = await firebaseMessaging.getToken();
+    String? fcmToken;
+    if (Platform.isAndroid) {
+      final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+      fcmToken = await firebaseMessaging.getToken();
+    }
 
     try {
       // PUT 요청 보내기
