@@ -6,8 +6,8 @@ import '../section/yellow_background.dart';
 import '../util/gesture_dectector_hiding_keyboard.dart.dart';
 import '../widget/app_title.dart';
 import '../widget/auth_text_field.dart';
-import '../widget/bottom_bar.dart';
 import 'bank_selection_page.dart';
+import 'kakao_pay_qr_input_page.dart';
 
 class AccountInputPage extends StatefulWidget {
   const AccountInputPage({
@@ -63,124 +63,121 @@ class _AccountInputPageState extends State<AccountInputPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: GestureDectectorHidingKeyboard(
-        child: YellowBackground(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Spacer(
-                    flex: 3,
-                  ),
-                  const AppTitle(),
-                  const Spacer(),
-                  Container(
-                    width: MediaQuery.sizeOf(context).width,
-                    height: MediaQuery.sizeOf(context).height / 2,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(10),
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: MediaQuery.sizeOf(context).height,
+          child: GestureDectectorHidingKeyboard(
+            child: YellowBackground(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Spacer(
+                        flex: 3,
                       ),
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AuthTextField(
-                            controller: _nameController,
-                            label: "예금주 성명",
-                            hintText: "이름을 입력해주세요",
+                      const AppTitle(),
+                      const Spacer(),
+                      Container(
+                        width: MediaQuery.sizeOf(context).width,
+                        height: MediaQuery.sizeOf(context).height / 2,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10),
                           ),
-                          const Spacer(),
-                          AuthTextField(
-                            controller: _bankController,
-                            label: "은행",
-                            hintText: "은행을 선택해주세요",
-                            readOnly: true,
-                            showCursor: false,
-                            onTap: () {
-                              showModalBottomSheet<void>(
-                                context: context,
-                                isScrollControlled: true,
-                                useSafeArea: true,
-                                showDragHandle: true,
-                                builder: (context) {
-                                  return BankSelectionPage(
-                                    bankController: _bankController,
-                                    textfieldController: _textfieldController,
-                                    banks: _banks,
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AuthTextField(
+                                controller: _nameController,
+                                label: "예금주 성명",
+                                hintText: "이름을 입력해주세요",
+                              ),
+                              const Spacer(),
+                              AuthTextField(
+                                controller: _bankController,
+                                label: "은행",
+                                hintText: "은행을 선택해주세요",
+                                readOnly: true,
+                                showCursor: false,
+                                onTap: () {
+                                  showModalBottomSheet<void>(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    useSafeArea: true,
+                                    showDragHandle: true,
+                                    builder: (context) {
+                                      return BankSelectionPage(
+                                        bankController: _bankController,
+                                        textfieldController: _textfieldController,
+                                        banks: _banks,
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                          ),
-                          const Spacer(),
-                          AuthTextField(
-                            controller: _accountNumberController,
-                            label: "계좌번호 입력",
-                            hintText: "계좌번호를 입력해주세요",
-                            keyboardType: TextInputType.number,
-                          ),
-                          const Spacer(),
-                          GestureDectectorHidingKeyboard(
-                            onTap: () async {
-                              if (_nameController.text.isEmpty ||
-                                  _bankController.text.isEmpty ||
-                                  _accountNumberController.text.isEmpty) {
-                                return;
-                              }
-                              final result = await httpservice.createTeacher(
-                                dto: widget.dto,
-                                loginMethod: widget.loginMethod,
-                                name: _nameController.text,
-                                bank: _bankController.text,
-                                account: _accountNumberController.text,
-                                kakaoId: "",
-                              );
-                              if (result == false) return;
-                              if (!context.mounted) return;
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => BottomBar(
-                                    isTeacher: true,
+                              ),
+                              const Spacer(),
+                              AuthTextField(
+                                controller: _accountNumberController,
+                                label: "계좌번호 입력",
+                                hintText: "계좌번호를 입력해주세요",
+                                keyboardType: TextInputType.number,
+                              ),
+                              const Spacer(),
+                              GestureDectectorHidingKeyboard(
+                                onTap: () async {
+                                  if (_nameController.text.isEmpty ||
+                                      _bankController.text.isEmpty ||
+                                      _accountNumberController.text.isEmpty) {
+                                    return;
+                                  }
+                                  Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => KakaoPayQrInputPage(
+                                            dto: widget.dto,
+                                            loginMethod: widget.loginMethod,
+                                            name: _nameController.text,
+                                            bank: _bankController.text,
+                                            account: _accountNumberController.text,
+                                          ),
+                                        ),
+                                      );
+                                },
+                                child: Container(
+                                  width: MediaQuery.sizeOf(context).width,
+                                  height: MediaQuery.sizeOf(context).height / 16,
+                                  decoration: const BoxDecoration(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(8),
+                                    ),
+                                    color: Colors.brown,
+                                  ),
+                                  child: const Center(
+                                    child: Text(
+                                      "다음",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                (route) => false,
-                              );
-                            },
-                            child: Container(
-                              width: MediaQuery.sizeOf(context).width,
-                              height: MediaQuery.sizeOf(context).height / 16,
-                              decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8),
-                                ),
-                                color: Colors.brown,
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  "회원가입 완료",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
+                              )
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                      const Spacer(
+                        flex: 3,
+                      ),
+                    ],
                   ),
-                  const Spacer(
-                    flex: 3,
-                  ),
-                ],
+                ),
               ),
             ),
           ),

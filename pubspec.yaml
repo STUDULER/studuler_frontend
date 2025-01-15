@@ -52,6 +52,7 @@ dependencies:
   googleapis_auth: ^1.6.0
   workmanager: 0.5.2
   cloud_firestore: ^5.6.1
+  email_validator: ^3.0.0
 
 dev_dependencies:
   flutter_test:

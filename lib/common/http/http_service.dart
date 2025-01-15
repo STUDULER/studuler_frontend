@@ -282,6 +282,7 @@ class HttpService {
     required String name,
     required int loginMethod,
     required String? kakaoId,
+    required String? kakaoQrUrl,
   }) async {
     final Response response;
     if (loginMethod == 1) {
@@ -297,6 +298,7 @@ class HttpService {
           "loginMethod": loginMethod,
           "image": dto.image,
           "kakaoId": dto.mail,
+          "kakaopayLink": kakaoQrUrl,
         },
       );
     } else if (loginMethod == 2) {
@@ -311,6 +313,7 @@ class HttpService {
           "mail": dto.mail,
           "loginMethod": loginMethod,
           "image": dto.image,
+          "kakaopayLink": kakaoQrUrl,
         },
       );
     } else {
@@ -325,6 +328,7 @@ class HttpService {
           "mail": dto.mail,
           "loginMethod": loginMethod,
           "image": dto.image,
+          "kakaopayLink": kakaoQrUrl,
         },
       );
     }
