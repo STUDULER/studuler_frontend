@@ -50,8 +50,7 @@ class HttpService {
           return handler.next(options);
         },
         onError: (DioException error, handler) async {
-          // print("${error.message}");
-          // debugPrint(error.message);
+          print(error);
           // if (error.response?.statusCode == 302) {
           //   // 302 Redirection
           //   debugPrint("302 Response");
@@ -223,10 +222,12 @@ class HttpService {
   }) async {
     Response? response;
     try {
+      String? fcmToken;
       // FCM 토큰 가져오기
-      final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-      final fcmToken = await firebaseMessaging.getToken();
-
+      if (Platform.isAndroid) {
+        final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+        fcmToken = await firebaseMessaging.getToken();
+      }
       String path = isTeacher ? "/teachers" : "/students";
       String fcmKey = isTeacher ? 'teacherFCM' : 'studentFCM';
       if (loginMethod == 1) {
@@ -407,7 +408,7 @@ class HttpService {
         "prepay": howToPay, // 결제 방법
         "themecolor": themeColor, // 테마 색상
         "teacherid": userId, // 유저 아이디
-        "teacherFCM" : fcmToken, // FCM 토큰
+        "teacherFCM": fcmToken, // FCM 토큰
       },
     );
     if (response.statusCode != 201) return null;
@@ -1305,7 +1306,9 @@ class HttpService {
       if (response.statusCode == 200) {
         return response.data['studentFCM']; // 서버에서 반환된 FCM 토큰
       } else {
-        throw Exception("Failed to fetch FCM token. Status code: ${response.statusCode}");
+        throw Exception(
+          "Failed to fetch FCM token. Status code: ${response.statusCode}",
+        );
       }
     } catch (e) {
       print("Error in fetchStudentFCMByClassId: $e");
