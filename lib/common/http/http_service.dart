@@ -1301,7 +1301,7 @@ class HttpService {
   Future<void> updateAccountInfo({
     required AccountInfo accountInfo,
   }) async {
-    final response = await call.put(
+    await call.put(
       "/home/updateAccountInfo",
       data: {
         "name": accountInfo.name,
@@ -1310,6 +1310,20 @@ class HttpService {
         "kakaopayLink": accountInfo.kakaopayLink,
       },
     );
+  }
+
+  Future<String?> getKakaopayLink({
+    required int classId,
+  }) async {
+    final response = await call.get(
+      '/payment/kakaopayLink',
+      data: {
+        'classId': classId,
+      },
+    );
+    return response.data['kakaopayLink'] != ""
+        ? response.data['kakaopayLink']
+        : null;
   }
 
   Future<bool> _isTeacher() async {

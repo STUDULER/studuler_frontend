@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:jiffy/jiffy.dart';
 
 import 'bank_transfer_page.dart';
+import 'kakao_pay_transfer_page.dart';
 
 class TransferMethodSelectingPage extends StatelessWidget {
   const TransferMethodSelectingPage({
@@ -61,8 +62,17 @@ class TransferMethodSelectingPage extends StatelessWidget {
                 alignment: Alignment.center,
                 child: GestureDetector(
                   onTap: () {
-                    // TODO - 카카오페이 송금하기로 이동
-                    print("카카오페이 송금하기");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => KakaoPayTransferPage(
+                          classId: classId,
+                          className: className,
+                          date: date,
+                          price: price,
+                        ),
+                      ),
+                    );
                   },
                   child: Container(
                     width: 232,
