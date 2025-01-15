@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
+import '../auth/auth_service.dart';
+import '../http/http_service.dart';
+import '../page/role_selection_page.dart';
+
 class QuitMemberSection extends StatefulWidget {
   const QuitMemberSection({super.key});
 
@@ -30,11 +34,20 @@ class _QuitMemberSectionState extends State<QuitMemberSection> {
           "탈퇴 시 해당 계정의 정보가 모두 삭제됩니다.",
           style: textStyle,
         ),
-        Text("탈퇴를 원하실 경우 '탈퇴'를 입력해주세요.", style: textStyle,),
+        Text(
+          "탈퇴를 원하실 경우 '탈퇴'를 입력해주세요.",
+          style: textStyle,
+        ),
         TextField(
           controller: _controller,
         ),
-        if (validationError) Text("'탈퇴'를 입력해주세요", style: textStyle.copyWith(color: Colors.red,),),
+        if (validationError)
+          Text(
+            "'탈퇴'를 입력해주세요",
+            style: textStyle.copyWith(
+              color: Colors.red,
+            ),
+          ),
         Gap(28),
         Row(
           children: [
@@ -62,12 +75,22 @@ class _QuitMemberSectionState extends State<QuitMemberSection> {
             ),
             const Gap(8),
             GestureDetector(
-              onTap: () {
+              onTap: () async {
                 if (_controller.text != "탈퇴") {
                   setState(() {
                     validationError = true;
                   });
                   return;
+                }
+                await HttpService().quitMember();
+                await AuthService().signOut();
+                if (context.mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RoleSelectionPage(),
+                    ),
+                  );
                 }
               },
               child: Container(
@@ -90,7 +113,10 @@ class _QuitMemberSectionState extends State<QuitMemberSection> {
           ],
         ),
         Gap(4),
-        Text("'확인' 클릭 시 해당 동작은 되돌릴 수 없습니다", style: textStyle,),
+        Text(
+          "'확인' 클릭 시 해당 동작은 되돌릴 수 없습니다",
+          style: textStyle,
+        ),
       ],
     );
   }
