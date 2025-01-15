@@ -139,9 +139,12 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                             infoItems: classItem['infoItems'],
                             onUpdate: (updatedTitle, updatedInfoItems, updatedThemeColor) {
                               setState(() {
-                                classData![index]['title'] = updatedTitle;
-                                classData![index]['infoItems'] = updatedInfoItems;
-                                classData![index]['themeColor'] = updatedThemeColor;
+                                classData![index] = {
+                                  ...classData![index], // 기존 데이터 유지
+                                  'title': updatedTitle,
+                                  'infoItems': updatedInfoItems,
+                                  'themeColor': updatedThemeColor,
+                                };
                               });
                             },
                             goToPerClassPage: widget.goToPerClassPage,

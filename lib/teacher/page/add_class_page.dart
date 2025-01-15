@@ -143,6 +143,8 @@ class _AddClassPageState extends State<AddClassPage> {
         if (themeColorController.text.isEmpty) return;
 
         final int numOfClasses = int.parse(numOfClassesToPayController.text);
+
+        /*
         final bool isValid = canCreateClass(
           classStartDateController.text,
           classScheduleController.text,
@@ -235,6 +237,7 @@ class _AddClassPageState extends State<AddClassPage> {
           );
           return;
         }
+         */
 
         final String? classId = await httpService.createClass(
           className: classNameController.text,

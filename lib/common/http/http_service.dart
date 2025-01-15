@@ -464,7 +464,7 @@ class HttpService {
               ClassInfoItem(
                 icon: Icons.payment,
                 title: '정산 방법',
-                value: classInfo['prepay'] == true ? '선불' : '후불',
+                value: classInfo['prepay'] == 1 ? '선불' : '후불',
               ),
               ClassInfoItem(
                 icon: Icons.attach_money,
@@ -721,6 +721,9 @@ class HttpService {
         "/home/updatePrepayT",
         data: {"classId": classId, "prepay": prepay},
       );
+      // 백엔드 메시지 출력
+      print("Response message: ${response.data['message']}");
+
       return response.statusCode == 200 &&
           response.data['message'] == 'Class information updated successfully.';
     } catch (e) {
