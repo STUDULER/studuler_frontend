@@ -98,7 +98,6 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                   return _buildEmptyCard(screenHeight, screenWidth);
                 } else {
                   // 그 외의 에러는 에러 메시지 표시
-                  // 그 외의 에러는 사용자 친화적인 메시지 표시
                   return const Center(
                     child: Text(
                       '오류가 발생했습니다. 다시 시도해주세요.',

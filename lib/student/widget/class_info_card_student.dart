@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-import '../util/get_color_by_index.dart';
-import 'edit_item_dialog.dart';
+import '../../common/util/get_color_by_index.dart';
+import 'edit_item_dialog_student.dart';
 import '../../teacher/section/incomplete_class_feedback.dart';
-import '../http/http_service.dart';
-import '../section/class_info_item.dart';
-import '../section/animated_wave_painter.dart';
+import '../../common/http/http_service.dart';
+import '../../common/section/class_info_item.dart';
+import '../../common/section/animated_wave_painter.dart';
 
-class ClassInfoCard extends StatefulWidget {
+class ClassInfoCardStudent extends StatefulWidget {
   final String title;
   final String code;
   final int classId;
@@ -20,14 +20,13 @@ class ClassInfoCard extends StatefulWidget {
   final int period;
   final Color themeColor;
   final Function(
-    String title,
-    List<ClassInfoItem> infoItems,
-    Color themeColor,
-  ) onUpdate;
+      String title,
+      List<ClassInfoItem> infoItems,
+      Color themeColor,
+      ) onUpdate;
   final Function(int, String, int) goToPerClassPage;
-  final Function(int classId) onDelete;
 
-  const ClassInfoCard({
+  const ClassInfoCardStudent({
     required this.title,
     required this.code,
     required this.classId,
@@ -40,19 +39,18 @@ class ClassInfoCard extends StatefulWidget {
     required this.themeColor,
     required this.onUpdate,
     required this.goToPerClassPage,
-    required this.onDelete,
     super.key,
   });
 
   @override
-  State<ClassInfoCard> createState() => _ClassInfoCardState();
+  State<ClassInfoCardStudent> createState() => _ClassInfoCardStudentState();
 }
 
-class _ClassInfoCardState extends State<ClassInfoCard>
+class _ClassInfoCardStudentState extends State<ClassInfoCardStudent>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late TextEditingController titleController;
-  late TextEditingController studentNameController;
+  late TextEditingController teacherNameController;
   late TextEditingController sessionDurationController;
   late TextEditingController daysController;
   late TextEditingController paymentMethodController;
@@ -73,7 +71,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     )..repeat();
 
     titleController = TextEditingController(text: widget.title);
-    studentNameController =
+    teacherNameController =
         TextEditingController(text: widget.infoItems[0].value);
     sessionDurationController =
         TextEditingController(text: widget.infoItems[1].value.replaceAll('시간', ''));
@@ -85,7 +83,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     sessionCountController =
         TextEditingController(text: widget.infoItems[5].value.replaceAll('회', ''));
     nextPaymentDate =
-        widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
+    widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
     currentThemeColor = widget.themeColor;
 
     themeColorController = TextEditingController(
@@ -97,7 +95,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
   void dispose() {
     _controller.dispose();
     titleController.dispose();
-    studentNameController.dispose();
+    teacherNameController.dispose();
     sessionDurationController.dispose();
     daysController.dispose();
     paymentMethodController.dispose();
@@ -108,21 +106,21 @@ class _ClassInfoCardState extends State<ClassInfoCard>
   }
 
   void _editClassInfo() {
-    EditItemDialog.showSelectItemDialog(
+    EditItemDialogStudent.showSelectItemDialog(
       context: context,
       classData: {'classid': widget.classId},
       items: [
         {
-          'title': '학생 이름',
-          'controller': studentNameController,
+          'title': '선생님 이름',
+          'controller': teacherNameController,
           'onUpdate': (String newValue) async {
-            final success = await HttpService().updateStudentName(
+            final success = await HttpService().updateTeacherNameS(
               classId: widget.classId,
-              studentName: newValue,
+              teacherName: newValue,
             );
             if (success) {
               setState(() {
-                studentNameController.text = newValue;
+                teacherNameController.text = newValue;
               });
               widget.onUpdate(
                 titleController.text,
@@ -136,7 +134,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
           'title': '수업 이름',
           'controller': titleController,
           'onUpdate': (String newValue) async {
-            final success = await HttpService().updateClassName(
+            final success = await HttpService().updateClassNameS(
               classId: widget.classId,
               className: newValue,
             );
@@ -153,110 +151,11 @@ class _ClassInfoCardState extends State<ClassInfoCard>
           },
         },
         {
-          'title': '요일',
-          'controller': daysController,
-          'onUpdate': (String newValue) async {
-            final success = await HttpService().updateDay(
-              classId: widget.classId,
-              day: newValue,
-            );
-            if (success) {
-              setState(() {
-                daysController.text = newValue;
-              });
-              widget.onUpdate(
-                titleController.text,
-                _getUpdatedInfoItems(),
-                currentThemeColor,
-              );
-            }
-          },
-        },
-        {
-          'title': '회당 시간',
-          'controller': sessionDurationController,
-          'onUpdate': (String newValue) async {
-            final success = await HttpService().updateTime(
-              classId: widget.classId,
-              time: int.parse(newValue),
-            );
-            if (success) {
-              setState(() {
-                sessionDurationController.text = newValue;
-              });
-              widget.onUpdate(
-                titleController.text,
-                _getUpdatedInfoItems(),
-                currentThemeColor,
-              );
-            }
-          },
-        },
-        {
-          'title': '수업 횟수',
-          'controller': sessionCountController,
-          'onUpdate': (String newValue) async {
-            final success = await HttpService().updatePeriod(
-              classId: widget.classId,
-              period: int.parse(newValue),
-            );
-            if (success) {
-              setState(() {
-                sessionCountController.text = newValue;
-              });
-              widget.onUpdate(
-                titleController.text,
-                _getUpdatedInfoItems(),
-                currentThemeColor,
-              );
-            }
-          },
-        },
-        {
-          'title': '시급',
-          'controller': hourlyRateController,
-          'onUpdate': (String newValue) async {
-            final success = await HttpService().updateHourlyRate(
-              classId: widget.classId,
-              hourlyRate: int.parse(newValue),
-            );
-            if (success) {
-              setState(() {
-                hourlyRateController.text = newValue;
-              });
-              widget.onUpdate(
-                titleController.text,
-                _getUpdatedInfoItems(),
-                currentThemeColor,
-              );
-            }
-          },
-        },
-        {
-          'title': '정산 방법',
-          'controller': paymentMethodController,
-          'onUpdate': (String newValue) async {
-            final success = await HttpService().updatePrepay(
-              classId: widget.classId,
-              prepay: int.parse(newValue),
-            );
-            if (success) {
-              setState(() {
-                paymentMethodController.text = newValue;
-              });
-              widget.onUpdate(
-                titleController.text,
-                _getUpdatedInfoItems(),
-                currentThemeColor,
-              );
-            }
-          },
-        },
-        {
           'title': '테마 색상',
           'controller': themeColorController,
           'onUpdate': (String newValue) async {
-            final success = await HttpService().updateThemeColor(
+            final int colorValue = int.parse(newValue);
+            final success = await HttpService().updateThemeColorS(
               classId: widget.classId,
               themeColor: int.parse(newValue),
             );
@@ -264,6 +163,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
               setState(() {
                 themeColorController.text = newValue;
                 currentThemeColor = getColorByIndex(int.parse(newValue));
+                // print("현재 색상: $currentThemeColor ");
               });
               widget.onUpdate(
                 titleController.text,
@@ -281,8 +181,8 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     return [
       ClassInfoItem(
         icon: Icons.person,
-        title: '학생 이름',
-        value: studentNameController.text,
+        title: '선생님 이름',
+        value: teacherNameController.text,
       ),
       ClassInfoItem(
         icon: Icons.access_time,
@@ -319,118 +219,6 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     ];
   }
 
-  void _copyCodeToClipboard() {
-    Clipboard.setData(ClipboardData(text: widget.code));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("수업 코드가 클립보드에 복사되었습니다.")),
-    );
-  }
-
-  void _deleteClass() async {
-    try {
-      final confirmed = await showDialog(
-        context: context,
-        builder: (context) => Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Stack(
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 22),
-                    const Text(
-                      "수업을 삭제하시겠습니까?",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 48),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        SizedBox(
-                          width: 60,
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              backgroundColor:
-                                  const Color(0xFFC7B7A3).withOpacity(0.34),
-                              foregroundColor: const Color(0xFFC7B7A3),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                            ),
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text("취소"),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        SizedBox(
-                          width: 60,
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFFC7B7A3),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                            ),
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text("확인"),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                ),
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: GestureDetector(
-                    onTap: () => Navigator.pop(context, false),
-                    child: const Icon(
-                      Icons.close,
-                      size: 20,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-
-      if (confirmed == true) {
-        final success = await HttpService().deleteClass(widget.classId);
-        if (success) {
-          widget.onDelete(widget.classId);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("수업이 삭제되었습니다.")),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("수업 삭제에 실패했습니다.")),
-          );
-        }
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("알 수 없는 오류가 발생했습니다.")),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -463,54 +251,9 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                           Row(
                             children: [
                               GestureDetector(
-                                onTap: () async {
-                                  if (await ShareClient.instance
-                                      .isKakaoTalkSharingAvailable()) {
-                                    try {
-                                      final textTemplate = TextTemplate(
-                                        text:
-                                            "수업 코드: ${widget.code}\n수업 추가하기 버튼을 누른 다음 나오는 화면에 수업 코드를 입력해서 수업에 참여해주세요",
-                                        link: Link(
-                                          webUrl: Uri.parse(
-                                            'https://developers.kakao.com',
-                                          ),
-                                          mobileWebUrl: Uri.parse(
-                                            'https://developers.kakao.com',
-                                          ),
-                                        ),
-                                        buttonTitle: "수업 추가하기",
-                                      );
-
-                                      Uri uri = await ShareClient.instance
-                                          .shareDefault(template: textTemplate);
-                                      await ShareClient.instance
-                                          .launchKakaoTalk(uri);
-                                      print('카카오톡 공유 완료');
-                                    } catch (error) {
-                                      print('카카오톡 공유 실패 $error');
-                                    }
-                                  }
-                                },
-                                child: const Icon(
-                                  Icons.share,
-                                  color: Colors.grey,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              GestureDetector(
                                 onTap: _editClassInfo,
                                 child: const Icon(
                                   Icons.edit,
-                                  color: Colors.grey,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              GestureDetector(
-                                onTap: _deleteClass,
-                                child: const Icon(
-                                  Icons.delete,
                                   color: Colors.grey,
                                   size: 20,
                                 ),
@@ -542,21 +285,13 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            widget.code,
+                            '',   // 학생은 수업 코드 복사 필요 없음
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[500],
                             ),
                           ),
                           const SizedBox(width: 4),
-                          GestureDetector(
-                            onTap: _copyCodeToClipboard,
-                            child: const Icon(
-                              Icons.copy,
-                              size: 16,
-                              color: Colors.grey,
-                            ),
-                          ),
                         ],
                       ),
                       const Divider(),
@@ -606,23 +341,6 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                         ),
                       if (!showIncompleteFeedbackList)
                         const SizedBox(height: 16),
-                      if (!showIncompleteFeedbackList)
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              showIncompleteFeedbackList = true;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFC7B7A3),
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size.fromHeight(40),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          child: const Text('미작성 피드백 바로가기'),
-                        ),
                     ],
                   ),
                 ),
