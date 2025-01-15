@@ -58,6 +58,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
   late TextEditingController paymentMethodController;
   late TextEditingController hourlyRateController;
   late TextEditingController sessionCountController;
+  late TextEditingController themeColorController;
   late String nextPaymentDate;
   late Color currentThemeColor;
 
@@ -75,17 +76,21 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     studentNameController =
         TextEditingController(text: widget.infoItems[0].value);
     sessionDurationController =
-        TextEditingController(text: widget.infoItems[1].value);
+        TextEditingController(text: widget.infoItems[1].value.replaceAll('시간', ''));
     daysController = TextEditingController(text: widget.infoItems[2].value);
     paymentMethodController =
         TextEditingController(text: widget.infoItems[3].value);
     hourlyRateController =
-        TextEditingController(text: widget.infoItems[4].value);
+        TextEditingController(text: widget.infoItems[4].value.replaceAll('원', ''));
     sessionCountController =
-        TextEditingController(text: widget.infoItems[5].value);
+        TextEditingController(text: widget.infoItems[5].value.replaceAll('회', ''));
     nextPaymentDate =
         widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
     currentThemeColor = widget.themeColor;
+
+    themeColorController = TextEditingController(
+      text: widget.themeColor.value.toString(),
+    );
   }
 
   @override
@@ -98,6 +103,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     paymentMethodController.dispose();
     hourlyRateController.dispose();
     sessionCountController.dispose();
+    themeColorController.dispose();
     super.dispose();
   }
 
@@ -109,68 +115,208 @@ class _ClassInfoCardState extends State<ClassInfoCard>
         {
           'title': '학생 이름',
           'controller': studentNameController,
-          'onUpdate': (String newValue) {
-            setState(() {
-              studentNameController.text = newValue;
-            });
+          'onUpdate': (String newValue) async {
+            final success = await HttpService().updateStudentName(
+              classId: widget.classId,
+              studentName: newValue,
+            );
+            if (success) {
+              setState(() {
+                studentNameController.text = newValue;
+              });
+              widget.onUpdate(
+                titleController.text,
+                _getUpdatedInfoItems(),
+                currentThemeColor,
+              );
+            }
           },
         },
         {
           'title': '수업 이름',
           'controller': titleController,
-          'onUpdate': (String newValue) {
-            setState(() {
-              titleController.text = newValue;
-            });
+          'onUpdate': (String newValue) async {
+            final success = await HttpService().updateClassName(
+              classId: widget.classId,
+              className: newValue,
+            );
+            if (success) {
+              setState(() {
+                titleController.text = newValue;
+              });
+              widget.onUpdate(
+                newValue,
+                _getUpdatedInfoItems(),
+                currentThemeColor,
+              );
+            }
           },
         },
         {
           'title': '요일',
           'controller': daysController,
-          'onUpdate': (String newValue) {
-            setState(() {
-              daysController.text = newValue;
-            });
+          'onUpdate': (String newValue) async {
+            final success = await HttpService().updateDay(
+              classId: widget.classId,
+              day: newValue,
+            );
+            if (success) {
+              setState(() {
+                daysController.text = newValue;
+              });
+              widget.onUpdate(
+                titleController.text,
+                _getUpdatedInfoItems(),
+                currentThemeColor,
+              );
+            }
           },
         },
         {
           'title': '회당 시간',
           'controller': sessionDurationController,
-          'onUpdate': (String newValue) {
-            setState(() {
-              sessionDurationController.text = newValue;
-            });
+          'onUpdate': (String newValue) async {
+            final success = await HttpService().updateTime(
+              classId: widget.classId,
+              time: int.parse(newValue),
+            );
+            if (success) {
+              setState(() {
+                sessionDurationController.text = newValue;
+              });
+              widget.onUpdate(
+                titleController.text,
+                _getUpdatedInfoItems(),
+                currentThemeColor,
+              );
+            }
           },
         },
         {
           'title': '수업 횟수',
           'controller': sessionCountController,
-          'onUpdate': (String newValue) {
-            setState(() {
-              sessionCountController.text = newValue;
-            });
+          'onUpdate': (String newValue) async {
+            final success = await HttpService().updatePeriod(
+              classId: widget.classId,
+              period: int.parse(newValue),
+            );
+            if (success) {
+              setState(() {
+                sessionCountController.text = newValue;
+              });
+              widget.onUpdate(
+                titleController.text,
+                _getUpdatedInfoItems(),
+                currentThemeColor,
+              );
+            }
           },
         },
         {
           'title': '시급',
           'controller': hourlyRateController,
-          'onUpdate': (String newValue) {
-            setState(() {
-              hourlyRateController.text = newValue;
-            });
+          'onUpdate': (String newValue) async {
+            final success = await HttpService().updateHourlyRate(
+              classId: widget.classId,
+              hourlyRate: int.parse(newValue),
+            );
+            if (success) {
+              setState(() {
+                hourlyRateController.text = newValue;
+              });
+              widget.onUpdate(
+                titleController.text,
+                _getUpdatedInfoItems(),
+                currentThemeColor,
+              );
+            }
           },
         },
         {
           'title': '정산 방법',
           'controller': paymentMethodController,
-          'onUpdate': (String newValue) {
-            setState(() {
-              paymentMethodController.text = newValue;
-            });
+          'onUpdate': (String newValue) async {
+            final success = await HttpService().updatePrepay(
+              classId: widget.classId,
+              prepay: int.parse(newValue),
+            );
+            if (success) {
+              setState(() {
+                paymentMethodController.text = newValue;
+              });
+              widget.onUpdate(
+                titleController.text,
+                _getUpdatedInfoItems(),
+                currentThemeColor,
+              );
+            }
+          },
+        },
+        {
+          'title': '테마 색상',
+          'controller': themeColorController,
+          'onUpdate': (String newValue) async {
+            final success = await HttpService().updateThemeColor(
+              classId: widget.classId,
+              themeColor: int.parse(newValue),
+            );
+            if (success) {
+              setState(() {
+                themeColorController.text = newValue;
+                currentThemeColor = Color(int.parse(newValue));
+              });
+              widget.onUpdate(
+                titleController.text,
+                _getUpdatedInfoItems(),
+                currentThemeColor,
+              );
+            }
           },
         },
       ],
     );
+  }
+
+  List<ClassInfoItem> _getUpdatedInfoItems() {
+    return [
+      ClassInfoItem(
+        icon: Icons.person,
+        title: '학생 이름',
+        value: studentNameController.text,
+      ),
+      ClassInfoItem(
+        icon: Icons.access_time,
+        title: '회당 시간',
+        value: '${sessionDurationController.text}시간',
+      ),
+      ClassInfoItem(
+        icon: Icons.calendar_today,
+        title: '요일',
+        value: daysController.text,
+      ),
+      ClassInfoItem(
+        icon: Icons.payment,
+        title: '정산 방법',
+        value: paymentMethodController.text,
+      ),
+      ClassInfoItem(
+        icon: Icons.attach_money,
+        title: '시급',
+        value: '${hourlyRateController.text}원',
+      ),
+      ClassInfoItem(
+        icon: Icons.repeat,
+        title: '수업 횟수',
+        value: '${sessionCountController.text}회',
+      ),
+      ClassInfoItem(
+        icon: Icons.calendar_today,
+        title: '이번 회차 정산일',
+        value: nextPaymentDate.isNotEmpty
+            ? nextPaymentDate
+            : '정보 없음', // 정산일이 없을 경우 대체값 표시
+      ),
+    ];
   }
 
   void _copyCodeToClipboard() {

@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 import '../section/class_info_item.dart';
 
@@ -69,6 +70,7 @@ class _EditClassInfoModalState extends State<EditClassInfoModal> {
   @override
   void initState() {
     super.initState();
+
     _hourlyRateController = TextEditingController(text: widget.hourlyRateController.text.replaceAll('원', ''));
     selectedColor = widget.themeColor;
 
@@ -96,6 +98,8 @@ class _EditClassInfoModalState extends State<EditClassInfoModal> {
 
   @override
   Widget build(BuildContext context) {
+    // paymentMethodController의 초기값 출력
+    print('Initial payment method: ${widget.paymentMethodController.text}');
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -173,25 +177,14 @@ class _EditClassInfoModalState extends State<EditClassInfoModal> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: DropdownButtonFormField<String>(
-                    isDense: true,
-                    style: const TextStyle(fontSize: 14, color: Colors.grey),
-                    decoration: const InputDecoration(
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 4.0),
-                    ),
                     value: sessionDurationOptions.contains(widget.sessionDurationController.text.replaceAll('시간', ''))
                         ? widget.sessionDurationController.text.replaceAll('시간', '')
-                        : sessionDurationOptions[0],
+                        : sessionDurationOptions[0], // 기본값 설정
                     items: sessionDurationOptions.map((value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Align(
-                          alignment: Alignment.centerLeft, // 왼쪽 정렬
+                          alignment: Alignment.centerLeft,
                           child: Text('$value 시간'),
                         ),
                       );
@@ -201,42 +194,69 @@ class _EditClassInfoModalState extends State<EditClassInfoModal> {
                         widget.sessionDurationController.text = '$newValue 시간';
                       });
                     },
-                  ),
+                  )
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  '납부 방식',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                  '정산 방법',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.left,
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.8,
-                  child: DropdownButtonFormField<String>(
-                    isDense: true,
-                    style: const TextStyle(fontSize: 14, color: Colors.grey),
-                    decoration: const InputDecoration(
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 4.0),
-                    ),
-                    value: ['선불', '후불'].contains(widget.paymentMethodController.text) ? widget.paymentMethodController.text : '선불',
-                    items: ['선불', '후불'].map((value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Align(
-                          alignment: Alignment.centerLeft, // 왼쪽 정렬
-                          child: Text(value),
-                        ),
+                  child: StatefulBuilder(
+                    builder: (context, setState) {
+                      int selectedMethod = widget.paymentMethodController.text == '후불' ? 0 : 1; // 초기값 설정
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedMethod = 1;
+                                widget.paymentMethodController.text = '선불';
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                              decoration: BoxDecoration(
+                                color: selectedMethod == 1 ? Colors.blue : Colors.grey[300],
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Text(
+                                '선불',
+                                style: TextStyle(
+                                  color: selectedMethod == 1 ? Colors.white : Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedMethod = 0;
+                                widget.paymentMethodController.text = '후불';
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                              decoration: BoxDecoration(
+                                color: selectedMethod == 0 ? Colors.blue : Colors.grey[300],
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Text(
+                                '후불',
+                                style: TextStyle(
+                                  color: selectedMethod == 0 ? Colors.white : Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        widget.paymentMethodController.text = newValue!;
-                      });
                     },
                   ),
                 ),
@@ -334,7 +354,7 @@ class _EditClassInfoModalState extends State<EditClassInfoModal> {
                       widget.titleController.text,
                       [
                         ClassInfoItem(icon: Icons.person, title: '학생 이름', value: widget.studentNameController.text),
-                        ClassInfoItem(icon: Icons.access_time, title: '회당 시간', value: '${widget.sessionDurationController.text}'),
+                        ClassInfoItem(icon: Icons.access_time, title: '회당 시간', value: widget.sessionDurationController.text),
                         ClassInfoItem(icon: Icons.calendar_today, title: '요일', value: getSortedDaysString()),
                         ClassInfoItem(icon: Icons.payment, title: '정산 방법', value: widget.paymentMethodController.text),
                         ClassInfoItem(icon: Icons.attach_money, title: '시급', value: _hourlyRateController.text),
@@ -363,3 +383,4 @@ class _EditClassInfoModalState extends State<EditClassInfoModal> {
     );
   }
 }
+*/

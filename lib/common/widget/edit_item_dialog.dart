@@ -9,10 +9,331 @@ class EditItemDialog {
     required String title,
     required String initialValue,
     required Function(String) onUpdate,
-    required int classId, // classId를 부모에서 전달받음
+    required int classId,
     bool isNumeric = false,
   }) {
     TextEditingController controller = TextEditingController(text: initialValue);
+
+    // 다이나믹한 입력 필드 생성 함수
+    Widget _buildInputField() {
+      switch (title) {
+        case '학생 이름':
+        case '수업 이름':
+          return TextField(
+            controller: controller,
+            keyboardType: TextInputType.text,
+            decoration: const InputDecoration(
+              hintText: '새로운 값을 입력하세요',
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue),
+              ),
+            ),
+          );
+        case '회당 시간':
+          return TextField(
+            controller: TextEditingController(
+              text: initialValue.replaceAll('시간', ''), // '시간' 제거
+            ),
+            keyboardType: TextInputType.number, // 숫자 입력 전용 키보드
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly], // 숫자만 입력 가능
+            decoration: const InputDecoration(
+              hintText: '회당 시간을 입력하세요',
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue),
+              ),
+            ),
+            onChanged: (newValue) {
+              controller.text = newValue; // 변경된 값을 controller에 저장
+            },
+          );
+        case '테마 색상':
+          final List<Color> themeColors = [
+            const Color(0xFFC96868), // Red shade
+            const Color(0xFFFFBB70), // Peach shade
+            const Color(0xFFB5C18E), // Green shade
+            const Color(0xFFCFEFFC), // Light Blue shade
+            const Color(0xFF5A72A0), // Blue shade
+            const Color(0xFFDDBCFF), // Lavender shade
+            const Color(0xFFFCCFCF), // Pink shade
+            const Color(0xFFD9D9D9), // Light Gray shade
+            const Color(0xFF545454), // Dark Gray shade
+            const Color(0xFFB28F65), // Brown shade
+          ];
+
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: List.generate(
+                            5,
+                                (index) => GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  controller.text = "$index"; // 선택된 색상 인덱스를 저장
+                                });
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: themeColors[index],
+                                radius: 15,
+                                child: controller.text == "$index"
+                                    ? const Icon(
+                                  Icons.check,
+                                  color: Colors.white, // 체크 아이콘 색상을 흰색으로 설정
+                                  size: 16,
+                                )
+                                    : null,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: List.generate(
+                            5,
+                                (index) => GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  controller.text = "${index + 5}"; // 두 번째 줄 색상
+                                });
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: themeColors[index + 5],
+                                radius: 15,
+                                child: controller.text == "${index + 5}"
+                                    ? const Icon(
+                                  Icons.check,
+                                  color: Colors.white, // 체크 아이콘 색상을 흰색으로 설정
+                                  size: 16,
+                                )
+                                    : null,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        case '요일':
+          final List<String> selectedDays = initialValue.split('/');
+          final Color selectedBoxColor = const Color(0xFFC7B7A3); // 선택된 박스 색상
+          final Color unselectedBoxColor =
+          const Color(0x4DC7B7A3); // 선택되지 않은 박스 색상 (30% 투명도)
+          final Color selectedTextColor = Colors.white; // 선택된 텍스트 색상
+          final Color unselectedTextColor = const Color(0xFFC7B7A3);
+
+          final Map<String, int> dayOrder = {
+            '월': 1,
+            '화': 2,
+            '수': 3,
+            '목': 4,
+            '금': 5,
+            '토': 6,
+            '일': 7,
+          };
+
+          // 선택된 요일을 정렬하여 반환
+          String getSortedDaysString() {
+            selectedDays.sort((a, b) => dayOrder[a]!.compareTo(dayOrder[b]!));
+            return selectedDays.join('/');
+          }
+
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                children: [
+                  Wrap(
+                    runSpacing: 2.0, // 줄 간 간격
+                    children: ['월', '화', '수', '목', '금', '토', '일']
+                        .map(
+                          (day) => ChoiceChip(
+                        label: Text(
+                          day,
+                          style: TextStyle(
+                            fontSize: 12, // 텍스트 크기 조정
+                            color: selectedDays.contains(day)
+                                ? selectedTextColor
+                                : unselectedTextColor,
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 3.0, // 좌우 여백 줄이기
+                          vertical: 2.0, // 상하 여백 줄이기
+                        ),
+                        selected: selectedDays.contains(day),
+                        selectedColor: selectedBoxColor,
+                        backgroundColor: unselectedBoxColor,
+                        onSelected: (selected) {
+                          setState(() {
+                            if (selected) {
+                              selectedDays.add(day);
+                            } else {
+                              selectedDays.remove(day);
+                            }
+                            controller.text = getSortedDaysString();
+                          });
+                        },
+                        showCheckmark: false,
+                      ),
+                    )
+                        .toList(),
+                  ),
+                ],
+              );
+            },
+          );
+        case '정산 방법':
+          return StatefulBuilder(
+            builder: (BuildContext context, void Function(void Function()) setState) {
+              // 초기값을 기반으로 버튼 활성화 상태 설정
+              int buttonActivated = controller.text == '선불' ? 1 : 0; // 1: 선불, 0: 후불
+
+              const duration = Duration(milliseconds: 100);
+
+              return Column(
+                children: [
+                  Row(
+                    children: [
+                      const Spacer(),
+                      TextButton.icon(
+                        style: const ButtonStyle(
+                          foregroundColor: MaterialStatePropertyAll(
+                            Colors.black87,
+                          ),
+                          overlayColor: MaterialStatePropertyAll(
+                            Colors.transparent,
+                          ),
+                        ),
+                        onPressed: () {
+                          controller.text = '1'; // UI 표시용 값 설정 (선불)
+                          setState(() {
+                            buttonActivated = 1; // 버튼 활성화 상태 업데이트
+                          });
+                          onUpdate('1'); // 변경된 값 전달
+                        },
+                        icon: AnimatedContainer(
+                          duration: duration,
+                          curve: Curves.bounceInOut,
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 3,
+                              color: const Color(0xffffec9e),
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            color: buttonActivated == 1
+                                ? const Color(0xffffec9e)
+                                : Colors.white70,
+                          ),
+                        ),
+                        label: const Text("선불"),
+                      ),
+                      const SizedBox(
+                        width: 40,
+                      ),
+                      TextButton.icon(
+                        style: const ButtonStyle(
+                          foregroundColor: MaterialStatePropertyAll(
+                            Colors.black87,
+                          ),
+                          overlayColor: MaterialStatePropertyAll(
+                            Colors.transparent,
+                          ),
+                        ),
+                        onPressed: () {
+                          controller.text = '0'; // UI 표시용 값 설정 (후불)
+                          setState(() {
+                            buttonActivated = 0; // 버튼 활성화 상태 업데이트
+                          });
+                          onUpdate('0'); // 변경된 값 전달
+                        },
+                        icon: AnimatedContainer(
+                          duration: duration,
+                          curve: Curves.bounceInOut,
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 3,
+                              color: const Color(0xffffec9e),
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            color: buttonActivated == 0
+                                ? const Color(0xffffec9e)
+                                : Colors.white70,
+                          ),
+                        ),
+                        label: const Text("후불"),
+                      ),
+                      const Spacer(),
+                    ],
+                  ),
+                ],
+              );
+            },
+          );
+      // 시급
+        case '시급':
+          return TextField(
+            controller: TextEditingController(
+              text: initialValue.replaceAll('원', ''), // "원" 제거
+            ),
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly], // 숫자만 입력 가능
+            decoration: const InputDecoration(
+              hintText: '새로운 시급을 입력하세요',
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue),
+              ),
+            ),
+          );
+      // 수업 횟수
+        case '수업 횟수':
+          return TextField(
+            controller: TextEditingController(
+              text: initialValue.replaceAll('회', ''), // 초기값 설정
+            ),
+            keyboardType: TextInputType.number, // 숫자 입력 전용 키보드
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly], // 숫자만 입력 가능
+            decoration: const InputDecoration(
+              hintText: '수업 횟수를 입력하세요',
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue),
+              ),
+            ),
+            onChanged: (newValue) {
+              controller.text = newValue; // 변경된 값을 controller에 저장
+            },
+          );
+        default:
+          return const SizedBox();
+      }
+    }
 
     showDialog(
       context: context,
@@ -39,18 +360,7 @@ class EditItemDialog {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      TextField(
-                        controller: controller,
-                        keyboardType: isNumeric
-                            ? TextInputType.number
-                            : TextInputType.text,
-                        inputFormatters: isNumeric
-                            ? [FilteringTextInputFormatter.digitsOnly]
-                            : null,
-                        decoration: const InputDecoration(
-                          hintText: '새로운 값을 입력하세요',
-                        ),
-                      ),
+                      _buildInputField(), // 동적으로 렌더링된 입력 필드
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -102,7 +412,7 @@ class EditItemDialog {
                                     hourlyRate: int.parse(newValue),
                                   );
                                   break;
-                                case '선불/후불':
+                                case '정산 방법':
                                   success = await HttpService().updatePrepay(
                                     classId: classId,
                                     prepay: int.parse(newValue),
@@ -180,7 +490,8 @@ class EditItemDialog {
                     children: [
                       const Text(
                         "수정할 항목을 선택하세요",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16),
                       Column(
@@ -190,18 +501,12 @@ class EditItemDialog {
                             title: Text(item['title']),
                             onTap: () {
                               Navigator.pop(context);
-
-                              // "회당 시간"일 경우 classData['time'] 값을 초기 값으로 사용
-                              final initialValue = item['title'] == '회당 시간'
-                                  ? classData['time'].toString() // 단위 제거
-                                  : item['controller'].text;
-
+                              final initialValue = item['controller'].text;
                               showEditDialog(
                                 context: context,
                                 title: item['title'],
                                 initialValue: initialValue,
                                 onUpdate: item['onUpdate'],
-                                isNumeric: item['title'] == '회당 시간',
                                 classId: classData['classid'],
                               );
                             },
