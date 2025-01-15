@@ -90,7 +90,6 @@ class _KakaoPayQrInputPageState extends State<KakaoPayQrInputPage> {
                               ],
                             ),
                           ),
-                          Gap(8),
                           Text(
                             "카카오페이로 정산을 원하실 경우 링크를 기재해주세요",
                             style: TextStyle(
