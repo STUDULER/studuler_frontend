@@ -577,29 +577,32 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                           ),
                         ),
                       if (!showIncompleteFeedbackList)
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.4,
-                          child: Wrap(
-                            spacing: 16.0,
-                            runSpacing: 16.0,
-                            children: widget.infoItems.map((item) {
-                              return SizedBox(
-                                width:
-                                    (MediaQuery.of(context).size.width * 0.9 -
-                                            48) /
-                                        2,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.08,
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 26.0),
-                                    child: item,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
+                        Column(
+                          children: [
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.02, // 시작 위치를 아래로 내림
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.4,
+                              child: Wrap(
+                                spacing: 16.0,
+                                runSpacing: 16.0,
+                                children: widget.infoItems.map((item) {
+                                  return SizedBox(
+                                    width: (MediaQuery.of(context).size.width * 0.9 - 48) / 2,
+                                    height: MediaQuery.of(context).size.height * 0.08,
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 0.0),
+                                        child: item,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ],
                         ),
                       if (!showIncompleteFeedbackList)
                         const SizedBox(height: 16),
