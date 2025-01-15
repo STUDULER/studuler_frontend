@@ -12,6 +12,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:studuler/common/auth/oauth_user_dto.dart';
 import 'package:studuler/main.dart';
+import 'package:studuler/teacher/model/account_info.dart';
 
 import '../auth/auth_service.dart';
 import '../model/class_settlement.dart';
@@ -1231,8 +1232,36 @@ class HttpService {
     }
   }
 
+  Future<AccountInfo> getAccountInfo() async {
+    final response = await call.get("/home/accountInfo");
+    return AccountInfo(
+      account: response.data[0]['account'],
+      name: response.data[0]['name'],
+      bank: response.data[0]['bank'],
+      kakaopayLink: response.data[0]['kakaopayLink'],
+    );
+  }
+
+  Future<void> updateAccountInfo({
+    required AccountInfo accountInfo,
+  }) async {
+    final response = await call.put(
+      "/home/updateAccountInfo",
+      data: {
+        "name": accountInfo.name,
+        "account": accountInfo.account,
+        "bank": accountInfo.bank,
+        "kakaopayLink": accountInfo.kakaopayLink,
+      },
+    );
+  }
+
   Future<bool> _isTeacher() async {
     return await AuthService().isTeacher();
+  }
+
+  Future<bool> isTeacher() async {
+    return await _isTeacher();
   }
 
   String _jiffyToFormat(Jiffy date) {

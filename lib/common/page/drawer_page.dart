@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../teacher/page/account_management_page.dart';
 import '../auth/auth_service.dart';
 import '../http/http_service.dart';
 import '../section/quit_member_section.dart';
@@ -17,15 +18,30 @@ class _DrawerPageState extends State<DrawerPage> {
   final AuthService _authService = AuthService();
   final HttpService _httpService = HttpService();
   String name = "";
+  Widget accountManagementTile = SizedBox.shrink();
 
   @override
   void initState() {
     super.initState();
-    initName();
+    initBuild();
   }
 
-  Future<void> initName() async {
+  Future<void> initBuild() async {
     name = await _httpService.getName();
+    if (await _httpService.isTeacher()) {
+      accountManagementTile = ListTile(
+        leading: const Icon(Icons.account_balance_outlined),
+        title: const Text("계좌관리"),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AccountManagementPage(),
+            ),
+          );
+        },
+      );
+    }
     setState(() {});
   }
 
@@ -74,6 +90,7 @@ class _DrawerPageState extends State<DrawerPage> {
               print("설정");
             },
           ),
+          accountManagementTile,
           ListTile(
             leading: const Icon(Icons.logout_rounded),
             title: const Text("로그아웃"),
