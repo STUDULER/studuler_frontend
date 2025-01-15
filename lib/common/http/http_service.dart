@@ -647,7 +647,6 @@ class HttpService {
           "studentname": studentName,
         },
       );
-      print("Response Data: ${response.data}");
       return response.statusCode == 200 &&
           response.data['message'] == 'Class information updated successfully.';
     } catch (e) {
@@ -774,6 +773,63 @@ class HttpService {
           response.data['message'] == 'Class information updated successfully.';
     } catch (e) {
       print("Error in updateThemeColor: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updateTeacherNameS({
+    required int classId,
+    required String teacherName,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updateTeacherNameS",
+        data: {
+          "classId": classId,
+          "teachername": teacherName,
+        },
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print("Error in updateTeacherNameS: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updateClassNameS({
+    required int classId,
+    required String className,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updateClassNameS",
+        data: {
+          "classId": classId,
+          "classname": className,
+        },
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print("Error in updateClassNameS: \$e");
+      return false;
+    }
+  }
+
+  Future<bool> updateThemeColorS({
+    required int classId,
+    required int themeColor,
+  }) async {
+    try {
+      final response = await call.put(
+        "/home/updateThemeColorS",
+        data: {
+          "classId": classId,
+          "themecolor": themeColor,
+        },
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print("Error in updateThemeColorS: \$e");
       return false;
     }
   }

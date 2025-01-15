@@ -5,7 +5,7 @@ import '../../common/http/http_service.dart';
 import '../../common/widget/background.dart';
 import '../../common/widget/class_info_card.dart';
 import '../../main.dart';
-import '../../teacher/page/add_class_page.dart';
+import '../widget/class_info_card_student.dart';
 import 'add_class_page_student.dart';
 
 class StudentHomePage extends StatefulWidget {
@@ -100,7 +100,13 @@ Future<List<Map<String, dynamic>>>? futureClassData;
                   return _buildEmptyCard(screenHeight, screenWidth);
                 } else {
                   // 그 외의 에러는 에러 메시지 표시
-                  return Center(child: Text('에러 발생: $errorMessage'));
+                  return const Center(
+                    child: Text(
+                      '오류가 발생했습니다. 다시 시도해주세요.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  );
                 }
               } else if (classData != null && classData!.isNotEmpty) {
                 return Column(
@@ -128,7 +134,7 @@ Future<List<Map<String, dynamic>>>? futureClassData;
                         itemCount: classData!.length,
                         itemBuilder: (BuildContext context, int index) {
                           final classItem = classData![index];
-                          return ClassInfoCard(
+                          return ClassInfoCardStudent(
                             title: classItem['title'],
                             code: classItem['code'],
                             classId: classItem['classId'],
@@ -147,7 +153,6 @@ Future<List<Map<String, dynamic>>>? futureClassData;
                               });
                             },
                             goToPerClassPage: widget.goToPerClassPage,
-                            onDelete: _removeClass,
                           );
                         },
                         loop: false,
@@ -178,7 +183,7 @@ Future<List<Map<String, dynamic>>>? futureClassData;
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const AddClassPage(),
+              builder: (context) => const AddClassPageStudent(),
             ),
           );
           if (result != null && result == true) {
