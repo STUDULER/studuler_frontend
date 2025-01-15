@@ -151,6 +151,7 @@ class LoginPage extends StatelessWidget {
                     id: result.mail,
                     isTeacher: isTeacher,
                     loginMethod: googleLoginMethodIndex,
+                    username: result.username,
                   );
                   if (context.mounted) {
                     if (isAreadyUser) {

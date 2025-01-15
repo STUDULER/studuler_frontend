@@ -236,7 +236,7 @@ class HttpService {
           data: {
             'kakaoId': id,
             'username': username,
-            fcmKey : fcmToken,
+            fcmKey: fcmToken,
           },
         );
       } else if (loginMethod == 2) {
@@ -244,7 +244,8 @@ class HttpService {
           "$path/loginWithGoogle",
           data: {
             'mail': id,
-            fcmKey : fcmToken,
+            'username': username,
+            fcmKey: fcmToken,
           },
         );
       } else {
@@ -264,6 +265,14 @@ class HttpService {
       isTeacher: isTeacher,
     );
     return true;
+  }
+
+  Future<void> quitMember() async {
+    if (await _isTeacher()) {
+      await call.post('/teachers/signout');
+    } else {
+      await call.post('/students/signout');
+    }
   }
 
   Future<bool> createTeacher({
@@ -391,9 +400,12 @@ class HttpService {
     required String classStartDate,
   }) async {
     final userId = await _secureStorage.read(key: "userId");
+    String? fcmToken;
 
-    final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-    final fcmToken = await firebaseMessaging.getToken();
+    if (Platform.isAndroid) {
+      final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+      fcmToken = await firebaseMessaging.getToken();
+    }
 
     final response = await call.post(
       "/home/createClass",
@@ -1202,6 +1214,16 @@ class HttpService {
     return resultMap;
   }
 
+  Future<String> getName() async {
+    if (await _isTeacher()) {
+      final response = await call.get("/teachers/name");
+      return response.data[0]['username'];
+    } else {
+      final response = await call.get("/students/name");
+      return response.data[0]['username'];
+    }
+  }
+
   Future<bool> _isTeacher() async {
     return await AuthService().isTeacher();
   }
@@ -1328,7 +1350,8 @@ class HttpService {
       if (response.statusCode == 200) {
         return response.data['teacherFCM']; // 서버에서 반환된 FCM 토큰
       } else {
-        throw Exception("Failed to fetch Teacher FCM token. Status code: ${response.statusCode}");
+        throw Exception(
+            "Failed to fetch Teacher FCM token. Status code: ${response.statusCode}");
       }
     } catch (e) {
       print("Error in fetchTeacherFCMByClassId: $e");
@@ -1336,12 +1359,15 @@ class HttpService {
     }
   }
 
-  Future<bool> sendNotification(String fcmToken, String title, String body) async {
-    const String serviceAccountKeyPath = "lib/common/auth/studuler.json"; // 서비스 계정 키 경로
+  Future<bool> sendNotification(
+      String fcmToken, String title, String body) async {
+    const String serviceAccountKeyPath =
+        "lib/common/auth/studuler.json"; // 서비스 계정 키 경로
 
     try {
       // 서비스 계정 키 로드
-      final String serviceAccount = await rootBundle.loadString(serviceAccountKeyPath);
+      final String serviceAccount =
+          await rootBundle.loadString(serviceAccountKeyPath);
       final credentials = ServiceAccountCredentials.fromJson(serviceAccount);
 
       // OAuth 2.0 인증 클라이언트 생성
@@ -1370,7 +1396,7 @@ class HttpService {
       final response = await client.post(
         url,
         headers: {
-      'Authorization': 'Bearer ${client.credentials.accessToken.data}',
+          'Authorization': 'Bearer ${client.credentials.accessToken.data}',
           'Content-Type': 'application/json'
         },
         body: jsonEncode(payload),

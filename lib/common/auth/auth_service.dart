@@ -95,6 +95,7 @@ class AuthService {
     String? authServiceTypeString = await _secureStorage.read(
       key: "authServiceType",
     );
+    await _secureStorage.deleteAll();
     if (authServiceTypeString == null) return;
 
     switch (AuthServiceType.values.byName(authServiceTypeString)) {
@@ -104,7 +105,6 @@ class AuthService {
       case AuthServiceType.kakao:
       default:
     }
-    await _secureStorage.deleteAll();
   }
 
   Future<bool> autoLogin() async {
