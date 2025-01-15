@@ -61,8 +61,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
         useMaterial3: true,
       ),
-      // home: const SplashPage(),
-      home: const KaKaoTestPage(),
+      home: const SplashPage(),
     );
   }
 }
@@ -81,7 +80,11 @@ class KaKaoTestPage extends StatelessWidget {
             onTap: () async {
               // final token = await UserApi.instance.loginWithKakaoTalk();
 
-              final token = await UserApi.instance.loginWithNewScopes(["talk_message"]);
+              final token = await UserApi.instance.loginWithNewScopes(
+                [
+                  "talk_message",
+                ],
+              );
 
               print(token.scopes);
 
@@ -103,7 +106,9 @@ class KaKaoTestPage extends StatelessWidget {
               width: 200,
               height: 100,
               color: Colors.amber,
-              child: Center(child: Text("나에게 보내기"),),
+              child: Center(
+                child: Text("나에게 보내기"),
+              ),
             ),
           ),
           Gap(20),
@@ -207,6 +212,36 @@ class KaKaoTestPage extends StatelessWidget {
               height: 100,
               color: Colors.amber,
               child: Center(child: Text("보낼 사람 선택")),
+            ),
+          ),
+          Gap(20),
+          GestureDetector(
+            onTap: () async {
+              bool isKakaoTalkSharingAvailable =
+                  await ShareClient.instance.isKakaoTalkSharingAvailable();
+
+              if (isKakaoTalkSharingAvailable) {
+                try {
+                  final textTemplate = TextTemplate(
+                    text: "sodfn",
+                    link: Link(),
+                    buttonTitle: "복사하기",
+                  );
+
+                  Uri uri = await ShareClient.instance
+                      .shareDefault(template: textTemplate);
+                  await ShareClient.instance.launchKakaoTalk(uri);
+                  print('카카오톡 공유 완료');
+                } catch (error) {
+                  print('카카오톡 공유 실패 $error');
+                }
+              }
+            },
+            child: Container(
+              width: 200,
+              height: 100,
+              color: Colors.amber,
+              child: Center(child: Text("고ㅇ유")),
             ),
           ),
         ],

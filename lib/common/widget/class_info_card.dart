@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import '../util/get_color_by_index.dart';
 import 'edit_item_dialog.dart';
 import '../../teacher/section/incomplete_class_feedback.dart';
@@ -19,10 +20,10 @@ class ClassInfoCard extends StatefulWidget {
   final int period;
   final Color themeColor;
   final Function(
-      String title,
-      List<ClassInfoItem> infoItems,
-      Color themeColor,
-      ) onUpdate;
+    String title,
+    List<ClassInfoItem> infoItems,
+    Color themeColor,
+  ) onUpdate;
   final Function(int, String, int) goToPerClassPage;
   final Function(int classId) onDelete;
 
@@ -83,7 +84,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     sessionCountController =
         TextEditingController(text: widget.infoItems[5].value);
     nextPaymentDate =
-    widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
+        widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
     currentThemeColor = widget.themeColor;
   }
 
@@ -216,7 +217,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                           child: TextButton(
                             style: TextButton.styleFrom(
                               backgroundColor:
-                              const Color(0xFFC7B7A3).withOpacity(0.34),
+                                  const Color(0xFFC7B7A3).withOpacity(0.34),
                               foregroundColor: const Color(0xFFC7B7A3),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
@@ -316,7 +317,34 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                           Row(
                             children: [
                               GestureDetector(
-                                onTap: () {},
+                                onTap: () async {
+                                  if (await ShareClient.instance
+                                      .isKakaoTalkSharingAvailable()) {
+                                    try {
+                                      final textTemplate = TextTemplate(
+                                        text:
+                                            "수업 코드: ${widget.code}\n수업 추가하기 버튼을 누른 다음 나오는 화면에 수업 코드를 입력해서 수업에 참여해주세요",
+                                        link: Link(
+                                          webUrl: Uri.parse(
+                                            'https://developers.kakao.com',
+                                          ),
+                                          mobileWebUrl: Uri.parse(
+                                            'https://developers.kakao.com',
+                                          ),
+                                        ),
+                                        buttonTitle: "수업 추가하기",
+                                      );
+
+                                      Uri uri = await ShareClient.instance
+                                          .shareDefault(template: textTemplate);
+                                      await ShareClient.instance
+                                          .launchKakaoTalk(uri);
+                                      print('카카오톡 공유 완료');
+                                    } catch (error) {
+                                      print('카카오톡 공유 실패 $error');
+                                    }
+                                  }
+                                },
                                 child: const Icon(
                                   Icons.share,
                                   color: Colors.grey,
@@ -410,11 +438,12 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                             runSpacing: 16.0,
                             children: widget.infoItems.map((item) {
                               return SizedBox(
-                                width: (MediaQuery.of(context).size.width * 0.9 -
-                                    48) /
-                                    2,
-                                height: MediaQuery.of(context).size.height *
-                                    0.08,
+                                width:
+                                    (MediaQuery.of(context).size.width * 0.9 -
+                                            48) /
+                                        2,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.08,
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Padding(
