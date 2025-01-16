@@ -297,7 +297,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
       ClassInfoItem(
         icon: Icons.payment,
         title: '정산 방법',
-        value: paymentMethodController.text,
+        value: paymentMethodController.text == '1' ? '선불' : '후불',
       ),
       ClassInfoItem(
         icon: Icons.attach_money,
