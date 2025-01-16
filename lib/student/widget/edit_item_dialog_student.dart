@@ -14,101 +14,106 @@ class EditItemDialogStudent {
   }) {
     TextEditingController controller = TextEditingController(text: initialValue);
 
-    // 다이나믹한 입력 필드 생성 함수
     Widget _buildInputField() {
       switch (title) {
         case '선생님 이름':
         case '수업 이름':
-          return TextField(
-            controller: controller,
-            keyboardType: TextInputType.text,
-            decoration: const InputDecoration(
-              hintText: '새로운 값을 입력하세요',
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.blue),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextField(
+              controller: controller,
+              keyboardType: TextInputType.text,
+              decoration: const InputDecoration(
+                hintText: '새로운 값을 입력하세요',
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
               ),
             ),
           );
         case '테마 색상':
           final List<Color> themeColors = [
-            const Color(0xFFC96868), // Red shade
-            const Color(0xFFFFBB70), // Peach shade
-            const Color(0xFFB5C18E), // Green shade
-            const Color(0xFFCFEFFC), // Light Blue shade
-            const Color(0xFF5A72A0), // Blue shade
-            const Color(0xFFDDBCFF), // Lavender shade
-            const Color(0xFFFCCFCF), // Pink shade
-            const Color(0xFFD9D9D9), // Light Gray shade
-            const Color(0xFF545454), // Dark Gray shade
-            const Color(0xFFB28F65), // Brown shade
+            const Color(0xFFC96868),
+            const Color(0xFFFFBB70),
+            const Color(0xFFB5C18E),
+            const Color(0xFFCFEFFC),
+            const Color(0xFF5A72A0),
+            const Color(0xFFDDBCFF),
+            const Color(0xFFFCCFCF),
+            const Color(0xFFD9D9D9),
+            const Color(0xFF545454),
+            const Color(0xFFB28F65),
           ];
 
           return StatefulBuilder(
             builder: (context, setState) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: List.generate(
-                            5,
-                                (index) => GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  controller.text = "$index"; // 선택된 색상 인덱스를 저장
-                                });
-                              },
-                              child: CircleAvatar(
-                                backgroundColor: themeColors[index],
-                                radius: 15,
-                                child: controller.text == "$index"
-                                    ? const Icon(
-                                  Icons.check,
-                                  color: Colors.white, // 체크 아이콘 색상을 흰색으로 설정
-                                  size: 16,
-                                )
-                                    : null,
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: List.generate(
+                              5,
+                                  (index) => GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    controller.text = "$index";
+                                  });
+                                },
+                                child: CircleAvatar(
+                                  backgroundColor: themeColors[index],
+                                  radius: 15,
+                                  child: controller.text == "$index"
+                                      ? const Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 16,
+                                  )
+                                      : null,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: List.generate(
-                            5,
-                                (index) => GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  controller.text = "${index + 5}"; // 두 번째 줄 색상
-                                });
-                              },
-                              child: CircleAvatar(
-                                backgroundColor: themeColors[index + 5],
-                                radius: 15,
-                                child: controller.text == "${index + 5}"
-                                    ? const Icon(
-                                  Icons.check,
-                                  color: Colors.white, // 체크 아이콘 색상을 흰색으로 설정
-                                  size: 16,
-                                )
-                                    : null,
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: List.generate(
+                              5,
+                                  (index) => GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    controller.text = "${index + 5}";
+                                  });
+                                },
+                                child: CircleAvatar(
+                                  backgroundColor: themeColors[index + 5],
+                                  radius: 15,
+                                  child: controller.text == "${index + 5}"
+                                      ? const Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 16,
+                                  )
+                                      : null,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             },
           );
@@ -122,42 +127,69 @@ class EditItemDialogStudent {
       builder: (context) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Container(
-            color: Colors.white,
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 22),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
                         '$title 수정',
                         style: const TextStyle(
-                          fontSize: 18,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 16),
-                      _buildInputField(), // 동적으로 렌더링된 입력 필드
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
+                    ),
+                    const SizedBox(height: 16),
+                    _buildInputField(),
+                    const SizedBox(height: 48),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        SizedBox(
+                          width: 60,
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor:
+                              const Color(0xFFC7B7A3).withOpacity(0.34),
+                              foregroundColor: const Color(0xFFC7B7A3),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
                             onPressed: () => Navigator.pop(context),
-                            child: const Text('취소'),
+                            child: const Text("취소"),
                           ),
-                          TextButton(
+                        ),
+                        const SizedBox(width: 10),
+                        SizedBox(
+                          width: 60,
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: const Color(0xFFC7B7A3),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
                             onPressed: () async {
                               String newValue = controller.text;
-                              print('새로운 값: $newValue'); // 디버그 로그 추가
+                              print('새로운 값: $newValue');
                               bool success = false;
 
-                              // 엔드포인트 호출
                               switch (title) {
                                 case '선생님 이름':
                                   success = await HttpService().updateTeacherNameS(
@@ -180,12 +212,10 @@ class EditItemDialogStudent {
                               }
 
                               if (success) {
-                                onUpdate(newValue);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text("수정이 완료되었습니다.")),
                                 );
                               } else {
-                                print('수업 수정 실패: $title with value: $newValue'); // 실패 로그
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text("수정에 실패했습니다."),
@@ -196,19 +226,20 @@ class EditItemDialogStudent {
                             },
                             child: const Text('저장'),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 Positioned(
-                  top: 8,
                   right: 8,
+                  top: 8,
                   child: GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: const Icon(
                       Icons.close,
-                      color: Colors.grey,
+                      size: 20,
+                      color: Colors.black54,
                     ),
                   ),
                 ),
@@ -222,7 +253,7 @@ class EditItemDialogStudent {
 
   static void showSelectItemDialog({
     required BuildContext context,
-    required Map<String, dynamic> classData, // 클래스 데이터 전달
+    required Map<String, dynamic> classData,
     required List<Map<String, dynamic>> items,
   }) {
     showDialog(
@@ -230,25 +261,35 @@ class EditItemDialogStudent {
       builder: (context) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0), // 모서리 살짝 둥글게
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Container(
-            color: Colors.white,
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 22),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: const Text(
                         "수정할 항목을 선택하세요",
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      const SizedBox(height: 16),
-                      Column(
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: items.map((item) {
                           return ListTile(
@@ -267,17 +308,18 @@ class EditItemDialogStudent {
                           );
                         }).toList(),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
                 Positioned(
-                  top: 8,
                   right: 8,
+                  top: 8,
                   child: GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: const Icon(
                       Icons.close,
-                      color: Colors.grey,
+                      size: 20,
+                      color: Colors.black54,
                     ),
                   ),
                 ),

@@ -22,10 +22,8 @@ class _AddClassPageStudentState extends State<AddClassPageStudent> {
   void initState() {
     super.initState();
 
-    // 초기 텍스트 설정
     classCodeController.text = "수업 코드를 입력해주세요";
 
-    // 포커스 상태 변화에 따라 기본 텍스트 처리
     classCodeFocusNode.addListener(() {
       if (classCodeFocusNode.hasFocus &&
           classCodeController.text == "수업 코드를 입력해주세요") {
@@ -40,7 +38,6 @@ class _AddClassPageStudentState extends State<AddClassPageStudent> {
       }
     });
 
-    // 입력된 글자 수 추적
     classCodeController.addListener(() {
       if (classCodeController.text != "수업 코드를 입력해주세요") {
         setState(() {
@@ -57,38 +54,136 @@ class _AddClassPageStudentState extends State<AddClassPageStudent> {
     super.dispose();
   }
 
-  void joinClass() async {
+  Future<void> joinClass() async {
     final String classCode = classCodeController.text.trim();
 
     if (classCode.isEmpty || classCode == "수업 코드를 입력해주세요") {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("유효한 수업 코드를 입력해주세요."),
-        ),
+      await _showPopup(
+        title: "수업 추가 오류",
+        message: "유효한 수업 코드를 입력해주세요.",
+        isError: true,
       );
       return;
     }
 
     final String? responseMessage = await httpService.joinClass(classCode: classCode);
+    print(responseMessage);
 
     if (responseMessage != null && responseMessage.contains("Successfully")) {
-      // 성공 메시지
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("수업에 성공적으로 참여했습니다!"),
-          backgroundColor: Colors.green,
-        ),
+      await _showPopup(
+        title: "$classCode",
+        message: "수업에 성공적으로 참여했습니다!",
+        isError: false,
+        onConfirm: () {
+          if (context.mounted) Navigator.pop(context, true);
+        },
       );
-      if (context.mounted) Navigator.pop(context, true); // 성공 시 true 반환
     } else {
-      // 실패 메시지
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(responseMessage ?? "수업 참여에 실패했습니다."),
-          backgroundColor: Colors.red,
-        ),
+      await _showPopup(
+        title: "수업 추가 오류",
+        message: "수업 코드를 다시 확인해주세요.",
+        isError: true,
       );
     }
+  }
+
+  Future<void> _showPopup({
+    required String title,
+    required String message,
+    bool isError = false,
+    VoidCallback? onConfirm,
+  }) async {
+    await showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Stack(
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 22),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    message,
+                    style: const TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 48),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      SizedBox(
+                        width: 60,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: const Color(0xFFC7B7A3).withOpacity(0.34),
+                            foregroundColor: const Color(0xFFC7B7A3),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("취소"),
+                        ),
+                      ),
+                      if (!isError) const SizedBox(width: 10),
+                      if (!isError)
+                        SizedBox(
+                          width: 60,
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: const Color(0xFFC7B7A3),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              if (onConfirm != null) onConfirm();
+                            },
+                            child: const Text("확인"),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+              Positioned(
+                right: 8,
+                top: 8,
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: const Icon(
+                    Icons.close,
+                    size: 20,
+                    color: Colors.black54,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -106,7 +201,7 @@ class _AddClassPageStudentState extends State<AddClassPageStudent> {
                 const SizedBox(height: 100),
                 Expanded(
                   child: Container(
-                    width: MediaQuery.of(context).size.width, // 화면 너비 설정
+                    width: MediaQuery.of(context).size.width,
                     decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.vertical(
@@ -119,7 +214,7 @@ class _AddClassPageStudentState extends State<AddClassPageStudent> {
                         horizontal: 16,
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽 정렬
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
                             "수업 추가하기",
@@ -136,22 +231,19 @@ class _AddClassPageStudentState extends State<AddClassPageStudent> {
                               color: Colors.black,
                             ),
                           ),
-                          const SizedBox(height: 6), // "수업 코드"와 TextField 사이 간격 추가
+                          const SizedBox(height: 6),
                           Align(
-                            alignment: Alignment.center, // TextField를 화면 가운데로 정렬
+                            alignment: Alignment.center,
                             child: Container(
-                              width: MediaQuery.of(context).size.width * 0.85, // 가로 길이 조정
+                              width: MediaQuery.of(context).size.width * 0.85,
                               child: TextField(
                                 controller: classCodeController,
                                 focusNode: classCodeFocusNode,
-                                maxLength: 8, // 최대 글자 수 제한
-                                textAlign: TextAlign.left, // 입력 텍스트는 왼쪽 정렬
+                                maxLength: 8,
+                                textAlign: TextAlign.left,
                                 decoration: InputDecoration(
-                                  border: const UnderlineInputBorder(), // 밑줄 추가
-                                  counterText: classCodeController.text ==
-                                      "수업 코드를 입력해주세요"
-                                      ? "$currentTextLength/8"
-                                      : "$currentTextLength/8",
+                                  border: const UnderlineInputBorder(),
+                                  counterText: "$currentTextLength/8",
                                   counterStyle: const TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey,
@@ -170,9 +262,9 @@ class _AddClassPageStudentState extends State<AddClassPageStudent> {
                   padding: const EdgeInsets.all(16),
                   color: Colors.white,
                   child: GestureDectectorHidingKeyboard(
-                    onTap: joinClass, // 버튼 클릭 시 joinClass 함수 실행
+                    onTap: joinClass,
                     child: Container(
-                      width: double.infinity, // 버튼 너비를 전체로 설정
+                      width: double.infinity,
                       height: 48,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
