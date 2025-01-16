@@ -12,45 +12,54 @@ class EditItemDialog {
     required int classId,
     bool isNumeric = false,
   }) {
-    TextEditingController controller = TextEditingController(text: initialValue);
+    TextEditingController controller = TextEditingController(
+        text: initialValue);
 
     // 다이나믹한 입력 필드 생성 함수
     Widget _buildInputField() {
       switch (title) {
         case '학생 이름':
         case '수업 이름':
-          return TextField(
-            controller: controller,
-            keyboardType: TextInputType.text,
-            decoration: const InputDecoration(
-              hintText: '새로운 값을 입력하세요',
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.blue),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextField(
+              controller: controller,
+              keyboardType: TextInputType.text,
+              decoration: const InputDecoration(
+                hintText: '새로운 값을 입력하세요',
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
               ),
             ),
           );
         case '회당 시간':
-          return TextField(
-            controller: TextEditingController(
-              text: initialValue.replaceAll('시간', ''), // '시간' 제거
-            ),
-            keyboardType: TextInputType.number, // 숫자 입력 전용 키보드
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly], // 숫자만 입력 가능
-            decoration: const InputDecoration(
-              hintText: '회당 시간을 입력하세요',
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextField(
+              controller: TextEditingController(
+                text: initialValue.replaceAll('시간', ''), // '시간' 제거
               ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.blue),
+              keyboardType: TextInputType.number,
+              // 숫자 입력 전용 키보드
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              // 숫자만 입력 가능
+              decoration: const InputDecoration(
+                hintText: '회당 시간을 입력하세요',
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
               ),
+              onChanged: (newValue) {
+                controller.text = newValue; // 변경된 값을 controller에 저장
+              },
             ),
-            onChanged: (newValue) {
-              controller.text = newValue; // 변경된 값을 controller에 저장
-            },
           );
         case '테마 색상':
           final List<Color> themeColors = [
@@ -80,24 +89,26 @@ class EditItemDialog {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: List.generate(
                             5,
-                                (index) => GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  controller.text = "$index"; // 선택된 색상 인덱스를 저장
-                                });
-                              },
-                              child: CircleAvatar(
-                                backgroundColor: themeColors[index],
-                                radius: 15,
-                                child: controller.text == "$index"
-                                    ? const Icon(
-                                  Icons.check,
-                                  color: Colors.white, // 체크 아이콘 색상을 흰색으로 설정
-                                  size: 16,
-                                )
-                                    : null,
-                              ),
-                            ),
+                                (index) =>
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      controller.text =
+                                      "$index"; // 선택된 색상 인덱스를 저장
+                                    });
+                                  },
+                                  child: CircleAvatar(
+                                    backgroundColor: themeColors[index],
+                                    radius: 15,
+                                    child: controller.text == "$index"
+                                        ? const Icon(
+                                      Icons.check,
+                                      color: Colors.white, // 체크 아이콘 색상을 흰색으로 설정
+                                      size: 16,
+                                    )
+                                        : null,
+                                  ),
+                                ),
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -105,24 +116,26 @@ class EditItemDialog {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: List.generate(
                             5,
-                                (index) => GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  controller.text = "${index + 5}"; // 두 번째 줄 색상
-                                });
-                              },
-                              child: CircleAvatar(
-                                backgroundColor: themeColors[index + 5],
-                                radius: 15,
-                                child: controller.text == "${index + 5}"
-                                    ? const Icon(
-                                  Icons.check,
-                                  color: Colors.white, // 체크 아이콘 색상을 흰색으로 설정
-                                  size: 16,
-                                )
-                                    : null,
-                              ),
-                            ),
+                                (index) =>
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      controller.text =
+                                      "${index + 5}"; // 두 번째 줄 색상
+                                    });
+                                  },
+                                  child: CircleAvatar(
+                                    backgroundColor: themeColors[index + 5],
+                                    radius: 15,
+                                    child: controller.text == "${index + 5}"
+                                        ? const Icon(
+                                      Icons.check,
+                                      color: Colors.white, // 체크 아이콘 색상을 흰색으로 설정
+                                      size: 16,
+                                    )
+                                        : null,
+                                  ),
+                                ),
                           ),
                         ),
                       ],
@@ -164,35 +177,36 @@ class EditItemDialog {
                     runSpacing: 2.0, // 줄 간 간격
                     children: ['월', '화', '수', '목', '금', '토', '일']
                         .map(
-                          (day) => ChoiceChip(
-                        label: Text(
-                          day,
-                          style: TextStyle(
-                            fontSize: 12, // 텍스트 크기 조정
-                            color: selectedDays.contains(day)
-                                ? selectedTextColor
-                                : unselectedTextColor,
+                          (day) =>
+                          ChoiceChip(
+                            label: Text(
+                              day,
+                              style: TextStyle(
+                                fontSize: 12, // 텍스트 크기 조정
+                                color: selectedDays.contains(day)
+                                    ? selectedTextColor
+                                    : unselectedTextColor,
+                              ),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 3.0, // 좌우 여백 줄이기
+                              vertical: 2.0, // 상하 여백 줄이기
+                            ),
+                            selected: selectedDays.contains(day),
+                            selectedColor: selectedBoxColor,
+                            backgroundColor: unselectedBoxColor,
+                            onSelected: (selected) {
+                              setState(() {
+                                if (selected) {
+                                  selectedDays.add(day);
+                                } else {
+                                  selectedDays.remove(day);
+                                }
+                                controller.text = getSortedDaysString();
+                              });
+                            },
+                            showCheckmark: false,
                           ),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 3.0, // 좌우 여백 줄이기
-                          vertical: 2.0, // 상하 여백 줄이기
-                        ),
-                        selected: selectedDays.contains(day),
-                        selectedColor: selectedBoxColor,
-                        backgroundColor: unselectedBoxColor,
-                        onSelected: (selected) {
-                          setState(() {
-                            if (selected) {
-                              selectedDays.add(day);
-                            } else {
-                              selectedDays.remove(day);
-                            }
-                            controller.text = getSortedDaysString();
-                          });
-                        },
-                        showCheckmark: false,
-                      ),
                     )
                         .toList(),
                   ),
@@ -202,9 +216,12 @@ class EditItemDialog {
           );
         case '정산 방법':
           return StatefulBuilder(
-            builder: (BuildContext context, void Function(void Function()) setState) {
+            builder: (BuildContext context,
+                void Function(void Function()) setState) {
               // 초기값을 기반으로 버튼 활성화 상태 설정
-              int buttonActivated = controller.text == '선불' ? 1 : 0; // 1: 선불, 0: 후불
+              int buttonActivated = controller.text == '선불'
+                  ? 1
+                  : 0; // 1: 선불, 0: 후불
 
               const duration = Duration(milliseconds: 100);
 
@@ -293,42 +310,51 @@ class EditItemDialog {
           );
       // 시급
         case '시급':
-          return TextField(
-            controller: TextEditingController(
-              text: initialValue.replaceAll('원', ''), // "원" 제거
-            ),
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly], // 숫자만 입력 가능
-            decoration: const InputDecoration(
-              hintText: '새로운 시급을 입력하세요',
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextField(
+              controller: TextEditingController(
+                text: initialValue.replaceAll('원', ''), // "원" 제거
               ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.blue),
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              // 숫자만 입력 가능
+              decoration: const InputDecoration(
+                hintText: '새로운 시급을 입력하세요',
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
               ),
             ),
           );
       // 수업 횟수
         case '수업 횟수':
-          return TextField(
-            controller: TextEditingController(
-              text: initialValue.replaceAll('회', ''), // 초기값 설정
-            ),
-            keyboardType: TextInputType.number, // 숫자 입력 전용 키보드
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly], // 숫자만 입력 가능
-            decoration: const InputDecoration(
-              hintText: '수업 횟수를 입력하세요',
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextField(
+              controller: TextEditingController(
+                text: initialValue.replaceAll('회', ''), // 초기값 설정
               ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.blue),
+              keyboardType: TextInputType.number,
+              // 숫자 입력 전용 키보드
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              // 숫자만 입력 가능
+              decoration: const InputDecoration(
+                hintText: '수업 횟수를 입력하세요',
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
               ),
+              onChanged: (newValue) {
+                controller.text = newValue; // 변경된 값을 controller에 저장
+              },
             ),
-            onChanged: (newValue) {
-              controller.text = newValue; // 변경된 값을 controller에 저장
-            },
           );
         default:
           return const SizedBox();
@@ -340,36 +366,65 @@ class EditItemDialog {
       builder: (context) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
+            borderRadius: BorderRadius.circular(12), // 둥근 모서리 적용
           ),
           child: Container(
-            color: Colors.white,
+            padding: const EdgeInsets.all(16.0), // 여백 추가
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12), // 둥근 모서리
+            ),
             child: Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 22),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
                         '$title 수정',
                         style: const TextStyle(
-                          fontSize: 18,
+                          fontSize: 24, // 제목 폰트 크기 증가
                           fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center, // 가운데 정렬
                       ),
-                      const SizedBox(height: 16),
-                      _buildInputField(), // 동적으로 렌더링된 입력 필드
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
+                    ),
+                    const SizedBox(height: 16),
+                    _buildInputField(), // 기존 입력 필드 유지
+                    const SizedBox(height: 48),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        SizedBox(
+                          width: 60,
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: const Color(0xFFC7B7A3)
+                                  .withOpacity(0.34), // 비활성화 색상
+                              foregroundColor: const Color(0xFFC7B7A3),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6), // 둥근 버튼
+                              ),
+                            ),
                             onPressed: () => Navigator.pop(context),
-                            child: const Text('취소'),
+                            child: const Text("취소"),
                           ),
-                          TextButton(
+                        ),
+                        const SizedBox(width: 10),
+                        SizedBox(
+                          width: 60,
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: const Color(0xFFC7B7A3),
+                              // 활성화 색상
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6), // 둥근 버튼
+                              ),
+                            ),
                             onPressed: () async {
                               String newValue = controller.text;
                               bool success = false;
@@ -442,19 +497,20 @@ class EditItemDialog {
                             },
                             child: const Text('저장'),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 Positioned(
-                  top: 8,
                   right: 8,
+                  top: 8,
                   child: GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: const Icon(
                       Icons.close,
-                      color: Colors.grey,
+                      size: 20, // 아이콘 크기 조정
+                      color: Colors.black54,
                     ),
                   ),
                 ),
@@ -476,29 +532,46 @@ class EditItemDialog {
       builder: (context) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0), // 모서리 살짝 둥글게
+            borderRadius: BorderRadius.circular(12), // 모서리 둥글게 적용
           ),
           child: Container(
-            color: Colors.white,
+            padding: const EdgeInsets.all(16.0), // 내부 여백 추가
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12), // 둥근 모서리
+            ),
             child: Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 22),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: const Text(
                         "수정할 항목을 선택하세요",
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.start,
                       ),
-                      const SizedBox(height: 16),
-                      Column(
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: items.map((item) {
                           return ListTile(
-                            title: Text(item['title']),
+                            title: Text(
+                              item['title'],
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                             onTap: () {
                               Navigator.pop(context);
                               final initialValue = item['controller'].text;
@@ -513,8 +586,8 @@ class EditItemDialog {
                           );
                         }).toList(),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
                 Positioned(
                   top: 8,
@@ -523,7 +596,8 @@ class EditItemDialog {
                     onTap: () => Navigator.pop(context),
                     child: const Icon(
                       Icons.close,
-                      color: Colors.grey,
+                      size: 20, // 닫기 아이콘 크기 조정
+                      color: Colors.black54,
                     ),
                   ),
                 ),
