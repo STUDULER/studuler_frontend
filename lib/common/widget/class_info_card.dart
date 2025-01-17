@@ -577,7 +577,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 50),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.06),
                       GestureDetector(
                         onTap: () {
                           widget.goToPerClassPage(
@@ -595,7 +595,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.01),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -606,7 +606,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                               color: Colors.grey[500],
                             ),
                           ),
-                          const SizedBox(width: 4),
+                          SizedBox(width: MediaQuery.of(context).size.width * 0.01),
                           GestureDetector(
                             onTap: _copyCodeToClipboard,
                             child: const Icon(
@@ -641,14 +641,14 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                               height: MediaQuery.of(context).size.height * 0.02, // 시작 위치를 아래로 내림
                             ),
                             SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.4,
+                              height: MediaQuery.of(context).size.height * 0.37,
                               child: Wrap(
                                 spacing: 16.0,
                                 runSpacing: 16.0,
                                 children: widget.infoItems.map((item) {
                                   return SizedBox(
                                     width: (MediaQuery.of(context).size.width * 0.9 - 48) / 2,
-                                    height: MediaQuery.of(context).size.height * 0.08,
+                                    height: MediaQuery.of(context).size.height * 0.07,
                                     child: Align(
                                       alignment: Alignment.centerLeft,
                                       child: Padding(
@@ -660,24 +660,26 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                                 }).toList(),
                               ),
                             ),
-                          ],
-                        ),
-                      if (!showIncompleteFeedbackList)
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              showIncompleteFeedbackList = true;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFC7B7A3),
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size.fromHeight(40),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                            ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  showIncompleteFeedbackList = true;
+                                });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFC7B7A3),
+                                foregroundColor: Colors.white,
+                                minimumSize: Size(
+                                  MediaQuery.of(context).size.width * 0.8, // 버튼 가로 크기 조정
+                                  MediaQuery.of(context).size.height * 0.05, // 버튼 높이를 화면 비율로 설정
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: const Text('미작성 피드백 바로가기'),
                             ),
-                          ),
-                          child: const Text('미작성 피드백 바로가기'),
+                          ],
                         ),
                     ],
                   ),
