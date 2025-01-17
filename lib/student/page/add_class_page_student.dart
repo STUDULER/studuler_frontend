@@ -67,11 +67,9 @@ class _AddClassPageStudentState extends State<AddClassPageStudent> {
     }
 
     final String? responseMessage = await httpService.joinClass(classCode: classCode);
-    print(responseMessage);
-
-    if (responseMessage != null && responseMessage.contains("Successfully")) {
+    if (responseMessage != null) {
       await _showPopup(
-        title: "$classCode",
+        title: responseMessage,
         message: "수업에 성공적으로 참여했습니다!",
         isError: false,
         onConfirm: () {

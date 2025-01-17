@@ -1449,7 +1449,7 @@ class HttpService {
 
       // 응답 성공 시 메시지 반환
       if (response.statusCode == 200) {
-        return response.data['message'] ?? "Successfully joined the class.";
+        return response.data['classname'] ?? "Successfully joined the class.";
       } else {
         // 상태 코드가 200이 아닐 경우 에러 메시지 반환
         return "Failed to join the class. Status code: ${response.statusCode}";
