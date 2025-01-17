@@ -36,6 +36,16 @@ class _AddClassPageState extends State<AddClassPage> {
   TextEditingController howToPayController = TextEditingController();
   TextEditingController themeColorController = TextEditingController();
 
+  bool showClassNameEmptyError = false;
+  bool showStudentNameEmptyError = false;
+  bool showNumOfClassesToPayEmptyError = false;
+  bool showClassPriceEmptyError = false;
+  bool showClassScheduleEmptyError = false;
+  bool showClassStartDateEmptyError = false;
+  bool showHoursPerClassEmptyError = false;
+  bool showHowToPayEmptyError = false;
+  bool showThemeColorEmptyError = false;
+
   @override
   void dispose() {
     classNameController.dispose();
@@ -66,7 +76,8 @@ class _AddClassPageState extends State<AddClassPage> {
       "일": 7,
     };
 
-    final scheduleDays = schedule.split("/").map((day) => daysOfWeek[day]!).toList();
+    final scheduleDays =
+        schedule.split("/").map((day) => daysOfWeek[day]!).toList();
     int classCount = 0;
     Jiffy currentDate = start.clone();
 
@@ -85,6 +96,15 @@ class _AddClassPageState extends State<AddClassPage> {
     var beforeButton = GestureDectectorHidingKeyboard(
       onTap: () {
         setState(() {
+          showClassNameEmptyError = false;
+          showStudentNameEmptyError = false;
+          showNumOfClassesToPayEmptyError = false;
+          showClassPriceEmptyError = false;
+          showClassScheduleEmptyError = false;
+          showClassStartDateEmptyError = false;
+          showHoursPerClassEmptyError = false;
+          showHowToPayEmptyError = false;
+          showThemeColorEmptyError = false;
           currIndex--;
         });
       },
@@ -108,6 +128,89 @@ class _AddClassPageState extends State<AddClassPage> {
 
     var nextButton = GestureDectectorHidingKeyboard(
       onTap: () {
+        setState(() {
+          showClassNameEmptyError = false;
+          showStudentNameEmptyError = false;
+          showNumOfClassesToPayEmptyError = false;
+          showClassPriceEmptyError = false;
+          showClassScheduleEmptyError = false;
+          showClassStartDateEmptyError = false;
+          showHoursPerClassEmptyError = false;
+          showHowToPayEmptyError = false;
+          showThemeColorEmptyError = false;
+        });
+        if (currIndex == 0) {
+          if (classNameController.text.isEmpty) {
+            setState(() {
+              showClassNameEmptyError = true;
+            });
+            return;
+          }
+        }
+        if (currIndex == 1) {
+          if (studentNameController.text.isEmpty) {
+            setState(() {
+              showStudentNameEmptyError = true;
+            });
+            return;
+          }
+        }
+        if (currIndex == 2) {
+          if (numOfClassesToPayController.text.isEmpty) {
+            setState(() {
+              showNumOfClassesToPayEmptyError = true;
+            });
+            return;
+          }
+        }
+        if (currIndex == 3) {
+          if (classPriceController.text.isEmpty) {
+            setState(() {
+              showClassPriceEmptyError = true;
+            });
+            return;
+          }
+        }
+        if (currIndex == 4) {
+          if (classScheduleController.text.isEmpty) {
+            setState(() {
+              showClassScheduleEmptyError = true;
+            });
+            return;
+          }
+        }
+        if (currIndex == 5) {
+          if (classStartDateController.text.isEmpty) {
+            setState(() {
+              showClassStartDateEmptyError = true;
+            });
+            return;
+          }
+        }
+        if (currIndex == 6) {
+          if (hoursPerClassController.text.isEmpty) {
+            setState(() {
+              showHoursPerClassEmptyError = true;
+            });
+            return;
+          }
+        }
+        if (currIndex == 7) {
+          if (howToPayController.text.isEmpty) {
+            setState(() {
+              showHowToPayEmptyError = true;
+            });
+            return;
+          }
+        }
+        if (currIndex == 8) {
+          if (themeColorController.text.isEmpty) {
+            setState(() {
+              showThemeColorEmptyError = true;
+            });
+            return;
+          }
+        }
         setState(() {
           currIndex++;
         });
@@ -333,6 +436,7 @@ class _AddClassPageState extends State<AddClassPage> {
                               classNameController: classNameController,
                               nextButton: nextButton,
                             ),
+                            showErrorText: showClassNameEmptyError,
                           ),
                           AddClassTile(
                             currIdx: currIndex,
@@ -346,6 +450,7 @@ class _AddClassPageState extends State<AddClassPage> {
                               beforeButton: beforeButton,
                               nextButton: nextButton,
                             ),
+                            showErrorText: showStudentNameEmptyError,
                           ),
                           AddClassTile(
                             currIdx: currIndex,
@@ -359,6 +464,7 @@ class _AddClassPageState extends State<AddClassPage> {
                               beforeButton: beforeButton,
                               nextButton: nextButton,
                             ),
+                            showErrorText: showNumOfClassesToPayEmptyError,
                           ),
                           AddClassTile(
                             currIdx: currIndex,
@@ -372,6 +478,7 @@ class _AddClassPageState extends State<AddClassPage> {
                               beforeButton: beforeButton,
                               nextButton: nextButton,
                             ),
+                            showErrorText: showClassPriceEmptyError,
                           ),
                           AddClassTile(
                             currIdx: currIndex,
@@ -385,6 +492,7 @@ class _AddClassPageState extends State<AddClassPage> {
                               beforeButton: beforeButton,
                               nextButton: nextButton,
                             ),
+                            showErrorText: showClassScheduleEmptyError,
                           ),
                           AddClassTile(
                             currIdx: currIndex,
@@ -395,10 +503,11 @@ class _AddClassPageState extends State<AddClassPage> {
                               currIndex: currIndex,
                               positionIndex: 5,
                               classStartDateController:
-                              classStartDateController,
+                                  classStartDateController,
                               beforeButton: beforeButton,
                               nextButton: nextButton,
                             ),
+                            showErrorText: showClassStartDateEmptyError,
                           ),
                           AddClassTile(
                             currIdx: currIndex,
@@ -412,6 +521,7 @@ class _AddClassPageState extends State<AddClassPage> {
                               beforeButton: beforeButton,
                               nextButton: nextButton,
                             ),
+                            showErrorText: showHoursPerClassEmptyError,
                           ),
                           AddClassTile(
                             currIdx: currIndex,
@@ -425,6 +535,7 @@ class _AddClassPageState extends State<AddClassPage> {
                               beforeButton: beforeButton,
                               nextButton: nextButton,
                             ),
+                            showErrorText: showHowToPayEmptyError,
                           ),
                           AddClassTile(
                             currIdx: currIndex,
@@ -438,6 +549,7 @@ class _AddClassPageState extends State<AddClassPage> {
                               beforeButton: beforeButton,
                               nextButton: submitButton,
                             ),
+                            showErrorText: showThemeColorEmptyError,
                           ),
                         ],
                       ),
