@@ -957,7 +957,7 @@ class HttpService {
     required String memo,
     required int rating,
   }) async {
-    int homeworkParam = 0;
+    int? homeworkParam;
     switch (homework) {
       case "미완료":
         homeworkParam = 0;
@@ -966,8 +966,9 @@ class HttpService {
         homeworkParam = 1;
         break;
       case "완료":
-      default:
         homeworkParam = 2;
+        break;
+      default:
         break;
     }
 
@@ -976,10 +977,10 @@ class HttpService {
       data: {
         "classid": classId,
         "date": _jiffyToFormat(Jiffy.parseFromDateTime(date)),
-        "workdone": did,
-        "attitude": attitude,
+        "workdone": did.isEmpty ? null : did,
+        "attitude": attitude.isEmpty ? null : attitude,
         "homework": homeworkParam,
-        "memo": memo,
+        "memo": memo.isEmpty ? null : memo,
         "rate": rating,
       },
     );
@@ -995,7 +996,7 @@ class HttpService {
     required String memo,
     required int rating,
   }) async {
-    int homeworkParam = 0;
+    int? homeworkParam;
     switch (homework) {
       case "미완료":
         homeworkParam = 0;
@@ -1004,8 +1005,9 @@ class HttpService {
         homeworkParam = 1;
         break;
       case "완료":
-      default:
         homeworkParam = 2;
+        break;
+      default:
         break;
     }
 
@@ -1013,10 +1015,10 @@ class HttpService {
       "/each/editFeedback",
       data: {
         "feedbackId": feedbackId,
-        "workdone": did,
-        "attitude": attitude,
+        "workdone": did.isEmpty ? null : did,
+        "attitude": attitude.isEmpty ? null : attitude,
         "homework": homeworkParam,
-        "memo": memo,
+        "memo": memo.isEmpty ? null : memo,
         "rate": rating,
       },
     );
@@ -1126,10 +1128,10 @@ class HttpService {
     return ClassFeedback(
       feedbackId: feedback['feedbackid'],
       date: Jiffy.parse(feedback['date']).dateTime,
-      workdone: feedback['workdone'],
-      attitude: feedback['attitude'],
+      workdone: feedback['workdone'] ?? "",
+      attitude: feedback['attitude'] ?? "",
       homework: feedback['homework'],
-      memo: feedback['memo'],
+      memo: feedback['memo'] ?? "",
       rate: int.parse(feedback['rate'].toString()),
     );
   }

@@ -41,9 +41,9 @@ class _FeedbackScrollableSheetSectionState
 
   final welldoneController = TextEditingController();
   final attitudeController = TextEditingController();
-  String homework = "";
+  final ValueNotifier<String> homework = ValueNotifier<String>("");
   final memoController = TextEditingController();
-  int rating = 5;
+  int rating = 0;
 
   String _dateToString(DateTime date) {
     String weekday = "";
@@ -79,9 +79,19 @@ class _FeedbackScrollableSheetSectionState
     widget.classFeedback.addListener(() {
       welldoneController.text = widget.classFeedback.value?.workdone ?? "";
       attitudeController.text = widget.classFeedback.value?.attitude ?? "";
-      homework = _homeworkMapper(widget.classFeedback.value?.homework);
+      homework.value = _homeworkMapper(widget.classFeedback.value?.homework);
       memoController.text = widget.classFeedback.value?.memo ?? "";
       rating = widget.classFeedback.value?.rate ?? 5;
+    });
+
+    welldoneController.addListener(() {
+      setState(() {});
+    });
+    attitudeController.addListener(() {
+      setState(() {});
+    });
+    homework.addListener(() {
+      setState(() {});
     });
     super.initState();
   }
@@ -104,9 +114,9 @@ class _FeedbackScrollableSheetSectionState
       onTap: () {
         welldoneController.text = "";
         attitudeController.text = "";
-        homework = "";
+        homework.value = "";
         memoController.text = "";
-        rating = widget.classFeedback.value?.rate ?? 5;
+        rating = widget.classFeedback.value?.rate ?? 0;
       },
       child: Container(
         width: 56,
@@ -125,20 +135,20 @@ class _FeedbackScrollableSheetSectionState
   }
 
   Widget completeButton(BuildContext context) {
+    bool vaildationFail = (welldoneController.text.isEmpty &&
+        attitudeController.text.isEmpty &&
+        homework.value.isEmpty &&
+        rating == 0);
     return GestureDectectorHidingKeyboard(
       onTap: () async {
-        if (welldoneController.text.isEmpty) return;
-        if (attitudeController.text.isEmpty) return;
-        if (homework.isEmpty) return;
-        if (memoController.text.isEmpty) return;
-
+        if (vaildationFail) return;
         if (widget.classFeedback.value == null) {
           final feedbackId = await httpService.createClassFeedback(
             classId: widget.classId,
             date: widget.selectedDate.value.dateTime,
             did: welldoneController.text,
             attitude: attitudeController.text,
-            homework: homework,
+            homework: homework.value,
             memo: memoController.text,
             rating: rating,
           );
@@ -161,7 +171,7 @@ class _FeedbackScrollableSheetSectionState
             feedbackId: widget.classFeedback.value?.feedbackId ?? 0,
             did: welldoneController.text,
             attitude: attitudeController.text,
-            homework: homework,
+            homework: homework.value,
             memo: memoController.text,
             rating: rating,
           );
@@ -186,13 +196,15 @@ class _FeedbackScrollableSheetSectionState
         height: 28,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: const Color(0xFFC7B7A3),
+          color: vaildationFail
+              ? const Color(0xFFC7B7A3).withOpacity(0.3)
+              : const Color(0xFFC7B7A3),
         ),
         child: Center(
           child: Text(
             widget.classFeedback.value == null ? "완료" : "변경",
             style: TextStyle(
-              color: Colors.white,
+              color: vaildationFail ? Colors.black : Colors.white,
             ),
           ),
         ),
@@ -314,7 +326,7 @@ class _FeedbackScrollableSheetSectionState
                             onPressed: () {
                               if (readOnly) return;
                               setState(() {
-                                homework = "완료";
+                                homework.value = "완료";
                               });
                             },
                             style: const ButtonStyle(
@@ -334,7 +346,7 @@ class _FeedbackScrollableSheetSectionState
                                   color: const Color(0xffffec9e),
                                 ),
                                 borderRadius: BorderRadius.circular(20),
-                                color: homework == "완료"
+                                color: homework.value == "완료"
                                     ? const Color(0xffffec9e)
                                     : Colors.white70,
                               ),
@@ -345,7 +357,7 @@ class _FeedbackScrollableSheetSectionState
                             onPressed: () {
                               if (readOnly) return;
                               setState(() {
-                                homework = "부분완료";
+                                homework.value = "부분완료";
                               });
                             },
                             style: const ButtonStyle(
@@ -365,7 +377,7 @@ class _FeedbackScrollableSheetSectionState
                                   color: const Color(0xffffec9e),
                                 ),
                                 borderRadius: BorderRadius.circular(20),
-                                color: homework == "부분완료"
+                                color: homework.value == "부분완료"
                                     ? const Color(0xffffec9e)
                                     : Colors.white70,
                               ),
@@ -376,7 +388,7 @@ class _FeedbackScrollableSheetSectionState
                             onPressed: () {
                               if (readOnly) return;
                               setState(() {
-                                homework = "미완료";
+                                homework.value = "미완료";
                               });
                             },
                             style: const ButtonStyle(
@@ -396,7 +408,7 @@ class _FeedbackScrollableSheetSectionState
                                   color: const Color(0xffffec9e),
                                 ),
                                 borderRadius: BorderRadius.circular(20),
-                                color: homework == "미완료"
+                                color: homework.value == "미완료"
                                     ? const Color(0xffffec9e)
                                     : Colors.white70,
                               ),
@@ -426,13 +438,15 @@ class _FeedbackScrollableSheetSectionState
                         allowHalfRating: false,
                         itemCount: 10,
                         itemSize: 32,
-                        itemBuilder: (context, _) => const Icon(
+                        unratedColor: const Color(0xFFC7B7A3).withOpacity(0.3),
+                        itemBuilder: (context, index) => Icon(
                           Icons.star,
-                          color: Colors.amber,
+                          color: Color(0xffc7b7a3),
                         ),
                         onRatingUpdate: (newRating) {
                           if (readOnly) return;
                           rating = newRating.toInt();
+                          setState(() {});
                         },
                       ),
                       const Gap(16),
