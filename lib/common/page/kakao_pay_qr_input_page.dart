@@ -76,9 +76,8 @@ class _KakaoPayQrInputPageState extends State<KakaoPayQrInputPage> {
                               children: [
                                 TextSpan(
                                   text: '카카오페이 송금 QR 링크',
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                  ),
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
                                 TextSpan(
                                   text: ' (선택사항)',
@@ -90,21 +89,26 @@ class _KakaoPayQrInputPageState extends State<KakaoPayQrInputPage> {
                               ],
                             ),
                           ),
-                          Text(
-                            "카카오페이로 정산을 원하실 경우 링크를 기재해주세요",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
-                            ),
-                          ),
                           Row(
                             children: [
-                              Text(
-                                "송금 링크 가이드가 필요하다면 물음표를 눌러주세요",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade500,
-                                ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "카카오페이로 정산을 원하실 경우 링크를 기재해주세요",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade500,
+                                    ),
+                                  ),
+                                  Text(
+                                    "송금 링크 가이드가 필요하다면 물음표를 눌러주세요",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade500,
+                                    ),
+                                  ),
+                                ],
                               ),
                               Gap(4),
                               GestureDectectorHidingKeyboard(
@@ -118,8 +122,9 @@ class _KakaoPayQrInputPageState extends State<KakaoPayQrInputPage> {
                                   );
                                 },
                                 child: Icon(
-                                  Icons.question_mark_rounded,
-                                  size: 12,
+                                  Icons.help_outline_rounded,
+                                  size: 28,
+                                  color: Colors.grey.shade700,
                                 ),
                               ),
                             ],

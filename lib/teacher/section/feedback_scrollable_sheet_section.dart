@@ -280,7 +280,7 @@ class _FeedbackScrollableSheetSectionState
               final readOnly = !widget.isTeacher;
               final showCursor = !readOnly;
               return Container(
-                height: MediaQuery.sizeOf(context).height * 0.8,
+                height: MediaQuery.sizeOf(context).height * 0.9,
                 color: Colors.white,
                 child: Padding(
                   padding: sidePadding,
@@ -431,24 +431,30 @@ class _FeedbackScrollableSheetSectionState
                         "수업 점수",
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      RatingBar.builder(
-                        ignoreGestures: readOnly,
-                        initialRating: rating.toDouble(),
-                        minRating: 0,
-                        direction: Axis.horizontal,
-                        allowHalfRating: false,
-                        itemCount: 10,
-                        itemSize: 32,
-                        unratedColor: const Color(0xFFC7B7A3).withOpacity(0.3),
-                        itemBuilder: (context, index) => Icon(
-                          Icons.star,
-                          color: Color(0xffc7b7a3),
-                        ),
-                        onRatingUpdate: (newRating) {
-                          if (readOnly) return;
-                          rating = newRating.toInt();
-                          setState(() {});
-                        },
+                      Row(
+                        children: [
+                          Spacer(),
+                          RatingBar.builder(
+                            ignoreGestures: readOnly,
+                            initialRating: rating.toDouble(),
+                            minRating: 0,
+                            direction: Axis.horizontal,
+                            allowHalfRating: false,
+                            itemCount: 10,
+                            itemSize: 30,
+                            unratedColor: const Color(0xFFC7B7A3).withOpacity(0.3),
+                            itemBuilder: (context, index) => Icon(
+                              Icons.star,
+                              color: Color(0xffc7b7a3),
+                            ),
+                            onRatingUpdate: (newRating) {
+                              if (readOnly) return;
+                              rating = newRating.toInt();
+                              setState(() {});
+                            },
+                          ),
+                          Spacer(),
+                        ],
                       ),
                       const Gap(16),
                       if (widget.isTeacher)
