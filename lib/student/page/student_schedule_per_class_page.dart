@@ -48,12 +48,10 @@ class _StudentSchedulePerClassPageState
     fetchClassDays(selectedDate.value);
     super.initState();
     selectedDate.addListener(() async {
-      if (weekMode.value == true) {
-        classFeedback.value = await httpService.fetchClassFeedback(
-          classId: widget.classId,
-          date: selectedDate.value,
-        );
-      }
+      classFeedback.value = await httpService.fetchClassFeedback(
+        classId: widget.classId,
+        date: selectedDate.value,
+      );
       fetchClassDays(selectedDate.value);
     });
   }
