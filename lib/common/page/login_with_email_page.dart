@@ -54,7 +54,7 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
                   const Spacer(),
                   Container(
                     width: MediaQuery.sizeOf(context).width,
-                    height: MediaQuery.sizeOf(context).height / 3,
+                    height: MediaQuery.sizeOf(context).height / 2.5,
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(
                         Radius.circular(10),
