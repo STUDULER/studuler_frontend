@@ -605,8 +605,6 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                           ],
                         ),
                       if (!showIncompleteFeedbackList)
-                        const SizedBox(height: 16),
-                      if (!showIncompleteFeedbackList)
                         ElevatedButton(
                           onPressed: () {
                             setState(() {
