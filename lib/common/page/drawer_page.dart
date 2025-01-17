@@ -19,6 +19,7 @@ class _DrawerPageState extends State<DrawerPage> {
   final HttpService _httpService = HttpService();
   String name = "";
   Widget accountManagementTile = SizedBox.shrink();
+  Image? image;
 
   @override
   void initState() {
@@ -40,6 +41,13 @@ class _DrawerPageState extends State<DrawerPage> {
             ),
           );
         },
+      );
+      image = Image.asset(
+        'assets/teacher.png',
+      );
+    } else {
+      image = Image.asset(
+        'assets/study.png',
       );
     }
     setState(() {});
@@ -67,6 +75,7 @@ class _DrawerPageState extends State<DrawerPage> {
               color: Colors.deepOrange.shade200,
               borderRadius: BorderRadius.circular(128),
             ),
+            child: Center(child: image,),
           ),
           const SizedBox(
             height: 16,
