@@ -520,8 +520,8 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                                     try {
                                       final feedTemplate = FeedTemplate(
                                         content: Content(
-                                          title: "수업 코드 안내",
-                                          description: "[${widget.title}] 수업 코드: ${widget.code}\n앱에서 수업 코드를 입력하여 수업에 참여하세요.",
+                                          title: "[${widget.title}] 수업 코드 안내",
+                                          description: "수업 코드: ${widget.code}\n앱에서 수업 코드를 입력하여 수업에 참여하세요.",
                                           imageUrl: Uri.parse('https://via.placeholder.com/300'), // 이미지 URL (선택)
                                           link: Link(
                                             webUrl: Uri.parse('https://developers.kakao.com'),
