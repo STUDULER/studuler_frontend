@@ -194,9 +194,7 @@ class _AccountManagementPageState extends State<AccountManagementPage> {
                             children: [
                               TextSpan(
                                 text: '카카오페이 송금 QR 링크',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                ),
+                                style: Theme.of(context).textTheme.titleMedium,
                               ),
                               TextSpan(
                                 text: ' (선택사항)',
@@ -208,45 +206,51 @@ class _AccountManagementPageState extends State<AccountManagementPage> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            "카카오페이로 정산을 원하실 경우 링크를 기재해주세요",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Row(
-                            children: [
-                              Text(
-                                "송금 링크 가이드가 필요하다면 물음표를 눌러주세요",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade500,
-                                ),
-                              ),
-                              Gap(4),
-                              GestureDectectorHidingKeyboard(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          KakaoPayQrInstructionPage(),
+                        Row(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    "카카오페이로 정산을 원하실 경우 링크를 기재해주세요",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade500,
                                     ),
-                                  );
-                                },
-                                child: Icon(
-                                  Icons.question_mark_rounded,
-                                  size: 12,
+                                  ),
                                 ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    "송금 링크 가이드가 필요하다면 물음표를 눌러주세요",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Gap(12),
+                            GestureDectectorHidingKeyboard(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        KakaoPayQrInstructionPage(),
+                                  ),
+                                );
+                              },
+                              child: Icon(
+                                Icons.help_outline_rounded,
+                                size: 28,
+                                color: Colors.grey.shade700,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),

@@ -14,7 +14,7 @@ class TeacherSchedulePerClassPage extends StatefulWidget {
   const TeacherSchedulePerClassPage({
     super.key,
     required this.className,
-    required this.classId, 
+    required this.classId,
     required this.classColor,
   });
 
@@ -36,6 +36,7 @@ class _TeacherSchedulePerClassPageState
   final PageController pageController = PageController(
     initialPage: 2400,
   );
+  final ScrollController scrollController = ScrollController();
   Jiffy date = Jiffy.now();
   final currPageIndex = ValueNotifier<int>(2400);
 
@@ -55,6 +56,10 @@ class _TeacherSchedulePerClassPageState
         );
       }
       fetchClassDays(selectedDate.value);
+    });
+
+    scrollController.addListener(() {
+      print(scrollController.offset);
     });
   }
 
@@ -80,152 +85,162 @@ class _TeacherSchedulePerClassPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Background(
-            colorIndex: widget.classColor,
-            iconActionButtons: [
-              IconButton(
-                icon: const Icon(Icons.menu, color: Colors.black),
-                onPressed: () => mainScaffoldKey.currentState?.openEndDrawer(),
-              ),
-            ],
-          ), // 배경 추가
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-              right: 16.0,
-              top: 100,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.className,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+      body: SingleChildScrollView(
+        controller: scrollController,
+        child: SizedBox(
+          width: MediaQuery.sizeOf(context).width,
+          height: MediaQuery.sizeOf(context).height,
+          child: Stack(
+            children: [
+              Background(
+                colorIndex: widget.classColor,
+                iconActionButtons: [
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Colors.black),
+                    onPressed: () =>
+                        mainScaffoldKey.currentState?.openEndDrawer(),
                   ),
+                ],
+              ), // 배경 추가
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 16.0,
+                  right: 16.0,
+                  top: 100,
                 ),
-                const Gap(20),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: sidePadding,
-                        child: Row(
-                          children: [
-                            ValueListenableBuilder<Jiffy>(
-                              valueListenable: selectedDate,
-                              builder: (
-                                BuildContext context,
-                                Jiffy value,
-                                Widget? child,
-                              ) {
-                                return Text(
-                                  "${value.year}년 ${value.month}월",
-                                );
-                              },
-                              // child: Text(displayDate.MMMMEEEEd)
-                            ),
-                            const Spacer(),
-                            ValueListenableBuilder<bool>(
-                              valueListenable: weekMode,
-                              builder: (context, weekMode, child) {
-                                if (weekMode) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      selectedDate.value =
-                                          selectedDate.value.add(weeks: -1);
-                                    },
-                                    child: const Icon(
-                                      Icons.keyboard_arrow_left_outlined,
-                                    ),
-                                  );
-                                } else {
-                                  return prevMonthButton();
-                                }
-                              },
-                            ),
-                            const Gap(12),
-                            ValueListenableBuilder<bool>(
-                              valueListenable: weekMode,
-                              builder: (context, weekMode, child) {
-                                if (weekMode) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      selectedDate.value =
-                                          selectedDate.value.add(weeks: 1);
-                                    },
-                                    child: const Icon(
-                                      Icons.keyboard_arrow_right_outlined,
-                                    ),
-                                  );
-                                } else {
-                                  return nextMonthButton();
-                                }
-                              },
-                            ),
-                          ],
-                        ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.className,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                      const Gap(8),
-                      Expanded(
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(16),
-                            ),
-                            color: Colors.white,
-                          ),
-                          child: Column(
-                            children: [
-                              const Gap(16),
-                              const CalendarDateSection(),
-                              Expanded(
-                                child: PageView.builder(
-                                  scrollDirection: Axis.vertical,
-                                  physics: weekMode.value
-                                      ? const NeverScrollableScrollPhysics()
-                                      : const BouncingScrollPhysics(),
-                                  controller: pageController,
-                                  itemBuilder: (context, index) {
-                                    return CalendarMonthSection(
-                                      isTeacher: true,
-                                      classId: widget.classId,
-                                      date: date.add(months: index - 2400),
-                                      someWeeksOfNextMonth: true,
-                                      weekMode: weekMode,
-                                      selectedDate: selectedDate,
-                                      classFeedback: classFeedback,
-                                      classDays: classDays,
-                                      fetchClassDaysFunction: fetchClassDays,
+                    ),
+                    const Gap(20),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: sidePadding,
+                            child: Row(
+                              children: [
+                                ValueListenableBuilder<Jiffy>(
+                                  valueListenable: selectedDate,
+                                  builder: (
+                                    BuildContext context,
+                                    Jiffy value,
+                                    Widget? child,
+                                  ) {
+                                    return Text(
+                                      "${value.year}년 ${value.month}월",
                                     );
                                   },
-                                  onPageChanged: (value) async {
-                                    if (currPageIndex.value > value) {
-                                      selectedDate.value =
-                                          selectedDate.value.add(months: -1);
+                                  // child: Text(displayDate.MMMMEEEEd)
+                                ),
+                                const Spacer(),
+                                ValueListenableBuilder<bool>(
+                                  valueListenable: weekMode,
+                                  builder: (context, weekMode, child) {
+                                    if (weekMode) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          selectedDate.value =
+                                              selectedDate.value.add(weeks: -1);
+                                        },
+                                        child: const Icon(
+                                          Icons.keyboard_arrow_left_outlined,
+                                        ),
+                                      );
                                     } else {
-                                      selectedDate.value =
-                                          selectedDate.value.add(months: 1);
+                                      return prevMonthButton();
                                     }
-                                    currPageIndex.value = value;
                                   },
                                 ),
-                              ),
-                            ],
+                                const Gap(12),
+                                ValueListenableBuilder<bool>(
+                                  valueListenable: weekMode,
+                                  builder: (context, weekMode, child) {
+                                    if (weekMode) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          selectedDate.value =
+                                              selectedDate.value.add(weeks: 1);
+                                        },
+                                        child: const Icon(
+                                          Icons.keyboard_arrow_right_outlined,
+                                        ),
+                                      );
+                                    } else {
+                                      return nextMonthButton();
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+                          const Gap(8),
+                          Expanded(
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(16),
+                                ),
+                                color: Colors.white,
+                              ),
+                              child: Column(
+                                children: [
+                                  const Gap(16),
+                                  const CalendarDateSection(),
+                                  Expanded(
+                                    child: PageView.builder(
+                                      scrollDirection: Axis.vertical,
+                                      physics: weekMode.value
+                                          ? const NeverScrollableScrollPhysics()
+                                          : const BouncingScrollPhysics(),
+                                      controller: pageController,
+                                      itemBuilder: (context, index) {
+                                        return CalendarMonthSection(
+                                          isTeacher: true,
+                                          classId: widget.classId,
+                                          date: date.add(months: index - 2400),
+                                          someWeeksOfNextMonth: true,
+                                          weekMode: weekMode,
+                                          selectedDate: selectedDate,
+                                          classFeedback: classFeedback,
+                                          classDays: classDays,
+                                          fetchClassDaysFunction:
+                                              fetchClassDays,
+                                        );
+                                      },
+                                      onPageChanged: (value) async {
+                                        if (currPageIndex.value > value) {
+                                          selectedDate.value = selectedDate
+                                              .value
+                                              .add(months: -1);
+                                        } else {
+                                          selectedDate.value =
+                                              selectedDate.value.add(months: 1);
+                                        }
+                                        currPageIndex.value = value;
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
