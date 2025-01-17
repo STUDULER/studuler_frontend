@@ -54,7 +54,6 @@ dependencies:
   cloud_firestore: ^5.6.1
   email_validator: ^3.0.0
   url_launcher: ^6.3.1
-  flutter_linkify: ^6.0.0
 
 dev_dependencies:
   flutter_test:
