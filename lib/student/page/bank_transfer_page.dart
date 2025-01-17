@@ -84,7 +84,6 @@ class _BankTransferPageState extends State<BankTransferPage> {
               Row(
                 children: [
                   SizedBox(
-                    width: MediaQuery.sizeOf(context).width / 5 * 1.8,
                     child: Center(
                       child: Text(
                         widget.className,

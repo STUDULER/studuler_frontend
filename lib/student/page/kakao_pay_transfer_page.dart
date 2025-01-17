@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:gap/gap.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -78,7 +77,6 @@ class _KakaoPayTransferPageState extends State<KakaoPayTransferPage> {
               Row(
                 children: [
                   SizedBox(
-                    width: MediaQuery.sizeOf(context).width / 5 * 1.8,
                     child: Center(
                       child: Text(
                         widget.className,
