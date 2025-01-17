@@ -88,6 +88,14 @@ flutter:
     - lib/common/auth/studuler.json
     - assets/banks/
 
+    - family: PoetsenOne
+      fonts:
+        - asset: assets/fonts/PoetsenOne-Regular.ttf
+    - family: PretendardVariable
+      fonts:
+        - asset: assets/fonts/Pretendard-Regular.otf
+        - asset: assets/fonts/Pretendard-ExtraBold.otf
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

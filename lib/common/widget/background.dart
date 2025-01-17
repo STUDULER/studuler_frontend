@@ -54,6 +54,7 @@ class Background extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'PoetsenOne',
                       ),
                     ),
                   ],

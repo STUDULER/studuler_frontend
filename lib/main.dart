@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Flutter Demo',
       theme: ThemeData(
-        fontFamily: 'GowunDodum',
+        fontFamily: 'PretendardVariable',
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         scaffoldBackgroundColor: Colors.white,
         useMaterial3: true,
