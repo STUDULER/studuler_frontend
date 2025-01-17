@@ -467,22 +467,29 @@ class _ClassInfoCardState extends State<ClassInfoCard>
                                   if (await ShareClient.instance
                                       .isKakaoTalkSharingAvailable()) {
                                     try {
-                                      final textTemplate = TextTemplate(
-                                        text:
-                                            "수업 코드: ${widget.code}\n수업 추가하기 버튼을 누른 다음 나오는 화면에 수업 코드를 입력해서 수업에 참여해주세요",
-                                        link: Link(
-                                          webUrl: Uri.parse(
-                                            'https://developers.kakao.com',
-                                          ),
-                                          mobileWebUrl: Uri.parse(
-                                            'https://developers.kakao.com',
+                                      final feedTemplate = FeedTemplate(
+                                        content: Content(
+                                          title: "수업 코드 안내",
+                                          description: "[${widget.title}] 수업 코드: ${widget.code}\n앱에서 수업 코드를 입력하여 수업에 참여하세요.",
+                                          imageUrl: Uri.parse('https://via.placeholder.com/300'), // 이미지 URL (선택)
+                                          link: Link(
+                                            webUrl: Uri.parse('https://developers.kakao.com'),
+                                            mobileWebUrl: Uri.parse('https://developers.kakao.com'),
                                           ),
                                         ),
-                                        buttonTitle: "수업 추가하기",
+                                        buttons: [
+                                          Button(
+                                            title: "수업 추가하기",
+                                            link: Link(
+                                              webUrl: Uri.parse('https://developers.kakao.com'),
+                                              mobileWebUrl: Uri.parse('https://developers.kakao.com'),
+                                            ),
+                                          ),
+                                        ],
                                       );
 
                                       Uri uri = await ShareClient.instance
-                                          .shareDefault(template: textTemplate);
+                                          .shareDefault(template: feedTemplate);
                                       await ShareClient.instance
                                           .launchKakaoTalk(uri);
                                       print('카카오톡 공유 완료');
