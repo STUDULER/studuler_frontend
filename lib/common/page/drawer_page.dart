@@ -72,7 +72,7 @@ class _DrawerPageState extends State<DrawerPage> {
             width: MediaQuery.sizeOf(context).width / 3,
             height: MediaQuery.sizeOf(context).width / 3,
             decoration: BoxDecoration(
-              color: Colors.deepOrange.shade200,
+              color: Color(0xfffdf6ec),
               borderRadius: BorderRadius.circular(128),
             ),
             child: Center(child: image,),
