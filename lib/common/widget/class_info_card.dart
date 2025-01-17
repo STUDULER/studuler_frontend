@@ -20,10 +20,10 @@ class ClassInfoCard extends StatefulWidget {
   final int period;
   final Color themeColor;
   final Function(
-    String title,
-    List<ClassInfoItem> infoItems,
-    Color themeColor,
-  ) onUpdate;
+      String title,
+      List<ClassInfoItem> infoItems,
+      Color themeColor,
+      ) onUpdate;
   final Function(int, String, int) goToPerClassPage;
   final Function(int classId) onDelete;
 
@@ -85,7 +85,7 @@ class _ClassInfoCardState extends State<ClassInfoCard>
     sessionCountController =
         TextEditingController(text: widget.infoItems[5].value.replaceAll('회', ''));
     nextPaymentDate =
-        widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
+    widget.infoItems.length > 6 ? widget.infoItems[6].value : '';
     currentThemeColor = widget.themeColor;
 
     themeColorController = TextEditingController(
@@ -327,91 +327,142 @@ class _ClassInfoCardState extends State<ClassInfoCard>
   }
 
   void _deleteClass() async {
-    try {
-      final confirmed = await showDialog(
-        context: context,
-        builder: (context) => Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
+    TextEditingController deleteController = TextEditingController();
+    bool validationError = false;
+
+    final confirmed = await showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
             child: Stack(
               children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 22),
-                    const Text(
-                      "수업을 삭제하시겠습니까?",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 16),
+                      const Text(
+                        "수업을 삭제하시겠습니까?",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 48),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        SizedBox(
-                          width: 60,
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              backgroundColor:
-                                  const Color(0xFFC7B7A3).withOpacity(0.34),
-                              foregroundColor: const Color(0xFFC7B7A3),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                            ),
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text("취소"),
+                      const SizedBox(height: 16),
+                      const Text(
+                        "삭제 시 해당 수업의 정보가 모두 삭제됩니다.",
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                      ),
+                      const Text(
+                        "삭제를 원하실 경우 '삭제'를 입력해주세요.",
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: deleteController,
+                        decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
+                          errorText: validationError ? "'삭제'를 입력해주세요." : null,
+                          errorStyle: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.red,
+                            height: 1.5,
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        SizedBox(
-                          width: 60,
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFFC7B7A3),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        "'확인' 클릭 시 해당 동작은 되돌릴 수 없습니다.",
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(
+                            width: 60,
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: const Color(0xFFC7B7A3).withOpacity(0.34),
+                                foregroundColor: const Color(0xFFC7B7A3),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
                               ),
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text("취소"),
                             ),
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text("확인"),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                  ],
+                          const SizedBox(width: 10),
+                          SizedBox(
+                            width: 60,
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: const Color(0xFFC7B7A3),
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                              ),
+                              onPressed: () {
+                                if (deleteController.text != "삭제") {
+                                  setState(() {
+                                    validationError = true;
+                                  });
+                                  return;
+                                }
+                                Navigator.pop(context, true);
+                              },
+                              child: const Text("확인"),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
                 Positioned(
-                  right: 8,
-                  top: 8,
+                  top: 16,
+                  right: 16,
                   child: GestureDetector(
                     onTap: () => Navigator.pop(context, false),
                     child: const Icon(
                       Icons.close,
                       size: 20,
-                      color: Colors.black54,
+                      color: Colors.black,
                     ),
                   ),
                 ),
               ],
             ),
-          ),
-        ),
-      );
+          );
+        },
+      ),
+    );
 
-      if (confirmed == true) {
+    if (confirmed == true) {
+      try {
         final success = await HttpService().deleteClass(widget.classId);
         if (success) {
           widget.onDelete(widget.classId);
@@ -423,11 +474,11 @@ class _ClassInfoCardState extends State<ClassInfoCard>
             const SnackBar(content: Text("수업 삭제에 실패했습니다.")),
           );
         }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("알 수 없는 오류가 발생했습니다.")),
+        );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("알 수 없는 오류가 발생했습니다.")),
-      );
     }
   }
 
