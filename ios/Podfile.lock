@@ -1172,7 +1172,7 @@ PODS:
   - firebase_core (3.10.0):
     - Firebase/CoreOnly (= 11.6.0)
     - Flutter
-  - firebase_messaging (15.2.0):
+  - firebase_messaging (15.1.6):
     - Firebase/Messaging (= 11.6.0)
     - firebase_core
     - Flutter
@@ -1373,6 +1373,8 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - url_launcher_ios (0.0.1):
+    - Flutter
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -1389,6 +1391,7 @@ DEPENDENCIES:
   - kakao_flutter_sdk_common (from `.symlinks/plugins/kakao_flutter_sdk_common/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
   - workmanager (from `.symlinks/plugins/workmanager/ios`)
 
@@ -1437,6 +1440,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
   webview_flutter_wkwebview:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
   workmanager:
@@ -1449,7 +1454,7 @@ SPEC CHECKSUMS:
   cloud_firestore: f02547e5b28138821eb44a48e3c5f034ebb5411b
   Firebase: 374a441a91ead896215703a674d58cdb3e9d772b
   firebase_core: feb37e79f775c2bd08dd35e02d83678291317e10
-  firebase_messaging: e2f0ba891b1509668c07f5099761518a5af8fe3c
+  firebase_messaging: 423f0b488a40be4e897213224f228929197e0d9f
   FirebaseAppCheckInterop: 2376d3ec5cb4267facad4fe754ab4f301a5a519b
   FirebaseCore: 48b0dd707581cf9c1a1220da68223fb0a562afaa
   FirebaseCoreExtension: 2d77d6430c16cf43ca2b04608302ed02b3598361
@@ -1475,6 +1480,7 @@ SPEC CHECKSUMS:
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
+  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
   webview_flutter_wkwebview: 0982481e3d9c78fd5c6f62a002fcd24fc791f1e4
   workmanager: 0afdcf5628bbde6924c21af7836fed07b42e30e6
 
