@@ -162,11 +162,6 @@ class _AccountInputPageState extends State<AccountInputPage> {
                               const Spacer(),
                               GestureDectectorHidingKeyboard(
                                 onTap: () async {
-                                  // if (_nameController.text.isEmpty ||
-                                  //     _bankController.text.isEmpty ||
-                                  //     _accountNumberController.text.isEmpty) {
-                                  //   return;
-                                  // }
                                   if (_nameController.text.isEmpty) {
                                     setState(() {
                                       showNameEmptyError = true;
