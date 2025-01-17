@@ -26,7 +26,13 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passwordCheckController = TextEditingController();
-  bool showEmailError = false;
+  bool showNameEmptyError = false;
+  bool showEmailEmptyError = false;
+  bool showEmailValidationError = false;
+  bool showEmailDuplicatedError = false;
+  bool showPasswordEmptyError = false;
+  bool showPasswordCheckEmptyError = false;
+  bool showPasswordCheckValidationError = false;
 
   @override
   void dispose() {
@@ -51,7 +57,7 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
   @override
   Widget build(BuildContext context) {
     final buttonText = widget.isTeacher ? "다음" : "회원가입";
-    final errorTextStyle = TextStyle(fontSize: 10, color: Colors.red);
+    final errorTextStyle = TextStyle(fontSize: 12, color: Colors.red);
     return Scaffold(
       body: SingleChildScrollView(
         child: SizedBox(
@@ -88,6 +94,14 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                                 label: "이름",
                                 hintText: "이름을 입력해주세요",
                               ),
+                              if (showNameEmptyError)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    "이름은 필수 입력사항입니다",
+                                    style: errorTextStyle,
+                                  ),
+                                ),
                               const Spacer(),
                               AuthTextField(
                                 controller: _emailController,
@@ -95,11 +109,27 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                                 hintText: "이메일을 입력해주세요",
                                 keyboardType: TextInputType.emailAddress,
                               ),
-                              if (showEmailError)
+                              if (showEmailEmptyError)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    "이메일은 필수 입력사항입니다",
+                                    style: errorTextStyle,
+                                  ),
+                                ),
+                              if (showEmailValidationError)
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8.0),
                                   child: Text(
                                     "이메일 주소를 확인해주세요",
+                                    style: errorTextStyle,
+                                  ),
+                                ),
+                              if (showEmailDuplicatedError)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    "이미 존재하는 이메일 입니다",
                                     style: errorTextStyle,
                                   ),
                                 ),
@@ -110,6 +140,14 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                                 hintText: "비밀번호를 입력해주세요",
                                 obscureText: true,
                               ),
+                              if (showPasswordEmptyError)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    "비밀번호는 필수 입력사항입니다",
+                                    style: errorTextStyle,
+                                  ),
+                                ),
                               const Spacer(),
                               AuthTextField(
                                 controller: _passwordCheckController,
@@ -117,24 +155,81 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                                 hintText: "비밀번호를 입력해주세요",
                                 obscureText: true,
                               ),
+                              if (showPasswordCheckValidationError)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    "비밀번호 확인이 비밀 번호와 달라요",
+                                    style: errorTextStyle,
+                                  ),
+                                ),
+                              if (showPasswordCheckEmptyError)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    "비밀번호 확인은 필수 입력사항입니다",
+                                    style: errorTextStyle,
+                                  ),
+                                ),
                               const Spacer(),
                               GestureDectectorHidingKeyboard(
                                 onTap: () async {
+                                  setState(() {
+                                    showNameEmptyError = false;
+                                    showEmailEmptyError = false;
+                                    showEmailValidationError = false;
+                                    showEmailDuplicatedError = false;
+                                    showPasswordEmptyError = false;
+                                    showPasswordCheckEmptyError = false;
+                                    showPasswordCheckValidationError = false;
+                                  });
+                                  if (_nameController.text.isEmpty) {
+                                    setState(() {
+                                      showNameEmptyError = true;
+                                    });
+                                    return;
+                                  }
+                                  if (_emailController.text.isEmpty) {
+                                    setState(() {
+                                      showEmailEmptyError = true;
+                                    });
+                                    return;
+                                  }
+                                  if (_passwordController.text.isEmpty) {
+                                    setState(() {
+                                      showPasswordEmptyError = true;
+                                    });
+                                    return;
+                                  }
+                                  if (_passwordCheckController.text.isEmpty) {
+                                    setState(() {
+                                      showPasswordCheckEmptyError = true;
+                                    });
+                                    return;
+                                  }
                                   if (!EmailValidator.validate(
                                     _emailController.text,
                                   )) {
                                     setState(() {
-                                      showEmailError = true;
+                                      showEmailValidationError = true;
                                     });
                                     return;
                                   }
-                                  if (_nameController.text.isEmpty ||
-                                      _emailController.text.isEmpty ||
-                                      _passwordController.text.isEmpty ||
-                                      _passwordCheckController.text.isEmpty) {
+                                  final emailDuplcatedSafe =
+                                      await httpService.checkMail(
+                                    mail: _emailController.text,
+                                    isTeacher: widget.isTeacher,
+                                  );
+                                  if (!emailDuplcatedSafe) {
+                                    setState(() {
+                                      showEmailDuplicatedError = true;
+                                    });
                                     return;
                                   }
                                   if (!isSamePassword()) {
+                                    setState(() {
+                                      showPasswordCheckValidationError = true;
+                                    });
                                     return;
                                   }
                                   const emailLoginMethod = 0;
@@ -145,15 +240,18 @@ class _SignUpWithEmailPageState extends State<SignUpWithEmailPage> {
                                     image: 0,
                                   );
                                   if (widget.isTeacher) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => AccountInputPage(
-                                          dto: dto,
-                                          loginMethod: emailLoginMethod,
+                                    if (context.mounted) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              AccountInputPage(
+                                            dto: dto,
+                                            loginMethod: emailLoginMethod,
+                                          ),
                                         ),
-                                      ),
-                                    );
+                                      );
+                                    }
                                   } else {
                                     final result =
                                         await httpService.createParent(

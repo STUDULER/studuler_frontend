@@ -3,7 +3,7 @@ class ClassFeedback {
   final DateTime date;
   final String workdone;
   final String attitude;
-  final int homework;
+  final int? homework;
   final String memo;
   final int rate;
 

@@ -8,6 +8,7 @@ class AddClassTile extends StatelessWidget {
     required this.title,
     required this.inputTile,
     required this.height,
+    required this.showErrorText,
   });
 
   final int currIdx;
@@ -15,9 +16,11 @@ class AddClassTile extends StatelessWidget {
   final String title;
   final Widget inputTile;
   final double height;
+  final bool showErrorText;
 
   @override
   Widget build(BuildContext context) {
+    final errorTextStyle = TextStyle(fontSize: 12, color: Colors.red);
     const double foldedHeight = 15;
     assert(height >= foldedHeight);
     const duration = Duration(
@@ -46,11 +49,20 @@ class AddClassTile extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  color: Color(0xff383838),
+              child: RichText(
+                text: TextSpan(
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Color(0xff383838),
+                  ),
+                  children: [
+                    TextSpan(text: '$title '),
+                    if (showErrorText)
+                      TextSpan(
+                        text: ' (필수 사항)',
+                        style: errorTextStyle,
+                      ),
+                  ],
                 ),
               ),
             ),

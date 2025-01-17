@@ -180,15 +180,18 @@ class HttpService {
     return true;
   }
 
-  Future<bool> loginWithMail({
+  Future<bool?> loginWithMail({
     required bool isTeacher,
     required String mail,
     required String password,
   }) async {
     try {
       // FCM 토큰 가져오기
-      final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-      final fcmToken = await firebaseMessaging.getToken();
+      String? fcmToken;
+      if (Platform.isAndroid) {
+        final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+        fcmToken = await firebaseMessaging.getToken();
+      }
 
       String path = isTeacher ? "/teachers" : "/students";
       String fcmKey = isTeacher ? 'teacherFCM' : 'studentFCM';
@@ -209,6 +212,14 @@ class HttpService {
         map: tokenMap,
         isTeacher: isTeacher,
       );
+    } on DioException catch (e) {
+      if (e.response?.data['message'] == "잘못된 메일 입니다. 다시 입력해주세요.") {
+        return null;
+      }
+      if (e.response?.data['message'] == "잘못된 비밀번호 입니다. 다시 입력해주세요.") {
+        return false;
+      }
+      return false;
     } catch (e) {
       return false;
     }
@@ -391,6 +402,29 @@ class HttpService {
     }
 
     return true;
+  }
+
+  Future<bool> checkMail({
+    required String mail,
+    required bool isTeacher,
+  }) async {
+    if (isTeacher) {
+      final response = await call.get(
+        "/teachers/checkMail",
+        data: {
+          "mail": mail,
+        },
+      );
+      return response.data;
+    } else {
+      final response = await call.get(
+        "/students/checkMail",
+        data: {
+          "mail": mail,
+        },
+      );
+      return response.data;
+    }
   }
 
   Future<String?> createClass({
@@ -934,7 +968,7 @@ class HttpService {
     required String memo,
     required int rating,
   }) async {
-    int homeworkParam = 0;
+    int? homeworkParam;
     switch (homework) {
       case "미완료":
         homeworkParam = 0;
@@ -943,8 +977,9 @@ class HttpService {
         homeworkParam = 1;
         break;
       case "완료":
-      default:
         homeworkParam = 2;
+        break;
+      default:
         break;
     }
 
@@ -953,10 +988,10 @@ class HttpService {
       data: {
         "classid": classId,
         "date": _jiffyToFormat(Jiffy.parseFromDateTime(date)),
-        "workdone": did,
-        "attitude": attitude,
+        "workdone": did.isEmpty ? null : did,
+        "attitude": attitude.isEmpty ? null : attitude,
         "homework": homeworkParam,
-        "memo": memo,
+        "memo": memo.isEmpty ? null : memo,
         "rate": rating,
       },
     );
@@ -972,7 +1007,7 @@ class HttpService {
     required String memo,
     required int rating,
   }) async {
-    int homeworkParam = 0;
+    int? homeworkParam;
     switch (homework) {
       case "미완료":
         homeworkParam = 0;
@@ -981,8 +1016,9 @@ class HttpService {
         homeworkParam = 1;
         break;
       case "완료":
-      default:
         homeworkParam = 2;
+        break;
+      default:
         break;
     }
 
@@ -990,10 +1026,10 @@ class HttpService {
       "/each/editFeedback",
       data: {
         "feedbackId": feedbackId,
-        "workdone": did,
-        "attitude": attitude,
+        "workdone": did.isEmpty ? null : did,
+        "attitude": attitude.isEmpty ? null : attitude,
         "homework": homeworkParam,
-        "memo": memo,
+        "memo": memo.isEmpty ? null : memo,
         "rate": rating,
       },
     );
@@ -1103,10 +1139,10 @@ class HttpService {
     return ClassFeedback(
       feedbackId: feedback['feedbackid'],
       date: Jiffy.parse(feedback['date']).dateTime,
-      workdone: feedback['workdone'],
-      attitude: feedback['attitude'],
+      workdone: feedback['workdone'] ?? "",
+      attitude: feedback['attitude'] ?? "",
       homework: feedback['homework'],
-      memo: feedback['memo'],
+      memo: feedback['memo'] ?? "",
       rate: int.parse(feedback['rate'].toString()),
     );
   }

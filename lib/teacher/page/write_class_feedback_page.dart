@@ -29,9 +29,9 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
 
   final _didController = TextEditingController();
   final _attitudeController = TextEditingController();
-  String _homework = "";
+  final ValueNotifier<String> _homework = ValueNotifier<String>("");
   final _memoController = TextEditingController();
-  int _rating = 5;
+  int _rating = 0;
 
   int buttonActivated = 0;
   String _dateToString() {
@@ -64,6 +64,20 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
   }
 
   @override
+  void initState() {
+    _didController.addListener(() {
+      setState(() {});
+    });
+    _attitudeController.addListener(() {
+      setState(() {});
+    });
+    _homework.addListener(() {
+      setState(() {});
+    });
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _didController.dispose();
     _attitudeController.dispose();
@@ -91,19 +105,19 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
   }
 
   Widget completeButton() {
+    bool vaildationFail = (_didController.text.isEmpty &&
+        _attitudeController.text.isEmpty &&
+        _homework.value.isEmpty &&
+        _rating == 0);
     return GestureDectectorHidingKeyboard(
       onTap: () async {
-        if (_didController.text.isEmpty) return;
-        if (_attitudeController.text.isEmpty) return;
-        if (_homework.isEmpty) return;
-        if (_memoController.text.isEmpty) return;
-
+        if (vaildationFail) return;
         final feedbackId = await httpService.createClassFeedback(
           classId: widget.classId,
           date: widget.date,
           did: _didController.text,
           attitude: _attitudeController.text,
-          homework: _homework,
+          homework: _homework.value,
           memo: _memoController.text,
           rating: _rating,
         );
@@ -119,10 +133,17 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
         height: 28,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: const Color(0xFFC7B7A3),
+          color: vaildationFail
+              ? const Color(0xFFC7B7A3).withOpacity(0.3)
+              : const Color(0xFFC7B7A3),
         ),
-        child: const Center(
-          child: Text("완료"),
+        child: Center(
+          child: Text(
+            "완료",
+            style: TextStyle(
+              color: vaildationFail ? Colors.black : Colors.white,
+            ),
+          ),
         ),
       ),
     );
@@ -228,7 +249,7 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        _homework = "완료";
+                                        _homework.value = "완료";
                                         setState(() {
                                           buttonActivated = 1;
                                         });
@@ -263,7 +284,7 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        _homework = "부분완료";
+                                        _homework.value = "부분완료";
                                         setState(() {
                                           buttonActivated = 2;
                                         });
@@ -298,7 +319,7 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        _homework = "미완료";
+                                        _homework.value = "미완료";
                                         setState(() {
                                           buttonActivated = 3;
                                         });
@@ -347,18 +368,21 @@ class _WriteClassFeedbackPageState extends State<WriteClassFeedbackPage> {
                                   ],
                                 ),
                                 RatingBar.builder(
-                                  initialRating: 5,
+                                  initialRating: _rating.toDouble(),
                                   minRating: 0,
                                   direction: Axis.horizontal,
                                   allowHalfRating: false,
                                   itemCount: 10,
                                   itemSize: 32,
-                                  itemBuilder: (context, _) => const Icon(
+                                  unratedColor:
+                                      const Color(0xFFC7B7A3).withOpacity(0.3),
+                                  itemBuilder: (context, index) => Icon(
                                     Icons.star,
-                                    color: Colors.amber,
+                                    color: Color(0xffc7b7a3),
                                   ),
                                   onRatingUpdate: (rating) {
                                     _rating = rating.toInt();
+                                    setState(() {});
                                   },
                                 ),
                                 const SizedBox(

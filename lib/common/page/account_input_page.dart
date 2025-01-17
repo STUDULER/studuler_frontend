@@ -30,6 +30,11 @@ class _AccountInputPageState extends State<AccountInputPage> {
   final _bankController = TextEditingController();
   final _accountNumberController = TextEditingController();
   final _textfieldController = TextEditingController();
+
+  bool showNameEmptyError = false;
+  bool showBankEmptyError = false;
+  bool showAccountNumberEmptyError = false;
+
   final List<String> _banks = [
     "카카오뱅크",
     "국민은행",
@@ -62,6 +67,7 @@ class _AccountInputPageState extends State<AccountInputPage> {
 
   @override
   Widget build(BuildContext context) {
+    final errorTextStyle = TextStyle(fontSize: 12, color: Colors.red);
     return Scaffold(
       body: SingleChildScrollView(
         child: SizedBox(
@@ -98,6 +104,14 @@ class _AccountInputPageState extends State<AccountInputPage> {
                                 label: "예금주 성명",
                                 hintText: "이름을 입력해주세요",
                               ),
+                              if (showNameEmptyError)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    "에금주 성명은 필수 입력사항입니다",
+                                    style: errorTextStyle,
+                                  ),
+                                ),
                               const Spacer(),
                               AuthTextField(
                                 controller: _bankController,
@@ -114,13 +128,22 @@ class _AccountInputPageState extends State<AccountInputPage> {
                                     builder: (context) {
                                       return BankSelectionPage(
                                         bankController: _bankController,
-                                        textfieldController: _textfieldController,
+                                        textfieldController:
+                                            _textfieldController,
                                         banks: _banks,
                                       );
                                     },
                                   );
                                 },
                               ),
+                              if (showBankEmptyError)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    "은행 필수 선택사항입니다",
+                                    style: errorTextStyle,
+                                  ),
+                                ),
                               const Spacer(),
                               AuthTextField(
                                 controller: _accountNumberController,
@@ -128,30 +151,57 @@ class _AccountInputPageState extends State<AccountInputPage> {
                                 hintText: "계좌번호를 입력해주세요",
                                 keyboardType: TextInputType.number,
                               ),
+                              if (showAccountNumberEmptyError)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    "계좌번호는 필수 입력사항입니다",
+                                    style: errorTextStyle,
+                                  ),
+                                ),
                               const Spacer(),
                               GestureDectectorHidingKeyboard(
                                 onTap: () async {
-                                  if (_nameController.text.isEmpty ||
-                                      _bankController.text.isEmpty ||
-                                      _accountNumberController.text.isEmpty) {
+                                  setState(() {
+                                    showNameEmptyError = false;
+                                    showBankEmptyError = false;
+                                    showAccountNumberEmptyError = false;
+                                  });
+                                  if (_nameController.text.isEmpty) {
+                                    setState(() {
+                                      showNameEmptyError = true;
+                                    });
+                                    return;
+                                  }
+                                  if (_bankController.text.isEmpty) {
+                                    setState(() {
+                                      showBankEmptyError = true;
+                                    });
+                                    return;
+                                  }
+                                  if (_accountNumberController.text.isEmpty) {
+                                    setState(() {
+                                      showAccountNumberEmptyError = true;
+                                    });
                                     return;
                                   }
                                   Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => KakaoPayQrInputPage(
-                                            dto: widget.dto,
-                                            loginMethod: widget.loginMethod,
-                                            name: _nameController.text,
-                                            bank: _bankController.text,
-                                            account: _accountNumberController.text,
-                                          ),
-                                        ),
-                                      );
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => KakaoPayQrInputPage(
+                                        dto: widget.dto,
+                                        loginMethod: widget.loginMethod,
+                                        name: _nameController.text,
+                                        bank: _bankController.text,
+                                        account: _accountNumberController.text,
+                                      ),
+                                    ),
+                                  );
                                 },
                                 child: Container(
                                   width: MediaQuery.sizeOf(context).width,
-                                  height: MediaQuery.sizeOf(context).height / 16,
+                                  height:
+                                      MediaQuery.sizeOf(context).height / 16,
                                   decoration: const BoxDecoration(
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(8),
