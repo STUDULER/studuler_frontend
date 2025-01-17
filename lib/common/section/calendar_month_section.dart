@@ -16,9 +16,9 @@ class CalendarMonthSection extends StatefulWidget {
     this.someWeeksOfNextMonth = false,
     required this.weekMode,
     required this.selectedDate,
-    required this.classFeedback, 
-    required this.classDays, 
-    required this.fetchClassDaysFunction, 
+    required this.classFeedback,
+    required this.classDays,
+    required this.fetchClassDaysFunction,
   });
 
   final bool isTeacher;
@@ -75,7 +75,7 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
     for (var i = 0; i < weeksOfMonthOnCalendar(widget.date); i++) {
       weekSections.add(
         CalendarWeekSection(
-          onTap: (int index, Jiffy date) {
+          onTap: (int index, Jiffy date) async {
             if (widget.weekMode.value == true) {
               widget.selectedDate.value = date;
             } else {
@@ -84,11 +84,12 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
                 duration: Durations.long2,
                 curve: Curves.easeInOut,
               );
-              widget.weekMode.value = true;
               widget.selectedDate.value = date;
               setState(() {
                 selectedIndex = selectedIndex == index ? null : index;
               });
+              await Future.delayed(Durations.long2);
+              widget.weekMode.value = true;
             }
           },
           allowLongPress: true,
@@ -98,7 +99,7 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
           month: widget.date.month,
           startDayOfWeek:
               widget.date.startOf(Unit.month).startOf(Unit.week).add(weeks: i),
-          classDays: widget.classDays, 
+          classDays: widget.classDays,
         ),
       );
     }
@@ -119,7 +120,7 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
                 .startOf(Unit.week)
                 .add(weeks: index),
             opacity: 0.33,
-            classDays: const [], 
+            classDays: const [],
           ),
         ),
       );
@@ -174,7 +175,7 @@ class _CalendarMonthSectionState extends State<CalendarMonthSection> {
                         month: selectedDate.month,
                         selectedDate: selectedDate,
                         startDayOfWeek: selectedDate.startOf(Unit.week),
-                        classDays: widget.classDays, 
+                        classDays: widget.classDays,
                       );
                     },
                   ),
