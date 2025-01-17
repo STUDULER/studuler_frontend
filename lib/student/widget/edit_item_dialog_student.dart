@@ -12,7 +12,8 @@ class EditItemDialogStudent {
     required int classId,
     bool isNumeric = false,
   }) {
-    TextEditingController controller = TextEditingController(text: initialValue);
+    TextEditingController controller =
+        TextEditingController(text: initialValue);
 
     Widget _buildInputField() {
       switch (title) {
@@ -64,7 +65,7 @@ class EditItemDialogStudent {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: List.generate(
                               5,
-                                  (index) => GestureDetector(
+                              (index) => GestureDetector(
                                 onTap: () {
                                   setState(() {
                                     controller.text = "$index";
@@ -75,10 +76,10 @@ class EditItemDialogStudent {
                                   radius: 15,
                                   child: controller.text == "$index"
                                       ? const Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 16,
-                                  )
+                                          Icons.check,
+                                          color: Colors.white,
+                                          size: 16,
+                                        )
                                       : null,
                                 ),
                               ),
@@ -89,7 +90,7 @@ class EditItemDialogStudent {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: List.generate(
                               5,
-                                  (index) => GestureDetector(
+                              (index) => GestureDetector(
                                 onTap: () {
                                   setState(() {
                                     controller.text = "${index + 5}";
@@ -100,10 +101,10 @@ class EditItemDialogStudent {
                                   radius: 15,
                                   child: controller.text == "${index + 5}"
                                       ? const Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 16,
-                                  )
+                                          Icons.check,
+                                          color: Colors.white,
+                                          size: 16,
+                                        )
                                       : null,
                                 ),
                               ),
@@ -164,7 +165,7 @@ class EditItemDialogStudent {
                           child: TextButton(
                             style: TextButton.styleFrom(
                               backgroundColor:
-                              const Color(0xFFC7B7A3).withOpacity(0.34),
+                                  const Color(0xFFC7B7A3).withOpacity(0.34),
                               foregroundColor: const Color(0xFFC7B7A3),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
@@ -192,19 +193,22 @@ class EditItemDialogStudent {
 
                               switch (title) {
                                 case '선생님 이름':
-                                  success = await HttpService().updateTeacherNameS(
+                                  success =
+                                      await HttpService().updateTeacherNameS(
                                     classId: classId,
                                     teacherName: newValue,
                                   );
                                   break;
                                 case '수업 이름':
-                                  success = await HttpService().updateClassNameS(
+                                  success =
+                                      await HttpService().updateClassNameS(
                                     classId: classId,
                                     className: newValue,
                                   );
                                   break;
                                 case '테마 색상':
-                                  success = await HttpService().updateThemeColorS(
+                                  success =
+                                      await HttpService().updateThemeColorS(
                                     classId: classId,
                                     themeColor: int.parse(newValue),
                                   );
@@ -212,6 +216,7 @@ class EditItemDialogStudent {
                               }
 
                               if (success) {
+                                onUpdate(newValue);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text("수정이 완료되었습니다.")),
                                 );
