@@ -393,6 +393,29 @@ class HttpService {
     return true;
   }
 
+  Future<bool> checkMail({
+    required String mail,
+    required bool isTeacher,
+  }) async {
+    if (isTeacher) {
+      final response = await call.get(
+        "/teachers/checkMail",
+        data: {
+          "mail": mail,
+        },
+      );
+      return response.data;
+    } else {
+      final response = await call.get(
+        "/students/checkMail",
+        data: {
+          "mail": mail,
+        },
+      );
+      return response.data;
+    }
+  }
+
   Future<String?> createClass({
     required String className,
     required int numOfClassesToPay,
