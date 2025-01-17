@@ -124,7 +124,7 @@ class LoginPage extends StatelessWidget {
                         "카카오로 시작하기",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 12,
+                          fontSize: 16,
                         ),
                       ),
                       const SizedBox(
@@ -194,7 +194,7 @@ class LoginPage extends StatelessWidget {
                         "Google로 시작하기",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 12,
+                          fontSize: 16,
                         ),
                       ),
                       const Gap(bannerSize),
