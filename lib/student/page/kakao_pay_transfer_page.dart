@@ -141,64 +141,42 @@ class _KakaoPayTransferPageState extends State<KakaoPayTransferPage> {
                 ],
               ),
               Gap(56),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: MediaQuery.sizeOf(context).width / 7 * 3,
-                    child: Center(
-                      child: Text(
-                        "선생님 송금 링크",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey.shade600,
+              if (kakaoPayLink != null)
+                Row(
+                  children: [
+                    Spacer(),
+                    GestureDetector(
+                      onTap: () async {
+                        final url = Uri.parse(kakaoPayLink!);
+                        if (await canLaunchUrl(url)) {
+                          try {
+                            await launchUrl(url);
+                          } catch (e) {
+                            return;
+                          }
+                        }
+                      },
+                      child: Container(
+                        width: 232,
+                        height: 54,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(32),
+                          color: Colors.amberAccent,
+                        ),
+                        child: Center(
+                          child: Text(
+                            "송금하기",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Gap(12),
-                  Linkify(
-                    onOpen: (link) async {
-                      // print(link.url);
-                      // print(Uri.parse(link.url));
-                      if (await canLaunchUrl(Uri.parse(link.url))) {
-                        print("Yes");
-                      } else {
-                        print("no");
-                      }
-                      if (!await launchUrl(Uri.parse(link.url))) {
-                        print("Could not launch ${link.url}");
-                        // throw Exception('Could not launch ${link.url}');
-                      }
-                    },
-                    text: kakaoPayLink ?? "",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontFamily: "PretendardVariable",
-                      fontStyle: FontStyle.normal,
-                      fontSize: 14.0,
-                    ),
-                    linkStyle: TextStyle(
-                      color: Colors.black,
-                      fontFamily: "PretendardVariable",
-                      fontWeight: FontWeight.w800,
-                      decoration: TextDecoration.underline,
-                      fontSize: 14.0,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: MediaQuery.sizeOf(context).width / 12),
-                    child: Text(
-                      kakaoPayLink ?? "송금 링크 없음",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                    Spacer(),
+                  ],
+                ),
               Spacer(),
               if (kakaoPayLink != null)
                 GestureDetector(
