@@ -10,7 +10,7 @@ class AppTitle extends StatelessWidget {
       style: TextStyle(
         fontSize: 52,
         fontWeight: FontWeight.bold,
-        fontFamily: 'GowunDodum',
+        fontFamily: 'PoetsenOne',
       ),
     );
   }
