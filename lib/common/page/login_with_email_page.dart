@@ -23,6 +23,11 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
   final _idController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  bool showEmailError = false;
+  bool showEmailEmptyError = false;
+  bool showPasswordError = false;
+  bool showPasswordEmptyError = false;
+
   @override
   void dispose() {
     _idController.dispose();
@@ -32,6 +37,7 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final errorTextStyle = TextStyle(fontSize: 12, color: Colors.red);
     return Scaffold(
       body: GestureDectectorHidingKeyboard(
         child: YellowBackground(
@@ -66,6 +72,22 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
                             hintText: "아이디를 입력해주세요",
                             keyboardType: TextInputType.emailAddress,
                           ),
+                          if (showEmailError)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                "잘못된 메일 입니다. 다시 입력해주세요.",
+                                style: errorTextStyle,
+                              ),
+                            ),
+                          if (showEmailEmptyError)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                "이메일을 입력해주세요.",
+                                style: errorTextStyle,
+                              ),
+                            ),
                           const Spacer(),
                           AuthTextField(
                             controller: _passwordController,
@@ -73,18 +95,62 @@ class _LoginWithEmailPageState extends State<LoginWithEmailPage> {
                             hintText: "비밀번호를 입력해주세요",
                             obscureText: true,
                           ),
+                          if (showPasswordError)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                "잘못된 비밀번호 입니다. 다시 입력해주세요.",
+                                style: errorTextStyle,
+                              ),
+                            ),
+                          if (showPasswordEmptyError)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                "비밀번호를 입력해주세요.",
+                                style: errorTextStyle,
+                              ),
+                            ),
                           const Spacer(),
                           GestureDectectorHidingKeyboard(
                             onTap: () async {
-                              if (_idController.text.isEmpty ||
-                                  _passwordController.text.isEmpty) {
+                              setState(() {
+                                showEmailError = false;
+                                showEmailEmptyError = false;
+                                showPasswordError = false;
+                                showPasswordEmptyError = false;
+                              });
+                              if (_idController.text.isEmpty) {
+                                setState(() {
+                                  showEmailEmptyError = true;
+                                });
                                 return;
                               }
-                              if (await HttpService().loginWithMail(
+                              if (_passwordController.text.isEmpty) {
+                                setState(() {
+                                  showPasswordEmptyError = true;
+                                });
+                                return;
+                              }
+                              final loginResult =
+                                  await HttpService().loginWithMail(
                                 isTeacher: widget.isTeacher,
                                 mail: _idController.text,
                                 password: _passwordController.text,
-                              )) {
+                              );
+                              if (loginResult == null) {
+                                setState(() {
+                                  showEmailError = true;
+                                });
+                                return;
+                              }
+                              if (loginResult == false) {
+                                setState(() {
+                                  showPasswordError = true;
+                                });
+                                return;
+                              }
+                              if (loginResult == true) {
                                 if (context.mounted) {
                                   Navigator.pushReplacement(
                                     context,

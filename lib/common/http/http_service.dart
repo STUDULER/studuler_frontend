@@ -180,15 +180,18 @@ class HttpService {
     return true;
   }
 
-  Future<bool> loginWithMail({
+  Future<bool?> loginWithMail({
     required bool isTeacher,
     required String mail,
     required String password,
   }) async {
     try {
       // FCM 토큰 가져오기
-      final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-      final fcmToken = await firebaseMessaging.getToken();
+      String? fcmToken;
+      if (Platform.isAndroid) {
+        final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+        fcmToken = await firebaseMessaging.getToken();
+      }
 
       String path = isTeacher ? "/teachers" : "/students";
       String fcmKey = isTeacher ? 'teacherFCM' : 'studentFCM';
@@ -209,6 +212,14 @@ class HttpService {
         map: tokenMap,
         isTeacher: isTeacher,
       );
+    } on DioException catch (e) {
+      if (e.response?.data['message'] == "잘못된 메일 입니다. 다시 입력해주세요.") {
+        return null;
+      }
+      if (e.response?.data['message'] == "잘못된 비밀번호 입니다. 다시 입력해주세요.") {
+        return false;
+      }
+      return false;
     } catch (e) {
       return false;
     }
