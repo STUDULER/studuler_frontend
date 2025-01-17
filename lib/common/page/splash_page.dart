@@ -18,9 +18,10 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   bool _showSplash = true;
   final AuthService _authService = AuthService();
+  bool _visible = true;
 
   final Duration splashDuration = const Duration(
-    seconds: 2,
+    seconds: 1,
     milliseconds: 500,
   );
 
@@ -40,7 +41,13 @@ class _SplashPageState extends State<SplashPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: AnimatedSwitcher(
-        duration: Durations.extralong1,
+        transitionBuilder: (child, animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        duration: Durations.medium4,
         child: _showSplash
             ? SizedBox(
                 width: MediaQuery.sizeOf(context).width,
@@ -53,10 +60,10 @@ class _SplashPageState extends State<SplashPage> {
                   secondaryBegin: Alignment.bottomCenter,
                   secondaryEnd: Alignment.topCenter,
                   primaryColors: [
-                    const Color(0xffB7CADB),
-                    const Color(0xffB7CADB),
-                    const Color(0xffB7CADB),
-                    const Color(0xffB7CADB),
+                    // const Color(0xffB7CADB),
+                    // const Color(0xffB7CADB),
+                    // const Color(0xffB7CADB),
+                    // const Color(0xffB7CADB),
                     const Color(0xffB7CADB),
                     const Color(0xffB7CADB),
                     Colors.yellow.shade200,
@@ -65,10 +72,10 @@ class _SplashPageState extends State<SplashPage> {
                     Colors.yellow.shade200,
                     Colors.yellow.shade200,
                     Colors.yellow.shade200,
-                    Colors.yellow.shade200,
-                    Colors.yellow.shade200,
-                    Colors.yellow.shade200,
-                    Colors.yellow.shade200,
+                    // Colors.yellow.shade200,
+                    // Colors.yellow.shade200,
+                    // Colors.yellow.shade200,
+                    // Colors.yellow.shade200,
                   ],
                   child: const Column(
                     children: [
