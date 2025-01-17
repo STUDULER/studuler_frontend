@@ -95,7 +95,7 @@ Future<List<Map<String, dynamic>>>? futureClassData;
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 final errorMessage = snapshot.error.toString();
-                if (errorMessage.contains('No classes available for the teacher')) {
+                if (errorMessage.contains('No classes available')) {
                   // 특정 에러 메시지일 경우 빈 카드 표시
                   return _buildEmptyCard(screenHeight, screenWidth);
                 } else {
@@ -191,9 +191,12 @@ Future<List<Map<String, dynamic>>>? futureClassData;
           }
         },
         child: Container(
-          width: screenWidth * 0.93, // 화면 가로 길이의 93%
-          height: screenHeight * 0.67, // 화면 세로 길이의 67%
-          margin: EdgeInsets.only(top: screenHeight * 0.22), // 카드 위치 아래로 이동
+          width: screenWidth * 0.93,
+          // 화면 가로 길이의 93%
+          height: screenHeight * 0.67,
+          // 화면 세로 길이의 67%
+          margin: EdgeInsets.only(top: screenHeight * 0.22),
+          // 카드 위치 아래로 이동
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
