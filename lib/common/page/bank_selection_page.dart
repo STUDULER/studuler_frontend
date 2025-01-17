@@ -23,6 +23,28 @@ class BankSelectionPage extends StatefulWidget {
 class _BankSelectionPageState extends State<BankSelectionPage> {
   List<String> _filteredBanks = [];
 
+  // 은행 이름과 로고 매핑
+  final Map<String, String> bankLogos = {
+    "카카오뱅크": "kakao_bank.png",
+    "국민은행": "kb_bank.png",
+    "기업은행": "ibk_bank.png",
+    "농협은행": "nh_bank.png",
+    "신한은행": "shinhan_bank.png",
+    "산업은행": "kdb_bank.png",
+    "우리은행": "woori_bank.png",
+    "한국씨티은행": "citi_bank.png",
+    "하나은행": "hana_bank.png",
+    "SC제일은행": "sc_bank.png",
+    "경남은행": "kyongnam_bank.png",
+    "광주은행": "kwangju_bank.png",
+    "대구은행": "daegu_bank.png",
+    "도이치은행": "deutsche_bank.png",
+    "뱅크오브아메리카": "bofa_bank.png",
+    "부산은행": "busan_bank.png",
+    "신림조합중앙회": "sinrim_bank.png",
+    "저축은행": "saving_bank.png",
+  };
+
   @override
   void initState() {
     super.initState();
@@ -111,7 +133,8 @@ class _BankSelectionPageState extends State<BankSelectionPage> {
                     itemBuilder: (context, index) {
                       return BankSelectionCell(
                         controller: widget._bankController,
-                        bank: _filteredBanks.elementAt(index), 
+                        bank: _filteredBanks.elementAt(index),
+                        bankLogos: bankLogos, // 매핑 전달
                       );
                     },
                   ),
