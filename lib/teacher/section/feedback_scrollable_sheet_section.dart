@@ -280,6 +280,7 @@ class _FeedbackScrollableSheetSectionState
               final readOnly = !widget.isTeacher;
               final showCursor = !readOnly;
               return Container(
+                height: MediaQuery.sizeOf(context).height * 0.8,
                 color: Colors.white,
                 child: Padding(
                   padding: sidePadding,
